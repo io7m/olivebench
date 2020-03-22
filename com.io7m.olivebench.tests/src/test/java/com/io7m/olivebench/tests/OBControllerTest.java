@@ -80,6 +80,15 @@ public final class OBControllerTest
 
     LOG.debug("checking events");
 
+    Assertions.assertTrue(
+      eventClasses.size() <= eventLog.size(),
+      () -> {
+        return String.format(
+          "Expected event count %d <= logged event count %d",
+          Integer.valueOf(eventClasses.size()),
+          Integer.valueOf(eventLog.size()));
+      });
+
     for (int index = 0; index < eventClasses.size(); ++index) {
       final var eventClass = eventClasses.get(index);
       final var event = eventLog.get(index);
@@ -100,15 +109,6 @@ public final class OBControllerTest
           event.getClass())
       );
     }
-
-    Assertions.assertTrue(
-      eventClasses.size() <= eventLog.size(),
-      () -> {
-        return String.format(
-          "Expected event count %d <= logged event count %d",
-          Integer.valueOf(eventClasses.size()),
-          Integer.valueOf(eventLog.size()));
-      });
   }
 
   @BeforeEach

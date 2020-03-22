@@ -47,6 +47,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -58,7 +59,7 @@ public final class OBControllerTest
     LoggerFactory.getLogger(OBControllerTest.class);
 
   private Disposable eventSub;
-  private LinkedList<OBControllerEventType> eventLog;
+  private List<OBControllerEventType> eventLog;
   private OBCompositionParsersType parsers;
   private OBCompositionSerializersType serializers;
   private OBStringsType strings;
@@ -131,7 +132,7 @@ public final class OBControllerTest
     this.strings = OBStrings.of(OBStrings.getResourceBundle());
     this.parsers = OBCompositionParsers.create();
     this.serializers = OBCompositionSerializers.create();
-    this.eventLog = new LinkedList<>();
+    this.eventLog = Collections.synchronizedList(new LinkedList<>());
     this.directory = OBTestDirectories.createTempDirectory();
   }
 

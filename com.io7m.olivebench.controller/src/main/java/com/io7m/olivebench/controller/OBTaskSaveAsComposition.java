@@ -71,7 +71,7 @@ public final class OBTaskSaveAsComposition implements OBControllerTaskType
     final var compositionFileTmp =
       this.file.resolveSibling(compositionFile.getFileName() + ".tmp");
 
-    LOG.info("write {} (temporary {})", compositionFile, compositionFileTmp);
+    LOG.debug("write {} (temporary {})", compositionFile, compositionFileTmp);
 
     try {
       this.serializers.serializeAtomically(

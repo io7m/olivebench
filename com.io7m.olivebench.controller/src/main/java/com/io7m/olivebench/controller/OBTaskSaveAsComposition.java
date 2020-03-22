@@ -78,12 +78,11 @@ public final class OBTaskSaveAsComposition implements OBControllerTaskType
         compositionFile,
         compositionFileTmp,
         this.controller.composition());
+      this.controller.setSaved();
 
-      this.preferences.update(prefs -> {
+      this.preferences.updateQuietly(prefs -> {
         prefs.recentItems().addRecentFile(this.file);
       });
-
-      this.controller.setSaved();
     } catch (final Exception e) {
       LOG.error("i/o error: ", e);
       throw new OBTaskFailureException(

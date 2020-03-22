@@ -89,12 +89,11 @@ public final class OBTaskOpenComposition implements OBControllerTaskType
 
         final var composition = compositionOpt.get();
         composition.setFileName(this.file);
+        this.controller.setComposition(composition);
 
-        this.preferences.update(prefs -> {
+        this.preferences.updateQuietly(prefs -> {
           prefs.recentItems().addRecentFile(this.file);
         });
-
-        this.controller.setComposition(composition);
       }
     } catch (final IOException e) {
       LOG.error("i/o error: ", e);

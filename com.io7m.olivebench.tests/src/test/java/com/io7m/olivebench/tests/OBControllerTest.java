@@ -39,6 +39,7 @@ import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
@@ -234,6 +235,7 @@ public final class OBControllerTest
   }
 
   @Test
+  @Disabled("Unreliable test!")
   public void testCreateSaveOpen()
     throws Exception
   {

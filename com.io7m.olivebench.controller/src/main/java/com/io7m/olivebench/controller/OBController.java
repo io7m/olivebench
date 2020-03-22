@@ -297,9 +297,10 @@ public final class OBController implements OBControllerType
   @Override
   public void close()
   {
-    this.events.onComplete();
-    this.unsubscribeComposition();
+    LOG.debug("shutting down controller");
     this.executor.shutdown();
+    this.unsubscribeComposition();
+    this.events.onComplete();
   }
 
   void unsetComposition()
@@ -450,6 +451,8 @@ public final class OBController implements OBControllerType
 
   private void undoStackClear()
   {
+    OBControllerThread.checkIsControllerThread();
+
     this.undoStack.clear();
     this.undoStackPublish();
   }
@@ -477,6 +480,8 @@ public final class OBController implements OBControllerType
   private void undoStackAdd(
     final OBControllerTaskType task)
   {
+    OBControllerThread.checkIsControllerThread();
+
     final var undoSettings = this.preferences.preferences().undo();
     if (this.undoStack.size() >= undoSettings.historySize()) {
       this.undoStack.removeFirst();
@@ -487,6 +492,8 @@ public final class OBController implements OBControllerType
 
   private OBControllerTaskType undoStackPop()
   {
+    OBControllerThread.checkIsControllerThread();
+
     final var result = this.undoStack.pop();
     this.undoStackPublish();
     return result;
@@ -570,15 +577,5 @@ public final class OBController implements OBControllerType
     }
 
     throw new IllegalStateException("Unreachable code");
-  }
-
-  OBPreferencesControllerType preferences()
-  {
-    return this.preferences;
-  }
-
-  void savePreferences()
-  {
-    OBControllerThread.checkIsControllerThread();
   }
 }

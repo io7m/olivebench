@@ -45,7 +45,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.URL;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -132,6 +131,20 @@ public final class OBMainViewController implements Initializable
     this.subscriptions = new CompositeDisposable();
   }
 
+  private static List<FileChooser.ExtensionFilter> fileNameFilters()
+  {
+    return List.of(
+      new FileChooser.ExtensionFilter(
+        "Olivebench XML (*.obx)",
+        "*.obx"
+      ),
+      new FileChooser.ExtensionFilter(
+        "All files",
+        "*"
+      )
+    );
+  }
+
   public void setStage(
     final Stage inStage)
   {
@@ -171,20 +184,6 @@ public final class OBMainViewController implements Initializable
     if (selectedFile != null) {
       this.controller.openComposition(selectedFile.toPath());
     }
-  }
-
-  private static List<FileChooser.ExtensionFilter> fileNameFilters()
-  {
-    return List.of(
-      new FileChooser.ExtensionFilter(
-        "Olivebench XML (*.obx)",
-        "*.obx"
-      ),
-      new FileChooser.ExtensionFilter(
-        "All files",
-        "*"
-      )
-    );
   }
 
   @FXML

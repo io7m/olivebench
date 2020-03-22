@@ -18,7 +18,6 @@ package com.io7m.olivebench.controller;
 
 import com.io7m.olivebench.composition_serializer.api.OBCompositionSerializersType;
 import com.io7m.olivebench.preferences.OBPreferencesControllerType;
-import com.io7m.olivebench.preferences.OBPreferencesType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -54,7 +54,7 @@ public interface OBControllerType extends Closeable
 
   Optional<OBCompositionReadableType> compositionSnapshot();
 
-  CompletableFuture<?>  updateMetadata(
+  CompletableFuture<?> updateMetadata(
     Function<OBMetadata, OBMetadata> updater
   );
 }

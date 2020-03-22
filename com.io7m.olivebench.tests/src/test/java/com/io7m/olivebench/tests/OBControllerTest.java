@@ -68,6 +68,48 @@ public final class OBControllerTest
   private OBPreferencesUndoType preferencesUndo;
   private OBPreferencesType preferences;
 
+  private static void checkEvents(
+    final List<? extends Class<?>> eventClasses,
+    final List<OBControllerEventType> eventLog)
+  {
+    for (int index = 0; index < eventLog.size(); ++index) {
+      final var eventClass = eventLog.get(index).getClass();
+      LOG.debug("[{}] event {}", Integer.valueOf(index), eventClass);
+    }
+
+    LOG.debug("checking events");
+
+    for (int index = 0; index < eventClasses.size(); ++index) {
+      final var eventClass = eventClasses.get(index);
+      final var event = eventLog.get(index);
+
+      LOG.debug(
+        "[{}] {} == {}",
+        Integer.valueOf(index),
+        eventClass,
+        event.getClass());
+
+      Assertions.assertEquals(
+        eventClass,
+        event.getClass(),
+        String.format(
+          "[%d] %s == %s",
+          Integer.valueOf(index),
+          eventClass,
+          event.getClass())
+      );
+    }
+
+    Assertions.assertTrue(
+      eventClasses.size() <= eventLog.size(),
+      () -> {
+        return String.format(
+          "Expected event count %d <= logged event count %d",
+          Integer.valueOf(eventClasses.size()),
+          Integer.valueOf(eventLog.size()));
+      });
+  }
+
   @BeforeEach
   public void testSetup()
     throws IOException
@@ -269,48 +311,6 @@ public final class OBControllerTest
     );
 
     checkEvents(eventClasses, this.eventLog);
-  }
-
-  private static void checkEvents(
-    final List<? extends Class<?>> eventClasses,
-    final List<OBControllerEventType> eventLog)
-  {
-    for (int index = 0; index < eventLog.size(); ++index) {
-      final var eventClass = eventLog.get(index).getClass();
-      LOG.debug("[{}] event {}", Integer.valueOf(index), eventClass);
-    }
-
-    LOG.debug("checking events");
-
-    for (int index = 0; index < eventClasses.size(); ++index) {
-      final var eventClass = eventClasses.get(index);
-      final var event = eventLog.get(index);
-
-      LOG.debug(
-        "[{}] {} == {}",
-        Integer.valueOf(index),
-        eventClass,
-        event.getClass());
-
-      Assertions.assertEquals(
-        eventClass,
-        event.getClass(),
-        String.format(
-          "[%d] %s == %s",
-          Integer.valueOf(index),
-          eventClass,
-          event.getClass())
-      );
-    }
-
-    Assertions.assertTrue(
-      eventClasses.size() <= eventLog.size(),
-      () -> {
-      return String.format(
-        "Expected event count %d <= logged event count %d",
-        Integer.valueOf(eventClasses.size()),
-        Integer.valueOf(eventLog.size()));
-    });
   }
 
   private void logEvent(

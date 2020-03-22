@@ -16,7 +16,6 @@
 
 package com.io7m.olivebench.tests;
 
-import checkers.units.quals.A;
 import com.io7m.jaffirm.core.PreconditionViolationException;
 import com.io7m.jregions.core.parameterized.areas.PAreaL;
 import com.io7m.olivebench.exceptions.OBDuplicateException;

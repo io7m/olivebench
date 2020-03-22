@@ -43,6 +43,28 @@ public final class OBCompositionParsersTest
   private OBStringsType strings;
   private Path directory;
 
+  private static void serializeTo(
+    final OBCompositionType composition0,
+    final Path outputFile)
+    throws Exception
+  {
+    final var outputTmp = outputFile.resolveSibling("output.tmp");
+    final var serializers = OBCompositionSerializers.create();
+    serializers.serializeAtomically(
+      outputFile,
+      outputTmp,
+      composition0
+    );
+  }
+
+  private static void logErrors(
+    final List<OBCompositionParserError> errors)
+  {
+    for (final var error : errors) {
+      LOG.error("error: {}", error);
+    }
+  }
+
   @BeforeEach
   public void testSetup()
     throws IOException
@@ -96,20 +118,6 @@ public final class OBCompositionParsersTest
       composition1.graph().nodes().keySet());
   }
 
-  private static void serializeTo(
-    final OBCompositionType composition0,
-    final Path outputFile)
-    throws Exception
-  {
-    final var outputTmp = outputFile.resolveSibling("output.tmp");
-    final var serializers = OBCompositionSerializers.create();
-    serializers.serializeAtomically(
-      outputFile,
-      outputTmp,
-      composition0
-    );
-  }
-
   private OBCompositionType parse(
     final Path path)
     throws Exception
@@ -121,14 +129,6 @@ public final class OBCompositionParsersTest
         logErrors(parser.errors());
         return result.orElseThrow();
       }
-    }
-  }
-
-  private static void logErrors(
-    final List<OBCompositionParserError> errors)
-  {
-    for (final var error : errors) {
-      LOG.error("error: {}", error);
     }
   }
 }

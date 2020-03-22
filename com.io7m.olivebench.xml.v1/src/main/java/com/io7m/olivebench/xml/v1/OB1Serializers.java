@@ -79,6 +79,17 @@ public final class OB1Serializers implements OBCompositionSPISerializersType
     return new Serializer(target, output, collection);
   }
 
+  @Override
+  public String toString()
+  {
+    return String.format(
+      "[%s %d.%d]",
+      this.getClass().getCanonicalName(),
+      Integer.valueOf(this.versionMajor()),
+      Integer.valueOf(this.versionMinor())
+    );
+  }
+
   private static final class Serializer implements
     OBCompositionSPISerializerType
   {
@@ -237,16 +248,5 @@ public final class OB1Serializers implements OBCompositionSPISerializersType
       this.output.flush();
       this.output.close();
     }
-  }
-
-  @Override
-  public String toString()
-  {
-    return String.format(
-      "[%s %d.%d]",
-      this.getClass().getCanonicalName(),
-      Integer.valueOf(this.versionMajor()),
-      Integer.valueOf(this.versionMinor())
-    );
   }
 }

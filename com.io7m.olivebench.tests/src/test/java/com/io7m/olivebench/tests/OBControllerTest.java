@@ -73,6 +73,12 @@ public final class OBControllerTest
     final List<? extends Class<?>> eventClasses,
     final List<OBControllerEventType> eventLog)
   {
+    try {
+      Thread.sleep(100L);
+    } catch (final InterruptedException e) {
+      Thread.currentThread().interrupt();
+    }
+
     for (int index = 0; index < eventLog.size(); ++index) {
       final var eventClass = eventLog.get(index).getClass();
       LOG.debug("[{}] event {}", Integer.valueOf(index), eventClass);

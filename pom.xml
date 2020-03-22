@@ -43,6 +43,7 @@
   </modules>
 
   <properties>
+    <com.codacy.id>da626820d81647cf88e5633d7812ccb8</com.codacy.id>
     <com.io7m.immutables.version>2.8.3</com.io7m.immutables.version>
     <com.io7m.jade.version>0.0.1</com.io7m.jade.version>
     <io7m.api.previousVersion>0.0.1-SNAPSHOT</io7m.api.previousVersion>

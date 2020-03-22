@@ -16,7 +16,6 @@
 
 package com.io7m.olivebench.tests;
 
-import com.io7m.olivebench.model.OBChannelName;
 import com.io7m.olivebench.model.names.OBName;
 import com.io7m.olivebench.model.names.OBNames;
 import nl.jqno.equalsverifier.EqualsVerifier;
@@ -30,7 +29,7 @@ import org.quicktheories.generators.SourceDSL;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class OBChannelNamesTest
+public class OBNamesTest
 {
   @TestFactory
   public Stream<DynamicTest> testNamesValid()

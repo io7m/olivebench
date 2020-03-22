@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="@olivebench.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.io7m.olivebench.ui.OBCompositionViewController">
+   <children>
+      <Pane maxHeight="-Infinity" minHeight="-Infinity" prefHeight="32.0" AnchorPane.leftAnchor="32.0" AnchorPane.rightAnchor="16.0" AnchorPane.topAnchor="0.0" />
+      <Separator layoutX="592.0" layoutY="10.0" maxHeight="-Infinity" minHeight="-Infinity" orientation="VERTICAL" prefHeight="32.0" AnchorPane.leftAnchor="31.0" AnchorPane.topAnchor="0.0" />
+      <Separator orientation="VERTICAL" prefHeight="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="0.0" />
+      <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="ALWAYS" vbarPolicy="ALWAYS" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="32.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="32.0">
+         <content>
+            <Pane />
+         </content>
+      </ScrollPane>
+      <VBox maxWidth="-Infinity" minWidth="-Infinity" prefWidth="32.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Region maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="32.0" prefWidth="32.0" />
+            <ToggleButton contentDisplay="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onToolCursorSelected" prefHeight="32.0" prefWidth="32.0" selected="true">
+               <graphic>
+                  <ImageView fitHeight="31.0" fitWidth="31.0" opacity="0.8" pickOnBounds="true" preserveRatio="true" smooth="false">
+                     <image>
+                        <Image url="@cursorOnDark.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <toggleGroup>
+                  <ToggleGroup fx:id="toolGroup" />
+               </toggleGroup>
+               <tooltip>
+                  <Tooltip text="%ui.tool.select" />
+               </tooltip>
+            </ToggleButton>
+            <ToggleButton contentDisplay="CENTER" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onToolDrawSelected" prefHeight="32.0" prefWidth="32.0" toggleGroup="$toolGroup">
+               <graphic>
+                  <ImageView fitHeight="31.0" fitWidth="31.0" opacity="0.8" pickOnBounds="true" preserveRatio="true" smooth="false">
+                     <image>
+                        <Image url="@drawOnDark.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <tooltip>
+                  <Tooltip text="%ui.tool.draw" />
+               </tooltip>
+            </ToggleButton>
+            <ToggleButton contentDisplay="CENTER" layoutX="10.0" layoutY="74.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onToolZoomSelected" prefHeight="32.0" prefWidth="32.0" toggleGroup="$toolGroup">
+               <graphic>
+                  <ImageView fitHeight="31.0" fitWidth="31.0" opacity="0.8" pickOnBounds="true" preserveRatio="true" smooth="false">
+                     <image>
+                        <Image url="@zoomOnDark.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <tooltip>
+                  <Tooltip text="%ui.tool.zoom" />
+               </tooltip>
+            </ToggleButton>
+         </children></VBox>
+   </children>
+</AnchorPane>

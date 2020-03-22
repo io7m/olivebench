@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefHeight="480.0" prefWidth="640.0" stylesheets="@olivebench.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.io7m.olivebench.ui.OBMetadataViewController">
+   <children>
+      <VBox VBox.vgrow="ALWAYS">
+         <children>
+            <HBox alignment="CENTER" layoutX="10.0" layoutY="10.0" prefHeight="32.0">
+               <children>
+                  <Label prefHeight="32.0" prefWidth="128.0" text="%ui.metadata.identifier" HBox.hgrow="NEVER" />
+                  <TextField fx:id="identifier" disable="true" editable="false" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="32.0" styleClass="metaField" HBox.hgrow="ALWAYS" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="32.0" VBox.vgrow="NEVER">
+               <children>
+                  <Label prefHeight="32.0" prefWidth="128.0" text="%ui.metadata.title" HBox.hgrow="NEVER" />
+                  <TextField fx:id="title" editable="false" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="32.0" styleClass="metaField" HBox.hgrow="ALWAYS" />
+                  <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onMetadataFieldEditTitle" prefHeight="32.0" prefWidth="32.0">
+                     <graphic>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@drawOnDark.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="%ui.tooltip.metadata.edit" />
+                     </tooltip>
+                  </Button>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" layoutX="10.0" layoutY="10.0" prefHeight="32.0" VBox.vgrow="NEVER">
+               <children>
+                  <Label prefHeight="32.0" prefWidth="128.0" text="%ui.metadata.date" HBox.hgrow="NEVER" />
+                  <TextField fx:id="date" editable="false" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="32.0" styleClass="metaField" HBox.hgrow="ALWAYS" />
+                  <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onMetadataFieldEditDate" prefHeight="32.0" prefWidth="32.0">
+                     <graphic>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@drawOnDark.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="%ui.tooltip.metadata.edit" />
+                     </tooltip>
+                  </Button>
+                  <Button layoutX="602.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onMetadataFieldCalculateDate" prefHeight="32.0" prefWidth="32.0">
+                     <graphic>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@clockOnDark.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="%ui.tooltip.metadata.setCurrent" />
+                     </tooltip>
+                  </Button>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" layoutX="10.0" layoutY="42.0" prefHeight="32.0">
+               <children>
+                  <Label prefHeight="32.0" prefWidth="128.0" text="%ui.metadata.creator" HBox.hgrow="NEVER" />
+                  <TextField fx:id="creator" editable="false" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="32.0" styleClass="metaField" HBox.hgrow="ALWAYS" />
+                  <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onMetadataFieldEditCreator" prefHeight="32.0" prefWidth="32.0">
+                     <graphic>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@drawOnDark.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="%ui.tooltip.metadata.edit" />
+                     </tooltip>
+                  </Button>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" layoutX="10.0" layoutY="74.0" prefHeight="32.0">
+               <children>
+                  <Label prefHeight="32.0" prefWidth="128.0" text="%ui.metadata.rights" HBox.hgrow="NEVER" />
+                  <TextField fx:id="rights" editable="false" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="32.0" styleClass="metaField" HBox.hgrow="ALWAYS" />
+                  <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onMetadataFieldEditRights" prefHeight="32.0" prefWidth="32.0">
+                     <graphic>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@drawOnDark.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="%ui.tooltip.metadata.edit" />
+                     </tooltip>
+                  </Button>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" layoutX="10.0" layoutY="106.0" prefHeight="32.0">
+               <children>
+                  <Label prefHeight="32.0" prefWidth="128.0" text="%ui.metadata.publisher" HBox.hgrow="NEVER" />
+                  <TextField fx:id="publisher" editable="false" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="32.0" styleClass="metaField" HBox.hgrow="ALWAYS" />
+                  <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onMetadataFieldEditPublisher" prefHeight="32.0" prefWidth="32.0">
+                     <graphic>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@drawOnDark.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="%ui.tooltip.metadata.edit" />
+                     </tooltip>
+                  </Button>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" layoutX="10.0" layoutY="138.0" prefHeight="32.0">
+               <children>
+                  <Label prefHeight="32.0" prefWidth="128.0" text="%ui.metadata.source" HBox.hgrow="NEVER" />
+                  <TextField fx:id="source" editable="false" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="32.0" styleClass="metaField" HBox.hgrow="ALWAYS" />
+                  <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onMetadataFieldEditSource" prefHeight="32.0" prefWidth="32.0">
+                     <graphic>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@drawOnDark.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="%ui.tooltip.metadata.edit" />
+                     </tooltip>
+                  </Button>
+               </children>
+            </HBox>
+         </children>
+         <VBox.margin>
+            <Insets />
+         </VBox.margin>
+      </VBox>
+      <Region maxHeight="-Infinity" minHeight="-Infinity" prefHeight="16.0" VBox.vgrow="NEVER" />
+      <TableView VBox.vgrow="ALWAYS">
+        <columns>
+          <TableColumn prefWidth="128.0" text="%ui.metadata.property" />
+          <TableColumn prefWidth="476.0" text="%ui.metadata.value" />
+        </columns>
+      </TableView>
+   </children>
+   <padding>
+      <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+   </padding>
+</VBox>

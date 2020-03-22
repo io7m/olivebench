@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<ob:Composition xmlns:ob="urn:com.io7m.olivebench:xml:1">
+
+  <ob:Metadata>
+    <ob:Property name="ticksPerQuarterNote"
+                 value="4096"/>
+  </ob:Metadata>
+
+  <ob:Graph>
+    <ob:Nodes>
+      <ob:Root id="5f40bbd6-057e-411c-99d9-a82b6c825421">
+        <ob:Area maximumX="0"

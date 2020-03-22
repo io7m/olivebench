@@ -284,6 +284,7 @@ public final class OBControllerTest
   }
 
   @Test
+  @Disabled("Unreliable test!")
   public void testOpenGarbage()
     throws Exception
   {

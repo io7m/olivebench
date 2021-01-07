@@ -26,7 +26,7 @@ import com.io7m.jxe.core.JXESchemaResolutionMappings;
 import com.io7m.jxe.core.JXEXInclude;
 import com.io7m.olivebench.composition_parser.spi.OBCompositionSPIParsersType;
 import com.io7m.olivebench.model.OBCompositionType;
-import com.io7m.olivebench.strings.OBStringsType;
+import com.io7m.olivebench.services.api.OBServiceDirectoryType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
@@ -168,31 +168,31 @@ public final class OBCompositionParsers implements OBCompositionParsersType
 
   @Override
   public OBCompositionParserType createParser(
-    final OBStringsType strings,
+    final OBServiceDirectoryType services,
     final URI source,
     final InputStream stream)
   {
-    return new Parser(this.parsers, strings, source, stream);
+    return new Parser(this.parsers, services, source, stream);
   }
 
   private static final class Parser implements OBCompositionParserType
   {
     private final List<OBCompositionSPIParsersType> providers;
-    private final OBStringsType strings;
+    private final OBServiceDirectoryType services;
     private final URI source;
     private final InputStream stream;
     private final ArrayList<OBCompositionParserError> errors;
 
     private Parser(
       final List<OBCompositionSPIParsersType> inProviders,
-      final OBStringsType inStrings,
+      final OBServiceDirectoryType inServices,
       final URI inSource,
       final InputStream inStream)
     {
       this.providers =
         Objects.requireNonNull(inProviders, "inProviders");
-      this.strings =
-        Objects.requireNonNull(inStrings, "strings");
+      this.services =
+        Objects.requireNonNull(inServices, "services");
       this.source =
         Objects.requireNonNull(inSource, "inSource");
       this.stream =
@@ -227,7 +227,7 @@ public final class OBCompositionParsers implements OBCompositionParsersType
           LOG.debug("adding schema {}", schemaNamespace);
           contentHandlerBuilder.addHandler(
             BTQualifiedName.of(schemaNamespace.toString(), "Composition"),
-            context -> candidate.createHandler(this.strings)
+            context -> candidate.createHandler(this.services)
           );
         }
 
@@ -275,5 +275,14 @@ public final class OBCompositionParsers implements OBCompositionParsersType
     {
       this.stream.close();
     }
+  }
+
+  @Override
+  public String toString()
+  {
+    return String.format(
+      "[OBCompositionParsers 0x%s]",
+      Integer.toUnsignedString(System.identityHashCode(this), 16)
+    );
   }
 }

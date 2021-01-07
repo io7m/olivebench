@@ -17,7 +17,9 @@
 package com.io7m.olivebench.controller;
 
 import com.io7m.olivebench.exceptions.OBException;
+import com.io7m.olivebench.model.graph.OBChannelMetadata;
 import com.io7m.olivebench.model.graph.OBChannelType;
+import com.io7m.olivebench.model.graph.OBNodeMetadata;
 import com.io7m.olivebench.model.names.OBName;
 
 import java.util.Objects;
@@ -50,12 +52,30 @@ public final class OBTaskCreateChannel implements OBControllerTaskType
   {
     try {
       final var composition = this.controller.composition();
-      final var created = this.channelCreated;
       final var graph = composition.graph();
+
+      final var created = this.channelCreated;
       if (created != null) {
-        this.channelCreated = graph.createChannel(created.id(), created.name());
+        final var nodeMetadata =
+          created.nodeMetadata().read();
+        final var channelMetadata =
+          created.channelMetadata().read();
+
+        this.channelCreated =
+          graph.createChannel(
+            created.id(),
+            nodeMetadata,
+            channelMetadata
+          );
       } else {
-        this.channelCreated = graph.createChannel(this.name);
+        this.channelCreated =
+          graph.createChannel(
+            OBNodeMetadata.builder()
+              .setName(this.name)
+              .build(),
+            OBChannelMetadata.builder()
+              .build()
+          );
       }
     } catch (final OBException e) {
       throw new OBTaskFailureException(

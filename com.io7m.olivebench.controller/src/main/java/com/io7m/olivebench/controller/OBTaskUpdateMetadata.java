@@ -16,7 +16,7 @@
 
 package com.io7m.olivebench.controller;
 
-import com.io7m.olivebench.model.metadata.OBMetadata;
+import com.io7m.olivebench.model.metadata.OBCompositionMetadata;
 
 import java.util.Objects;
 import java.util.function.Function;
@@ -24,12 +24,12 @@ import java.util.function.Function;
 public final class OBTaskUpdateMetadata implements OBControllerTaskType
 {
   private final OBController controller;
-  private final Function<OBMetadata, OBMetadata> updater;
-  private OBMetadata existingMetadata;
+  private final Function<OBCompositionMetadata, OBCompositionMetadata> updater;
+  private OBCompositionMetadata existingMetadata;
 
   public OBTaskUpdateMetadata(
     final OBController inController,
-    final Function<OBMetadata, OBMetadata> inUpdater)
+    final Function<OBCompositionMetadata, OBCompositionMetadata> inUpdater)
   {
     this.controller =
       Objects.requireNonNull(inController, "inController");
@@ -47,9 +47,7 @@ public final class OBTaskUpdateMetadata implements OBControllerTaskType
   public void taskDo()
   {
     final var composition = this.controller.composition();
-    this.existingMetadata = composition.metadata();
-    final var newMetadata = this.updater.apply(composition.metadata());
-    composition.setMetadata(newMetadata);
+    this.existingMetadata = composition.metadata().update(this.updater);
   }
 
   @Override
@@ -68,6 +66,6 @@ public final class OBTaskUpdateMetadata implements OBControllerTaskType
   public void taskUndo()
   {
     final var composition = this.controller.composition();
-    composition.setMetadata(this.existingMetadata);
+    composition.metadata().set(this.existingMetadata);
   }
 }

@@ -31,12 +31,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>com.io7m.olivebench.composition_serializer.api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>com.io7m.olivebench.composition_parser.api</artifactId>
+      <artifactId>com.io7m.olivebench.services.api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -51,16 +46,24 @@
     </dependency>
 
     <dependency>
-      <groupId>com.io7m.jade</groupId>
-      <artifactId>com.io7m.jade.api</artifactId>
+      <groupId>com.io7m.jwheatsheaf</groupId>
+      <artifactId>com.io7m.jwheatsheaf.api</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.io7m.jade</groupId>
-      <artifactId>com.io7m.jade.spi</artifactId>
+      <groupId>com.io7m.jwheatsheaf</groupId>
+      <artifactId>com.io7m.jwheatsheaf.ui</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.io7m.junreachable</groupId>
+      <artifactId>com.io7m.junreachable.core</artifactId>
     </dependency>
     <dependency>
       <groupId>com.io7m.jaffirm</groupId>
       <artifactId>com.io7m.jaffirm.core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.io7m.jtensors</groupId>
+      <artifactId>com.io7m.jtensors.core</artifactId>
     </dependency>
     <dependency>
       <groupId>io.reactivex.rxjava3</groupId>

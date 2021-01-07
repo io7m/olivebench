@@ -18,9 +18,12 @@ package com.io7m.olivebench.model.graph;
 
 public enum OBCompositionNodeKind
 {
-  ROOT,
   CHANNEL,
-  MUSIC_REGION,
   CURVE_REGION,
+  IMAGE_REGION,
+  MUSIC_REGION,
+  NOTE_REGION,
+  ROOT,
+  SECTION_REGION,
   TEXT_REGION
 }

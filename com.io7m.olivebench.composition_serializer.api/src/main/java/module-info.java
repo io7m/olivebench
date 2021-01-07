@@ -27,6 +27,7 @@ module com.io7m.olivebench.composition.serializer.api
 
   requires com.io7m.olivebench.composition.serializer.spi;
   requires com.io7m.olivebench.model;
+  requires com.io7m.olivebench.services.api;
   requires org.slf4j;
 
   uses OBCompositionSPISerializersType;

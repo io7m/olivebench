@@ -16,24 +16,32 @@
 
 package com.io7m.olivebench.model.graph;
 
-import com.io7m.jregions.core.parameterized.areas.PAreaL;
-import com.io7m.olivebench.model.names.OBName;
-import com.io7m.olivebench.model.spaces.OBSpaceRegionType;
+import com.io7m.olivebench.model.properties.OBProperty;
+import com.io7m.olivebench.model.properties.OBPropertyType;
 import com.io7m.olivebench.strings.OBStringsType;
 
 import java.util.UUID;
 
-public abstract class OBAbstractRegion
-  extends OBAbstractNode implements OBRegionType
+public abstract class OBAbstractRegion<T>
+  extends OBAbstractNode implements OBRegionType<T>
 {
+  private final OBPropertyType<T> property;
+
   protected OBAbstractRegion(
     final OBCompositionGraphType inGraph,
     final OBStringsType inStrings,
     final UUID inId,
-    final PAreaL<OBSpaceRegionType> inArea,
-    final OBName inName)
+    final OBNodeMetadata inNodeMetadata,
+    final T inRegionData)
   {
-    super(inGraph, inStrings, inId, inArea, inName);
+    super(inGraph, inStrings, inId, inNodeMetadata);
+    this.property = OBProperty.create(inRegionData);
+  }
+
+  @Override
+  public final OBPropertyType<T> data()
+  {
+    return this.property;
   }
 
   @Override

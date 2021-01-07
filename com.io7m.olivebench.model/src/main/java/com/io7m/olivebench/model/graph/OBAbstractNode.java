@@ -18,11 +18,9 @@ package com.io7m.olivebench.model.graph;
 
 import com.io7m.jregions.core.parameterized.areas.PAreaL;
 import com.io7m.olivebench.model.names.OBName;
-import com.io7m.olivebench.model.spaces.OBSpaceRegionType;
+import com.io7m.olivebench.model.properties.OBProperty;
+import com.io7m.olivebench.model.properties.OBPropertyType;
 import com.io7m.olivebench.strings.OBStringsType;
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.subjects.PublishSubject;
-import io.reactivex.rxjava3.subjects.Subject;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -31,11 +29,8 @@ public abstract class OBAbstractNode implements OBCompositionNodeType
 {
   private final OBCompositionGraphType graph;
   private final OBStringsType strings;
-  private final Subject<OBName> nameSubject;
-  private final Subject<PAreaL<OBSpaceRegionType>> areaSubject;
   private final UUID id;
-  private volatile OBName name;
-  private volatile PAreaL<OBSpaceRegionType> area;
+  private final OBPropertyType<OBNodeMetadata> nodeMetadata;
 
   protected OBAbstractNode(
     final OBCompositionGraphType inGraph,
@@ -46,16 +41,18 @@ public abstract class OBAbstractNode implements OBCompositionNodeType
       inGraph,
       inStrings,
       inId,
-      PAreaL.of(0L, 0L, 0L, 0L),
-      OBName.of(""));
+      OBNodeMetadata.builder()
+        .setArea(PAreaL.of(0L, 0L, 0L, 0L))
+        .setName(OBName.of(""))
+        .build()
+    );
   }
 
   protected OBAbstractNode(
     final OBCompositionGraphType inGraph,
     final OBStringsType inStrings,
     final UUID inId,
-    final PAreaL<OBSpaceRegionType> inArea,
-    final OBName inName)
+    final OBNodeMetadata inNodeMetadata)
   {
     this.graph =
       Objects.requireNonNull(inGraph, "graph");
@@ -63,48 +60,14 @@ public abstract class OBAbstractNode implements OBCompositionNodeType
       Objects.requireNonNull(inStrings, "strings");
     this.id =
       Objects.requireNonNull(inId, "id");
-    this.area =
-      Objects.requireNonNull(inArea, "area");
-    this.name =
-      Objects.requireNonNull(inName, "name");
-
-    this.nameSubject =
-      PublishSubject.<OBName>create().toSerialized();
-    this.areaSubject =
-      PublishSubject.<PAreaL<OBSpaceRegionType>>create().toSerialized();
+    this.nodeMetadata =
+      OBProperty.create(inNodeMetadata);
   }
 
   @Override
-  public final Observable<PAreaL<OBSpaceRegionType>> areaRelativeProperty()
+  public final OBPropertyType<OBNodeMetadata> nodeMetadata()
   {
-    return this.areaSubject;
-  }
-
-  @Override
-  public final Observable<OBName> nameProperty()
-  {
-    return this.nameSubject;
-  }
-
-  @Override
-  public final OBName name()
-  {
-    return this.name;
-  }
-
-  @Override
-  public final void setName(final OBName inName)
-  {
-    this.name = Objects.requireNonNull(inName, "name");
-    this.nameSubject.onNext(this.name);
-  }
-
-  @Override
-  public final void setAreaRelative(
-    final PAreaL<OBSpaceRegionType> newArea)
-  {
-    this.area = Objects.requireNonNull(newArea, "newArea");
-    this.areaSubject.onNext(this.area);
+    return this.nodeMetadata;
   }
 
   @Override
@@ -116,12 +79,6 @@ public abstract class OBAbstractNode implements OBCompositionNodeType
   protected final OBStringsType strings()
   {
     return this.strings;
-  }
-
-  @Override
-  public final PAreaL<OBSpaceRegionType> areaRelative()
-  {
-    return this.area;
   }
 
   @Override

@@ -23,5 +23,5 @@ public interface OBRegionEventType extends OBCompositionEventType
 {
   OBChannelType channel();
 
-  OBRegionType region();
+  OBRegionType<?> region();
 }

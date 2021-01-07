@@ -17,7 +17,8 @@
 package com.io7m.olivebench.xml.v1;
 
 import com.io7m.immutables.styles.ImmutablesStyleType;
-import com.io7m.olivebench.model.names.OBName;
+import com.io7m.olivebench.model.graph.OBChannelMetadata;
+import com.io7m.olivebench.model.graph.OBNodeMetadata;
 import org.immutables.value.Value;
 
 import java.util.UUID;
@@ -30,5 +31,7 @@ public interface OB1ChannelType extends OB1CompositionNodeType
   UUID id();
 
   @Override
-  OBName name();
+  OBNodeMetadata nodeMetadata();
+
+  OBChannelMetadata channelMetadata();
 }

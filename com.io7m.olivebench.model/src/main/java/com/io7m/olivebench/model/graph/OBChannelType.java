@@ -16,11 +16,26 @@
 
 package com.io7m.olivebench.model.graph;
 
+import com.io7m.olivebench.model.properties.OBPropertyType;
+import io.reactivex.rxjava3.core.Observable;
+
 public interface OBChannelType extends OBCompositionNodeType
 {
   @Override
   default OBCompositionNodeKind kind()
   {
     return OBCompositionNodeKind.CHANNEL;
+  }
+
+  OBPropertyType<OBChannelMetadata> channelMetadata();
+
+  @Override
+  default Observable<Object> changes()
+  {
+    final var nodeChanges =
+      this.nodeMetadata().asObservable().ofType(Object.class);
+    final var channelChanges =
+      this.channelMetadata().asObservable().ofType(Object.class);
+    return nodeChanges.mergeWith(channelChanges);
   }
 }

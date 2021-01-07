@@ -23,7 +23,8 @@ import com.io7m.blackthorne.api.BTQualifiedName;
 import com.io7m.olivebench.model.OBComposition;
 import com.io7m.olivebench.model.OBCompositionType;
 import com.io7m.olivebench.model.graph.OBCompositionGraphType;
-import com.io7m.olivebench.model.metadata.OBMetadata;
+import com.io7m.olivebench.model.metadata.OBCompositionMetadata;
+import com.io7m.olivebench.services.api.OBServiceDirectoryType;
 import com.io7m.olivebench.strings.OBStringsType;
 
 import java.util.Map;
@@ -32,23 +33,31 @@ import java.util.Objects;
 public final class OB1CompositionParser
   implements BTElementHandlerType<Object, OBCompositionType>
 {
-  private final OBStringsType strings;
+  private final OBServiceDirectoryType services;
   private OBCompositionGraphType graph;
   private OBCompositionType composition;
-  private OBMetadata metadata;
+  private OBCompositionMetadata metadata;
 
-  public OB1CompositionParser(
-    final OBStringsType inStrings)
+  private OB1CompositionParser(
+    final OBServiceDirectoryType inServices)
   {
-    this.strings = Objects.requireNonNull(inStrings, "strings");
+    this.services = Objects.requireNonNull(inServices, "services");
+  }
+
+  public static BTElementHandlerType<Object, OBCompositionType> create(
+    final OBServiceDirectoryType inServices)
+  {
+    Objects.requireNonNull(inServices, "services");
+    inServices.requireService(OBStringsType.class);
+    return new OB1CompositionParser(inServices);
   }
 
   @Override
   public OBCompositionType onElementFinished(
     final BTElementParsingContextType context)
   {
-    this.composition = OBComposition.createWith(this.strings, this.graph);
-    this.composition.setMetadata(this.metadata);
+    this.composition = OBComposition.createWith(this.services, this.graph);
+    this.composition.metadata().set(this.metadata);
     return this.composition;
   }
 
@@ -64,7 +73,7 @@ public final class OB1CompositionParser
       ),
       Map.entry(
         BTQualifiedName.of(namespace, "Graph"),
-        ignored -> new OB1GraphParser(this.strings)
+        ignored -> new OB1GraphParser(this.services)
       )
     );
   }
@@ -75,8 +84,8 @@ public final class OB1CompositionParser
     final BTElementParsingContextType context,
     final Object result)
   {
-    if (result instanceof OBMetadata) {
-      this.metadata = (OBMetadata) result;
+    if (result instanceof OBCompositionMetadata) {
+      this.metadata = (OBCompositionMetadata) result;
     } else if (result instanceof OBCompositionGraphType) {
       this.graph = (OBCompositionGraphType) result;
     }

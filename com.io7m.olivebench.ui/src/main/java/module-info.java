@@ -23,9 +23,12 @@ module com.io7m.olivebench.ui
   requires com.io7m.olivebench.preferences;
   requires com.io7m.olivebench.strings;
 
-  requires com.io7m.jade.api;
-  requires com.io7m.jade.spi;
   requires com.io7m.jaffirm.core;
+  requires com.io7m.jregions.core;
+  requires com.io7m.jtensors.core;
+  requires com.io7m.junreachable.core;
+  requires com.io7m.jwheatsheaf.api;
+  requires com.io7m.jwheatsheaf.ui;
   requires io.reactivex.rxjava3;
   requires javafx.controls;
   requires javafx.fxml;

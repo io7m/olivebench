@@ -29,4 +29,6 @@ public interface OBGraphStringsType extends OBStringResourcesType
   String nodeAdded();
 
   String nodeRemoved();
+
+  String nodeModified();
 }

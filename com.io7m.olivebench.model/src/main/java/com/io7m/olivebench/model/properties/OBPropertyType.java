@@ -14,15 +14,13 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.olivebench.model;
+package com.io7m.olivebench.model.properties;
 
-import com.io7m.immutables.styles.ImmutablesStyleType;
-import com.io7m.olivebench.model.metadata.OBMetadata;
-import org.immutables.value.Value;
+import java.util.function.Function;
 
-@Value.Immutable
-@ImmutablesStyleType
-public interface OBMetadataChangedEventType extends OBCompositionEventType
+public interface OBPropertyType<T> extends OBPropertyReadableType<T>
 {
-  OBMetadata metadata();
+  T set(T value);
+
+  T update(Function<T, T> update);
 }

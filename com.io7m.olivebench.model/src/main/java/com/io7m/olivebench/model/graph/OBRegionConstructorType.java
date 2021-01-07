@@ -16,15 +16,17 @@
 
 package com.io7m.olivebench.model.graph;
 
-import com.io7m.jregions.core.parameterized.areas.PAreaL;
-import com.io7m.olivebench.model.spaces.OBSpaceRegionType;
+import com.io7m.olivebench.services.api.OBServiceDirectoryType;
 
 import java.util.UUID;
 
-public interface OBRegionConstructorType<T extends OBRegionType>
+public interface OBRegionConstructorType<A, T extends OBRegionType<A>>
 {
   T construct(
+    OBServiceDirectoryType services,
     OBCompositionGraphType graph,
     UUID id,
-    PAreaL<OBSpaceRegionType> area);
+    OBNodeMetadata nodeMetadata,
+    A regionData
+  );
 }

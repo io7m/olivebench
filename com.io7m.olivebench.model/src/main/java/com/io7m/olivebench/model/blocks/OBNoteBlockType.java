@@ -14,13 +14,15 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.olivebench.model.graph;
+package com.io7m.olivebench.model.blocks;
 
-public interface OBCurveRegionType extends OBRegionType
+import com.io7m.olivebench.model.OBWaitFreeReadableType;
+import com.io7m.olivebench.model.properties.OBPropertyReadableType;
+
+import java.util.Set;
+
+public interface OBNoteBlockType
+  extends OBBlockType, OBWaitFreeReadableType<Set<OBNote>>
 {
-  @Override
-  default OBCompositionNodeKind kind()
-  {
-    return OBCompositionNodeKind.CURVE_REGION;
-  }
+  OBPropertyReadableType<Set<OBNote>> data();
 }

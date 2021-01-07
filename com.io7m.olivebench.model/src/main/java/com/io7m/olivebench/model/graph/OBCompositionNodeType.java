@@ -20,6 +20,7 @@ import com.io7m.jregions.core.parameterized.areas.PAreaL;
 import com.io7m.olivebench.model.OBDeleteableReadableType;
 import com.io7m.olivebench.model.OBIdentifiableType;
 import com.io7m.olivebench.model.names.OBName;
+import com.io7m.olivebench.model.properties.OBPropertyType;
 import com.io7m.olivebench.model.spaces.OBSpaceRegionType;
 import io.reactivex.rxjava3.core.Observable;
 
@@ -28,21 +29,27 @@ public interface OBCompositionNodeType
 {
   OBCompositionNodeKind kind();
 
-  PAreaL<OBSpaceRegionType> areaRelative();
+  OBPropertyType<OBNodeMetadata> nodeMetadata();
 
-  void setAreaRelative(PAreaL<OBSpaceRegionType> newArea);
-
-  Observable<PAreaL<OBSpaceRegionType>> areaRelativeProperty();
-
-  OBName name();
-
-  Observable<OBName> nameProperty();
-
-  void setName(OBName name);
-
-  default void setName(
-    final String name)
+  default void setNodeName(final String name)
   {
-    this.setName(OBName.of(name));
+    this.nodeMetadata().update(meta -> meta.withName(OBName.of(name)));
   }
+
+  default OBName nodeName()
+  {
+    return this.nodeMetadata().read().name();
+  }
+
+  default PAreaL<OBSpaceRegionType> nodeArea()
+  {
+    return this.nodeMetadata().read().area();
+  }
+
+  default void setNodeAreaRelative(final PAreaL<OBSpaceRegionType> area)
+  {
+    this.nodeMetadata().update(meta -> meta.withArea(area));
+  }
+
+  Observable<Object> changes();
 }

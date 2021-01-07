@@ -17,18 +17,20 @@
 package com.io7m.olivebench.model;
 
 import com.io7m.olivebench.model.graph.OBCompositionGraphType;
-import com.io7m.olivebench.model.metadata.OBMetadata;
+import com.io7m.olivebench.model.metadata.OBCompositionMetadata;
+import com.io7m.olivebench.model.properties.OBPropertyType;
 
 import java.nio.file.Path;
+import java.util.Optional;
 
 public interface OBCompositionType extends OBCompositionReadableType
 {
   @Override
   OBCompositionGraphType graph();
 
-  void setMetadata(
-    OBMetadata metadata);
+  @Override
+  OBPropertyType<OBCompositionMetadata> metadata();
 
-  void setFileName(
-    Path file);
+  @Override
+  OBPropertyType<Optional<Path>> fileName();
 }

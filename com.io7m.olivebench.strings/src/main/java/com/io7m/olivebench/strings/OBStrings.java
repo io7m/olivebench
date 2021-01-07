@@ -145,6 +145,18 @@ public final class OBStrings implements OBStringsType
   }
 
   @Override
+  public String metadata()
+  {
+    return this.resourceBundle.getString("core.metadata");
+  }
+
+  @Override
+  public String channels()
+  {
+    return this.resourceBundle.getString("core.channels");
+  }
+
+  @Override
   public String existingType()
   {
     return this.resourceBundle.getString("core.existingType");
@@ -154,6 +166,12 @@ public final class OBStrings implements OBStringsType
   public String newType()
   {
     return this.resourceBundle.getString("core.type");
+  }
+
+  @Override
+  public String noteBlock()
+  {
+    return this.resourceBundle.getString("core.noteBlock");
   }
 
   @Override
@@ -172,6 +190,12 @@ public final class OBStrings implements OBStringsType
   public String nodeRemoved()
   {
     return this.resourceBundle.getString("graph.nodeRemoved");
+  }
+
+  @Override
+  public String nodeModified()
+  {
+    return this.resourceBundle.getString("graph.nodeModified");
   }
 
   @Override
@@ -208,6 +232,13 @@ public final class OBStrings implements OBStringsType
   public String controllerUpdateMetadata()
   {
     return this.resourceBundle.getString("controller.task.updateMetadata");
+  }
+
+  @Override
+  public String controllerChannelUpdateMetadata()
+  {
+    return this.resourceBundle.getString("controller.task.channelUpdateMetadata");
+
   }
 
   @Override
@@ -353,8 +384,53 @@ public final class OBStrings implements OBStringsType
   }
 
   @Override
+  public String windowTitle()
+  {
+    return this.format("ui.window.title");
+  }
+
+  @Override
+  public String windowTitleSaved(
+    final Path file)
+  {
+    return this.format("ui.window.title.saved", file);
+  }
+
+  @Override
+  public String windowTitleUnsaved(
+    final Path file)
+  {
+    return this.format("ui.window.title.unsaved", file);
+  }
+
+  @Override
+  public String channelCreateEnter()
+  {
+    return this.resourceBundle.getString("ui.channelCreate.enter");
+  }
+
+  @Override
   public String metadataChanged()
   {
     return this.resourceBundle.getString("event.metadata.changed");
+  }
+
+  @Override
+  public String serviceRequiredUnavailable(
+    final Class<?> clazz)
+  {
+    return this.format(
+      "services.requiredUnavailable",
+      clazz.getCanonicalName()
+    );
+  }
+
+  @Override
+  public String toString()
+  {
+    return String.format(
+      "[OBStrings 0x%s]",
+      Integer.toUnsignedString(System.identityHashCode(this), 16)
+    );
   }
 }

@@ -16,6 +16,8 @@
 
 package com.io7m.olivebench.strings;
 
+import com.io7m.olivebench.services.api.OBServiceType;
+
 public interface OBStringsType extends
   OBChannelStringsType,
   OBControllerStringsType,
@@ -24,6 +26,8 @@ public interface OBStringsType extends
   OBGraphStringsType,
   OBMetadataStringsType,
   OBRegionStringsType,
+  OBServiceStringsType,
+  OBServiceType,
   OBUIStringsType
 {
 

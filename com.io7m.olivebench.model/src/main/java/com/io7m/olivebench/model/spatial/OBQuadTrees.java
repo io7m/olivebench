@@ -124,7 +124,7 @@ public final class OBQuadTrees
     final OBCompositionNodeType node)
   {
     final var parentArea = parentNode.area;
-    final var nodeArea = node.areaRelative();
+    final var nodeArea = node.nodeArea();
     final var minX = nodeArea.minimumX() + parentArea.minimumX();
     final var minY = nodeArea.minimumY() + parentArea.minimumY();
     final var maxX = minX + nodeArea.sizeX();

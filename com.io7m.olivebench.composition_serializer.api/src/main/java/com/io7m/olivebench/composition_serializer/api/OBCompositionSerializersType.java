@@ -17,6 +17,7 @@
 package com.io7m.olivebench.composition_serializer.api;
 
 import com.io7m.olivebench.model.OBCompositionReadableType;
+import com.io7m.olivebench.services.api.OBServiceType;
 
 import java.io.OutputStream;
 import java.net.URI;
@@ -32,7 +33,7 @@ import static java.nio.file.StandardOpenOption.WRITE;
  * A provider of serializers.
  */
 
-public interface OBCompositionSerializersType
+public interface OBCompositionSerializersType extends OBServiceType
 {
   /**
    * Create a new serializer using whatever is the highest supported format

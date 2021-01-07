@@ -18,15 +18,19 @@ package com.io7m.olivebench.xml.v1;
 
 
 import com.io7m.jregions.core.parameterized.areas.PAreaL;
+import com.io7m.jtensors.core.parameterized.vectors.PVector3D;
+import com.io7m.junreachable.UnimplementedCodeException;
 import com.io7m.olivebench.composition_serializer.spi.OBCompositionSPISerializerType;
 import com.io7m.olivebench.composition_serializer.spi.OBCompositionSPISerializersType;
 import com.io7m.olivebench.model.OBCompositionReadableType;
+import com.io7m.olivebench.model.graph.OBChannelMetadata;
 import com.io7m.olivebench.model.graph.OBChannelType;
 import com.io7m.olivebench.model.graph.OBCompositionGraphReadableType;
 import com.io7m.olivebench.model.graph.OBCompositionNodeType;
+import com.io7m.olivebench.model.graph.OBNodeMetadata;
 import com.io7m.olivebench.model.graph.OBRegionType;
-import com.io7m.olivebench.model.graph.OBTextRegionType;
-import com.io7m.olivebench.model.metadata.OBMetadata;
+import com.io7m.olivebench.model.metadata.OBCompositionMetadata;
+import com.io7m.olivebench.model.spaces.OBSpaceRGBType;
 import com.io7m.olivebench.model.spaces.OBSpaceRegionType;
 
 import javax.xml.stream.XMLOutputFactory;
@@ -42,6 +46,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 import java.util.Objects;
+
+import static com.io7m.olivebench.model.graph.OBRegionType.OBDecorativeRegionType.OBTextRegionType;
 
 /**
  * A provider of serializers for the 1.0 XML collection format.
@@ -124,7 +130,7 @@ public final class OB1Serializers implements OBCompositionSPISerializersType
       writer.writeStartElement(this.namespace, "Composition");
       writer.writeNamespace("ob", this.namespace);
 
-      this.writeMetadata(writer, this.composition.metadata());
+      this.writeMetadata(writer, this.composition.metadata().read());
       this.writeGraph(writer, this.composition.graph());
 
       writer.writeEndElement();
@@ -193,21 +199,94 @@ public final class OB1Serializers implements OBCompositionSPISerializersType
       throws XMLStreamException
     {
       if (node instanceof OBChannelType) {
-        writer.writeStartElement(this.namespace, "Channel");
+        this.writeChannel(writer, (OBChannelType) node);
       } else if (node instanceof OBRegionType) {
-        final var region = (OBRegionType) node;
-        if (region instanceof OBTextRegionType) {
-          final var textRegion = (OBTextRegionType) region;
-          writer.writeStartElement(this.namespace, "TextRegion");
-          writer.writeAttribute("text", textRegion.text());
-        }
+        this.writeRegion(writer, (OBRegionType<?>) node);
       } else {
-        writer.writeStartElement(this.namespace, "Root");
+        this.writeRoot(writer, node);
       }
+    }
 
+    private void writeRoot(
+      final XMLStreamWriter writer,
+      final OBCompositionNodeType node)
+      throws XMLStreamException
+    {
+      final var nodeMetadata = node.nodeMetadata().read();
+      writer.writeStartElement(this.namespace, "Root");
       writer.writeAttribute("id", node.id().toString());
-      writer.writeAttribute("name", node.name().value());
-      this.writeArea(writer, node.areaRelative());
+      this.writeNodeMetadata(writer, nodeMetadata);
+      writer.writeEndElement();
+    }
+
+    private void writeChannel(
+      final XMLStreamWriter writer,
+      final OBChannelType channel)
+      throws XMLStreamException
+    {
+      final var nodeMetadata = channel.nodeMetadata().read();
+      writer.writeStartElement(this.namespace, "Channel");
+      writer.writeAttribute("id", channel.id().toString());
+      this.writeNodeMetadata(writer, nodeMetadata);
+      this.writeChannelMetadata(writer, channel.channelMetadata().read());
+      writer.writeEndElement();
+    }
+
+    private void writeChannelMetadata(
+      final XMLStreamWriter writer,
+      final OBChannelMetadata channelMetadata)
+      throws XMLStreamException
+    {
+      writer.writeStartElement(this.namespace, "ChannelMetadata");
+      this.writeColor(writer, channelMetadata.color());
+      writer.writeEndElement();
+    }
+
+    private void writeRegion(
+      final XMLStreamWriter writer,
+      final OBRegionType<?> region)
+      throws XMLStreamException
+    {
+      if (region instanceof OBTextRegionType) {
+        this.writeTextRegion(writer, (OBTextRegionType) region);
+        return;
+      }
+      throw new UnimplementedCodeException();
+    }
+
+    private void writeTextRegion(
+      final XMLStreamWriter writer,
+      final OBTextRegionType region)
+      throws XMLStreamException
+    {
+      final var nodeMetadata = region.nodeMetadata().read();
+      writer.writeStartElement(this.namespace, "TextRegion");
+      writer.writeAttribute("id", region.id().toString());
+      writer.writeAttribute("text", region.text());
+      this.writeNodeMetadata(writer, nodeMetadata);
+      writer.writeEndElement();
+    }
+
+    private void writeNodeMetadata(
+      final XMLStreamWriter writer,
+      final OBNodeMetadata meta)
+      throws XMLStreamException
+    {
+      writer.writeStartElement(this.namespace, "NodeMetadata");
+      writer.writeAttribute("name", meta.name().value());
+      this.writeArea(writer, meta.area());
+      writer.writeEndElement();
+    }
+
+    private void writeColor(
+      final XMLStreamWriter writer,
+      final PVector3D<OBSpaceRGBType> color)
+      throws XMLStreamException
+    {
+      writer.writeStartElement(this.namespace, "Color");
+      writer.writeAttribute("red", Double.toString(color.x()));
+      writer.writeAttribute("green", Double.toString(color.y()));
+      writer.writeAttribute("blue", Double.toString(color.z()));
       writer.writeEndElement();
     }
 
@@ -226,7 +305,7 @@ public final class OB1Serializers implements OBCompositionSPISerializersType
 
     private void writeMetadata(
       final XMLStreamWriter writer,
-      final OBMetadata metadata)
+      final OBCompositionMetadata metadata)
       throws XMLStreamException
     {
       writer.writeStartElement(this.namespace, "Metadata");

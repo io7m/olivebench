@@ -20,8 +20,8 @@ import com.io7m.blackthorne.api.BTElementHandlerConstructorType;
 import com.io7m.blackthorne.api.BTElementHandlerType;
 import com.io7m.blackthorne.api.BTElementParsingContextType;
 import com.io7m.blackthorne.api.BTQualifiedName;
-import com.io7m.jregions.core.parameterized.areas.PAreaL;
-import com.io7m.olivebench.model.names.OBName;
+import com.io7m.olivebench.model.graph.OBChannelMetadata;
+import com.io7m.olivebench.model.graph.OBNodeMetadata;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public final class OB1ChannelParser
-  implements BTElementHandlerType<PAreaL<?>, OB1Channel>
+  implements BTElementHandlerType<Object, OB1Channel>
 {
   private final OB1Channel.Builder builder;
 
@@ -39,15 +39,18 @@ public final class OB1ChannelParser
   }
 
   @Override
-  public Map<BTQualifiedName, BTElementHandlerConstructorType<?, ? extends PAreaL<?>>>
-  onChildHandlersRequested(
+  public Map<BTQualifiedName, BTElementHandlerConstructorType<?, ?>> onChildHandlersRequested(
     final BTElementParsingContextType context)
   {
     final var namespace = OB1Schemas.NAMESPACE_1_URI.toString();
     return Map.ofEntries(
       Map.entry(
-        BTQualifiedName.of(namespace, "Area"),
-        context1 -> new OB1AreaParser()
+        BTQualifiedName.of(namespace, "NodeMetadata"),
+        context1 -> new OB1NodeMetadataParser()
+      ),
+      Map.entry(
+        BTQualifiedName.of(namespace, "ChannelMetadata"),
+        context1 -> new OB1ChannelMetadataParser()
       )
     );
   }
@@ -55,9 +58,13 @@ public final class OB1ChannelParser
   @Override
   public void onChildValueProduced(
     final BTElementParsingContextType context,
-    final PAreaL<?> result)
+    final Object result)
   {
-    this.builder.setArea(result);
+    if (result instanceof OBNodeMetadata) {
+      this.builder.setNodeMetadata((OBNodeMetadata) result);
+    } else if (result instanceof OBChannelMetadata) {
+      this.builder.setChannelMetadata((OBChannelMetadata) result);
+    }
   }
 
   @Override
@@ -69,8 +76,6 @@ public final class OB1ChannelParser
     try {
       this.builder.setId(
         UUID.fromString(attributes.getValue("id")));
-      this.builder.setName(
-        OBName.of(attributes.getValue("name")));
     } catch (final Exception e) {
       throw context.parseException(e);
     }

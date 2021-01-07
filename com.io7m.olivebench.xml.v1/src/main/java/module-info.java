@@ -34,6 +34,7 @@ module com.io7m.olivebench.xml.v1
   requires com.io7m.jaffirm.core;
   requires com.io7m.jregions.core;
   requires com.io7m.jtensors.core;
+  requires com.io7m.junreachable.core;
   requires com.io7m.jxe.core;
   requires com.io7m.olivebench.composition.serializer.spi;
   requires com.io7m.olivebench.composition_parser.spi;

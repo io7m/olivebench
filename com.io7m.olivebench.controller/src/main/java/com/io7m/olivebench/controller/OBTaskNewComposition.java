@@ -17,30 +17,51 @@
 package com.io7m.olivebench.controller;
 
 import com.io7m.olivebench.model.OBComposition;
+import com.io7m.olivebench.services.api.OBServiceDirectoryType;
+import com.io7m.olivebench.strings.OBStringsType;
 
 import java.util.Objects;
 
 public final class OBTaskNewComposition implements OBControllerTaskType
 {
   private final OBController controller;
+  private final OBServiceDirectoryType services;
+  private final OBStringsType strings;
 
-  public OBTaskNewComposition(
+  private OBTaskNewComposition(
+    final OBServiceDirectoryType inServices,
+    final OBStringsType inStrings,
     final OBController inController)
   {
+    this.services =
+      Objects.requireNonNull(inServices, "inServices");
+    this.strings =
+      Objects.requireNonNull(inStrings, "inStrings");
     this.controller =
       Objects.requireNonNull(inController, "inController");
+  }
+
+  public static OBControllerTaskType create(
+    final OBServiceDirectoryType inServices,
+    final OBController inController)
+  {
+    return new OBTaskNewComposition(
+      inServices,
+      inServices.requireService(OBStringsType.class),
+      inController
+    );
   }
 
   @Override
   public String name()
   {
-    return this.controller.strings().controllerNewComposition();
+    return this.strings.controllerNewComposition();
   }
 
   @Override
   public void taskDo()
   {
-    final var composition = OBComposition.create(this.controller.strings());
+    final var composition = OBComposition.create(this.services);
     this.controller.setComposition(composition);
   }
 

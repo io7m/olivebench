@@ -16,5 +16,7 @@
 
 module com.io7m.olivebench.strings
 {
+  requires transitive com.io7m.olivebench.services.api;
+
   exports com.io7m.olivebench.strings;
 }

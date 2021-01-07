@@ -53,4 +53,6 @@ public interface OBControllerStringsType extends OBStringResourcesType
   String controllerUndoStatusChanged();
 
   String controllerUpdateMetadata();
+
+  String controllerChannelUpdateMetadata();
 }

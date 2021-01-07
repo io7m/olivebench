@@ -16,23 +16,40 @@
 
 package com.io7m.olivebench.controller;
 
+import com.io7m.olivebench.services.api.OBServiceDirectoryType;
+import com.io7m.olivebench.strings.OBStringsType;
+
 import java.util.Objects;
 
 public final class OBTaskCloseComposition implements OBControllerTaskType
 {
   private final OBController controller;
+  private final OBStringsType strings;
 
-  public OBTaskCloseComposition(
+  private OBTaskCloseComposition(
+    final OBStringsType inStrings,
     final OBController inController)
   {
+    this.strings =
+      Objects.requireNonNull(inStrings, "inStrings");
     this.controller =
       Objects.requireNonNull(inController, "inController");
+  }
+
+  public static OBControllerTaskType create(
+    final OBServiceDirectoryType inServices,
+    final OBController inController)
+  {
+    return new OBTaskCloseComposition(
+      inServices.requireService(OBStringsType.class),
+      inController
+    );
   }
 
   @Override
   public String name()
   {
-    return this.controller.strings().controllerCloseComposition();
+    return this.strings.controllerCloseComposition();
   }
 
   @Override

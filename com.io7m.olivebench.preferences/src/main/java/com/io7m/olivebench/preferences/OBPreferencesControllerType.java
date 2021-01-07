@@ -16,10 +16,12 @@
 
 package com.io7m.olivebench.preferences;
 
+import com.io7m.olivebench.services.api.OBServiceType;
+
 import java.io.IOException;
 import java.util.function.Consumer;
 
-public interface OBPreferencesControllerType
+public interface OBPreferencesControllerType extends OBServiceType
 {
   OBPreferencesReadableType preferences();
 

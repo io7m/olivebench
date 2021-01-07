@@ -14,13 +14,15 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.olivebench.model.graph;
+package com.io7m.olivebench.services.api;
 
-public interface OBMusicRegionType extends OBRegionType
+import java.util.Objects;
+
+public final class OBServiceException extends RuntimeException
 {
-  @Override
-  default OBCompositionNodeKind kind()
+  public OBServiceException(
+    final String inMessage)
   {
-    return OBCompositionNodeKind.MUSIC_REGION;
+    super(Objects.requireNonNull(inMessage, "message"));
   }
 }

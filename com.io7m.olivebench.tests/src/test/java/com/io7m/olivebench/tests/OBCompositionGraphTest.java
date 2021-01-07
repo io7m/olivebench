@@ -18,19 +18,28 @@ package com.io7m.olivebench.tests;
 
 import com.io7m.jaffirm.core.PreconditionViolationException;
 import com.io7m.jregions.core.parameterized.areas.PAreaL;
+import com.io7m.olivebench.composition_parser.api.OBCompositionParsers;
+import com.io7m.olivebench.composition_parser.api.OBCompositionParsersType;
+import com.io7m.olivebench.composition_serializer.api.OBCompositionSerializers;
+import com.io7m.olivebench.composition_serializer.api.OBCompositionSerializersType;
 import com.io7m.olivebench.exceptions.OBDuplicateException;
 import com.io7m.olivebench.model.OBCompositionEventType;
 import com.io7m.olivebench.model.graph.OBCompositionGraph;
 import com.io7m.olivebench.model.graph.OBGraphNodeAddedEvent;
 import com.io7m.olivebench.model.graph.OBGraphNodeRemovedEvent;
+import com.io7m.olivebench.model.graph.OBNodeMetadata;
 import com.io7m.olivebench.model.graph.OBTextRegion;
+import com.io7m.olivebench.model.graph.OBTextRegionData;
 import com.io7m.olivebench.model.names.OBName;
 import com.io7m.olivebench.model.spaces.OBSpaceRegionType;
+import com.io7m.olivebench.services.api.OBServiceDirectory;
+import com.io7m.olivebench.services.api.OBServiceDirectoryType;
 import com.io7m.olivebench.strings.OBStrings;
 import com.io7m.olivebench.strings.OBStringsType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,11 +53,16 @@ public final class OBCompositionGraphTest
 
   private OBStringsType strings;
   private ArrayList<OBCompositionEventType> events;
+  private OBServiceDirectory services;
 
   @BeforeEach
   public void testSetup()
   {
     this.strings = OBStrings.of(OBStrings.getResourceBundle());
+
+    this.services = new OBServiceDirectory();
+    this.services.register(OBStringsType.class, this.strings);
+
     this.events = new ArrayList<>();
   }
 
@@ -56,7 +70,7 @@ public final class OBCompositionGraphTest
   public void testCreate()
   {
     final var id = UUID.randomUUID();
-    final var composition = OBCompositionGraph.createWith(this.strings, id);
+    final var composition = OBCompositionGraph.createWith(this.services, id);
     Assertions.assertEquals(id, composition.id());
   }
 
@@ -64,7 +78,7 @@ public final class OBCompositionGraphTest
   public void testCreateChannel()
     throws Exception
   {
-    final var composition = OBCompositionGraph.create(this.strings);
+    final var composition = OBCompositionGraph.create(this.services);
     composition.events().subscribe(this::logEvent);
 
     final var channel0 =
@@ -76,10 +90,15 @@ public final class OBCompositionGraphTest
     final var channel3 =
       composition.createChannel(UUID.randomUUID(), "channel3");
 
-    Assertions.assertEquals("channel0", channel0.name().value());
-    Assertions.assertEquals("channel1", channel1.name().value());
-    Assertions.assertEquals("channel3", channel3.name().value());
-    Assertions.assertEquals(channel1.name(), channel2.name());
+    final var meta0 = channel0.nodeMetadata().read();
+    final var meta1 = channel1.nodeMetadata().read();
+    final var meta2 = channel2.nodeMetadata().read();
+    final var meta3 = channel3.nodeMetadata().read();
+
+    Assertions.assertEquals("channel0", meta0.name().value());
+    Assertions.assertEquals("channel1", meta1.name().value());
+    Assertions.assertEquals("channel3", meta3.name().value());
+    Assertions.assertEquals(meta1.name(), meta2.name());
     Assertions.assertNotEquals(channel0.id(), channel1.id());
     Assertions.assertNotEquals(channel0.id(), channel2.id());
     Assertions.assertNotEquals(channel0.id(), channel3.id());
@@ -121,19 +140,22 @@ public final class OBCompositionGraphTest
   public void testCreateChannelSetGet()
     throws Exception
   {
-    final var composition = OBCompositionGraph.create(this.strings);
+    final var composition = OBCompositionGraph.create(this.services);
     composition.events().subscribe(this::logEvent);
 
     final var channel0 = composition.createChannel("channel0");
-    channel0.setName("xyz");
-    Assertions.assertEquals("xyz", channel0.name().value());
+    channel0.nodeMetadata()
+      .update(nodeMetadata -> nodeMetadata.withName(OBName.of("xyz")));
+
+    Assertions.assertEquals(
+      "xyz", channel0.nodeMetadata().read().name().value());
   }
 
   @Test
   public void testCreateChannelDuplicate()
     throws Exception
   {
-    final var composition = OBCompositionGraph.create(this.strings);
+    final var composition = OBCompositionGraph.create(this.services);
     composition.events().subscribe(this::logEvent);
 
     final var channel0 = composition.createChannel("channel0");
@@ -146,7 +168,7 @@ public final class OBCompositionGraphTest
   public void testCreateDeleteChannel()
     throws Exception
   {
-    final var composition = OBCompositionGraph.create(this.strings);
+    final var composition = OBCompositionGraph.create(this.services);
     composition.events().subscribe(this::logEvent);
 
     final var channel0 = composition.createChannel("channel0");
@@ -159,7 +181,7 @@ public final class OBCompositionGraphTest
   public void testCreateDeleteDeleteChannel()
     throws Exception
   {
-    final var composition = OBCompositionGraph.create(this.strings);
+    final var composition = OBCompositionGraph.create(this.services);
     composition.events().subscribe(this::logEvent);
 
     final var channel0 = composition.createChannel("channel0");
@@ -176,19 +198,16 @@ public final class OBCompositionGraphTest
   public void testCreateDeleteRegion()
     throws Exception
   {
-    final var composition = OBCompositionGraph.create(this.strings);
+    final var composition = OBCompositionGraph.create(this.services);
     composition.events().subscribe(this::logEvent);
 
     final var channel0 = composition.createChannel("channel0");
     final var region0 =
       composition.createRegion(
         channel0,
-        PAreaL.of(0L, 0L, 0L, 0L),
-        (graph, id, area) -> OBTextRegion.create(
-          graph,
-          this.strings,
-          id,
-          area));
+        OBTextRegion::create,
+        OBTextRegionData.builder().build()
+      );
 
     Assertions.assertFalse(region0.isDeleted());
     composition.nodeDelete(region0);
@@ -198,12 +217,9 @@ public final class OBCompositionGraphTest
       composition.createRegion(
         channel0,
         region0.id(),
-        PAreaL.of(0L, 0L, 0L, 0L),
-        (graph, id, area) -> OBTextRegion.create(
-          graph,
-          this.strings,
-          id,
-          area));
+        OBTextRegion::create,
+        OBTextRegionData.builder().build()
+      );
 
     Assertions.assertFalse(region1.isDeleted());
     composition.nodeDelete(region1);
@@ -251,7 +267,7 @@ public final class OBCompositionGraphTest
   public void testCreateRegionConflict0()
     throws Exception
   {
-    final var composition = OBCompositionGraph.create(this.strings);
+    final var composition = OBCompositionGraph.create(this.services);
     composition.events().subscribe(this::logEvent);
 
     final var channel0 =
@@ -261,9 +277,8 @@ public final class OBCompositionGraphTest
       composition.createRegion(
         channel0,
         channel0.id(),
-        PAreaL.of(0L, 0L, 0L, 0L),
-        (graph, id, area) ->
-          OBTextRegion.create(graph, this.strings, id, area));
+        OBTextRegion::create,
+        OBTextRegionData.builder().build());
     });
   }
 
@@ -271,7 +286,7 @@ public final class OBCompositionGraphTest
   public void testCreateRegionConflict1()
     throws Exception
   {
-    final var composition = OBCompositionGraph.create(this.strings);
+    final var composition = OBCompositionGraph.create(this.services);
     composition.events().subscribe(this::logEvent);
 
     final var channel0 =
@@ -280,23 +295,15 @@ public final class OBCompositionGraphTest
     final var region0 =
       composition.createRegion(
         channel0,
-        PAreaL.of(0L, 0L, 0L, 0L),
-        (graph, id, area) -> OBTextRegion.create(
-          graph,
-          this.strings,
-          id,
-          area));
+        OBTextRegion::create,
+        OBTextRegionData.builder().build());
 
     Assertions.assertThrows(OBDuplicateException.class, () -> {
       composition.createRegion(
         channel0,
         region0.id(),
-        PAreaL.of(0L, 0L, 0L, 0L),
-        (graph, id, area) -> OBTextRegion.create(
-          graph,
-          this.strings,
-          id,
-          area));
+        OBTextRegion::create,
+        OBTextRegionData.builder().build());
     });
   }
 
@@ -304,7 +311,7 @@ public final class OBCompositionGraphTest
   public void testCreateChannelConflict0()
     throws Exception
   {
-    final var composition = OBCompositionGraph.create(this.strings);
+    final var composition = OBCompositionGraph.create(this.services);
     composition.events().subscribe(this::logEvent);
 
     final var channel0 =
@@ -313,12 +320,8 @@ public final class OBCompositionGraphTest
     final var region0 =
       composition.createRegion(
         channel0,
-        PAreaL.of(0L, 0L, 0L, 0L),
-        (graph, id, area) -> OBTextRegion.create(
-          graph,
-          this.strings,
-          id,
-          area));
+        OBTextRegion::create,
+        OBTextRegionData.builder().build());
 
     Assertions.assertThrows(OBDuplicateException.class, () -> {
       composition.createChannel(region0.id(), "channel0");
@@ -329,7 +332,7 @@ public final class OBCompositionGraphTest
   public void testCreateChannelConflict1()
     throws Exception
   {
-    final var composition = OBCompositionGraph.create(this.strings);
+    final var composition = OBCompositionGraph.create(this.services);
     composition.events().subscribe(this::logEvent);
 
     final var channel0 =
@@ -344,19 +347,15 @@ public final class OBCompositionGraphTest
   public void testCreateTextRegionSetGet()
     throws Exception
   {
-    final var composition = OBCompositionGraph.create(this.strings);
+    final var composition = OBCompositionGraph.create(this.services);
     composition.events().subscribe(this::logEvent);
 
     final var channel0 = composition.createChannel("channel0");
     final var region0 =
       composition.createRegion(
         channel0,
-        PAreaL.of(0L, 0L, 0L, 0L),
-        (graph, id, area) -> OBTextRegion.create(
-          graph,
-          this.strings,
-          id,
-          area));
+        OBTextRegion::create,
+        OBTextRegionData.builder().build());
 
     Assertions.assertEquals("", region0.text());
     region0.setText("xyz");
@@ -367,36 +366,24 @@ public final class OBCompositionGraphTest
   public void testSnapshot()
     throws Exception
   {
-    final var composition = OBCompositionGraph.create(this.strings);
+    final var composition = OBCompositionGraph.create(this.services);
     composition.events().subscribe(this::logEvent);
 
     final var channel0 = composition.createChannel("channel0");
     composition.createRegion(
       channel0,
-      PAreaL.of(0L, 0L, 0L, 0L),
-      (graph, id, area) -> OBTextRegion.create(
-        graph,
-        this.strings,
-        id,
-        area));
+      OBTextRegion::create,
+      OBTextRegionData.builder().build());
 
     composition.createRegion(
       channel0,
-      PAreaL.of(0L, 0L, 0L, 0L),
-      (graph, id, area) -> OBTextRegion.create(
-        graph,
-        this.strings,
-        id,
-        area));
+      OBTextRegion::create,
+      OBTextRegionData.builder().build());
 
     composition.createRegion(
       channel0,
-      PAreaL.of(0L, 0L, 0L, 0L),
-      (graph, id, area) -> OBTextRegion.create(
-        graph,
-        this.strings,
-        id,
-        area));
+      OBTextRegion::create,
+      OBTextRegionData.builder().build());
 
     final var snap = composition.snapshot();
     Assertions.assertEquals(composition.nodes(), snap.nodes());
@@ -412,46 +399,57 @@ public final class OBCompositionGraphTest
   public void testCreateChannelSetName()
     throws Exception
   {
-    final var composition = OBCompositionGraph.create(this.strings);
+    final var composition = OBCompositionGraph.create(this.services);
     composition.events().subscribe(this::logEvent);
 
     final var names = new ArrayList<OBName>();
     final var channel = composition.createChannel("channel0");
-    channel.nameProperty().subscribe(names::add);
-    channel.setName("a");
-    channel.setName("b");
-    channel.setName("c");
+    channel.nodeMetadata().asObservable().map(OBNodeMetadata::name).subscribe(names::add);
+    channel.setNodeName("a");
+    channel.setNodeName("b");
+    channel.setNodeName("c");
 
-    Assertions.assertEquals(3, names.size());
-    Assertions.assertEquals("a", names.get(0).value());
-    Assertions.assertEquals("b", names.get(1).value());
-    Assertions.assertEquals("c", names.get(2).value());
+    Assertions.assertEquals(4, names.size());
+    Assertions.assertEquals("channel0", names.remove(0).value());
+    Assertions.assertEquals("a", names.remove(0).value());
+    Assertions.assertEquals("b", names.remove(0).value());
+    Assertions.assertEquals("c", names.remove(0).value());
   }
 
   @Test
   public void testCreateChannelSetArea()
     throws Exception
   {
-    final var composition = OBCompositionGraph.create(this.strings);
+    final var composition = OBCompositionGraph.create(this.services);
     composition.events().subscribe(this::logEvent);
 
     final var areas = new ArrayList<PAreaL<OBSpaceRegionType>>();
     final var channel = composition.createChannel("channel0");
-    channel.areaRelativeProperty().subscribe(areas::add);
-    channel.setAreaRelative(PAreaL.of(0L, 0L, 1L, 1L));
-    channel.setAreaRelative(PAreaL.of(0L, 0L, 2L, 2L));
-    channel.setAreaRelative(PAreaL.of(0L, 0L, 3L, 3L));
+    channel.nodeMetadata()
+      .asObservable()
+      .map(OBNodeMetadata::area)
+      .subscribe(e -> {
+        LOG.debug("update: {}", e);
+        areas.add(e);
+      });
 
-    Assertions.assertEquals(3, areas.size());
+    channel.setNodeAreaRelative(PAreaL.of(0L, 0L, 1L, 1L));
+    channel.setNodeAreaRelative(PAreaL.of(0L, 0L, 2L, 2L));
+    channel.setNodeAreaRelative(PAreaL.of(0L, 0L, 3L, 3L));
+
+    Assertions.assertEquals(4, areas.size());
+    Assertions.assertEquals(
+      PAreaL.of(0L, 0L, 0L, 0L),
+      areas.remove(0));
     Assertions.assertEquals(
       PAreaL.of(0L, 0L, 1L, 1L),
-      areas.get(0));
+      areas.remove(0));
     Assertions.assertEquals(
       PAreaL.of(0L, 0L, 2L, 2L),
-      areas.get(1));
+      areas.remove(0));
     Assertions.assertEquals(
       PAreaL.of(0L, 0L, 3L, 3L),
-      areas.get(2));
+      areas.remove(0));
   }
 
   private void logEvent(

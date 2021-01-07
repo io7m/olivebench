@@ -20,6 +20,8 @@
 
 module com.io7m.olivebench.preferences
 {
+  requires transitive com.io7m.olivebench.services.api;
+
   requires org.slf4j;
 
   exports com.io7m.olivebench.preferences;

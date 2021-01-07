@@ -16,7 +16,8 @@
 
 package com.io7m.olivebench.composition_parser.api;
 
-import com.io7m.olivebench.strings.OBStringsType;
+import com.io7m.olivebench.services.api.OBServiceDirectoryType;
+import com.io7m.olivebench.services.api.OBServiceType;
 
 import java.io.InputStream;
 import java.net.URI;
@@ -25,14 +26,14 @@ import java.net.URI;
  * A provider of parsers.
  */
 
-public interface OBCompositionParsersType
+public interface OBCompositionParsersType extends OBServiceType
 {
   /**
    * Create a new parser for the given input stream.
    *
-   * @param strings The string resources
-   * @param source  The source of the stream, for diagnostic messages
-   * @param stream  The input stream
+   * @param services A service directory
+   * @param source   The source of the stream, for diagnostic messages
+   * @param stream   The input stream
    *
    * @return A new parser
    *
@@ -40,7 +41,7 @@ public interface OBCompositionParsersType
    */
 
   OBCompositionParserType createParser(
-    OBStringsType strings,
+    OBServiceDirectoryType services,
     URI source,
     InputStream stream)
     throws UnsupportedOperationException;

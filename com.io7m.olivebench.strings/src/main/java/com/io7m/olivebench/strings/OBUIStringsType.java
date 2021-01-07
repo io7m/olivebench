@@ -16,6 +16,8 @@
 
 package com.io7m.olivebench.strings;
 
+import java.nio.file.Path;
+
 public interface OBUIStringsType
 {
   String unsavedSave();
@@ -25,4 +27,12 @@ public interface OBUIStringsType
   String unsavedMessage();
 
   String unsavedChangesTitle();
+
+  String windowTitle();
+
+  String windowTitleSaved(Path file);
+
+  String windowTitleUnsaved(Path file);
+
+  String channelCreateEnter();
 }

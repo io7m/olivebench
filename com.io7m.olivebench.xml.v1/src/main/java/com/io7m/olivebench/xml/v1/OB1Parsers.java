@@ -20,7 +20,7 @@ import com.io7m.blackthorne.api.BTElementHandlerType;
 import com.io7m.jxe.core.JXESchemaDefinition;
 import com.io7m.olivebench.composition_parser.spi.OBCompositionSPIParsersType;
 import com.io7m.olivebench.model.OBCompositionType;
-import com.io7m.olivebench.strings.OBStringsType;
+import com.io7m.olivebench.services.api.OBServiceDirectoryType;
 
 /**
  * A provider of parsers for the 1.0 XML collection format.
@@ -45,9 +45,9 @@ public final class OB1Parsers implements OBCompositionSPIParsersType
 
   @Override
   public BTElementHandlerType<?, OBCompositionType> createHandler(
-    final OBStringsType strings)
+    final OBServiceDirectoryType services)
   {
-    return new OB1CompositionParser(strings);
+    return OB1CompositionParser.create(services);
   }
 
   @Override

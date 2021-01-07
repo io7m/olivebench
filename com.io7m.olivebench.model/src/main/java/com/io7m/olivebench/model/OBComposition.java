@@ -22,9 +22,13 @@ import com.io7m.olivebench.model.graph.OBCompositionGraph;
 import com.io7m.olivebench.model.graph.OBCompositionGraphType;
 import com.io7m.olivebench.model.graph.OBGraphEventType;
 import com.io7m.olivebench.model.graph.OBGraphNodeAddedEvent;
+import com.io7m.olivebench.model.graph.OBGraphNodeModifiedEvent;
 import com.io7m.olivebench.model.graph.OBGraphNodeRemovedEvent;
 import com.io7m.olivebench.model.graph.OBRegionType;
-import com.io7m.olivebench.model.metadata.OBMetadata;
+import com.io7m.olivebench.model.metadata.OBCompositionMetadata;
+import com.io7m.olivebench.model.properties.OBProperty;
+import com.io7m.olivebench.model.properties.OBPropertyType;
+import com.io7m.olivebench.services.api.OBServiceDirectoryType;
 import com.io7m.olivebench.strings.OBStringsType;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
@@ -38,25 +42,31 @@ import java.util.UUID;
 public final class OBComposition implements OBCompositionType
 {
   private final OBCompositionGraphType graph;
-  private final PublishSubject<OBCompositionEventType> eventSubject;
+  private final OBPropertyType<OBCompositionMetadata> metadata;
+  private final OBPropertyType<Optional<Path>> fileName;
+  private final OBServiceDirectoryType services;
   private final OBStringsType strings;
-  private volatile OBMetadata metadata;
-  private volatile Optional<Path> fileName;
+  private final PublishSubject<OBCompositionEventType> eventSubject;
 
   private OBComposition(
+    final OBServiceDirectoryType inServices,
     final OBStringsType inStrings,
     final OBCompositionGraphType inGraph,
-    final OBMetadata inMetadata)
+    final OBCompositionMetadata inMetadata)
   {
     this.graph =
       Objects.requireNonNull(inGraph, "inGraph");
-    this.metadata =
-      Objects.requireNonNull(inMetadata, "inMetadata");
     this.strings =
       Objects.requireNonNull(inStrings, "inStrings");
+    this.metadata =
+      OBProperty.create(Objects.requireNonNull(inMetadata, "inMetadata"));
+    this.services =
+      Objects.requireNonNull(inServices, "inServices");
 
-    this.eventSubject =
-      PublishSubject.create();
+    this.fileName =
+      OBProperty.create(Optional.empty());
+
+    this.eventSubject = PublishSubject.create();
 
     this.graph.events().subscribe(
       this::onGraphEvent,
@@ -65,25 +75,45 @@ public final class OBComposition implements OBCompositionType
 
       }
     );
+
+    this.metadata.asObservable().subscribe(
+      this::onMetadataEvent,
+      this.eventSubject::onError,
+      () -> {
+
+      }
+    );
+  }
+
+  private void onMetadataEvent(
+    final OBCompositionMetadata metadata)
+  {
+    this.eventSubject.onNext(
+      OBCompositionMetadataChangedEvent.builder()
+        .setMessage(this.strings.metadataChanged())
+        .setMetadata(metadata)
+        .build()
+    );
   }
 
   public static OBCompositionType create(
-    final OBStringsType strings)
+    final OBServiceDirectoryType services)
   {
     return createWith(
-      strings,
-      OBCompositionGraph.createWith(strings, UUID.randomUUID())
+      services,
+      OBCompositionGraph.createWith(services, UUID.randomUUID())
     );
   }
 
   public static OBCompositionType createWith(
-    final OBStringsType strings,
+    final OBServiceDirectoryType services,
     final OBCompositionGraphType graph)
   {
     return new OBComposition(
-      strings,
+      services,
+      services.requireService(OBStringsType.class),
       graph,
-      OBMetadata.of(List.of())
+      OBCompositionMetadata.of(List.of())
     );
   }
 
@@ -94,6 +124,36 @@ public final class OBComposition implements OBCompositionType
       this.onGraphEventAdded((OBGraphNodeAddedEvent) event);
     } else if (event instanceof OBGraphNodeRemovedEvent) {
       this.onGraphEventRemoved((OBGraphNodeRemovedEvent) event);
+    } else if (event instanceof OBGraphNodeModifiedEvent) {
+      this.onGraphEventModified((OBGraphNodeModifiedEvent) event);
+    } else {
+      throw new UnreachableCodeException();
+    }
+  }
+
+  private void onGraphEventModified(
+    final OBGraphNodeModifiedEvent event)
+  {
+    final var modifiedNode = event.nodeTarget();
+    final var name = modifiedNode.nodeMetadata().read().name().value();
+
+    if (modifiedNode instanceof OBChannelType) {
+      this.eventSubject.onNext(
+        OBChannelEventChanged.builder()
+          .setMessage(this.strings.channelChanged())
+          .putAttributes(this.strings.channel(), name)
+          .setChannel((OBChannelType) modifiedNode)
+          .build()
+      );
+    } else if (modifiedNode instanceof OBRegionType) {
+      this.eventSubject.onNext(
+        OBRegionEventChanged.builder()
+          .setMessage(this.strings.regionDeleted())
+          .putAttributes(this.strings.channel(), name)
+          .setChannel(this.graph.channelOf(modifiedNode))
+          .setRegion((OBRegionType<?>) modifiedNode)
+          .build()
+      );
     } else {
       throw new UnreachableCodeException();
     }
@@ -103,58 +163,64 @@ public final class OBComposition implements OBCompositionType
     final OBGraphNodeRemovedEvent removedEvent)
   {
     final var removedNode = removedEvent.node();
+    final var name = removedNode.nodeMetadata().read().name().value();
+
     if (removedNode instanceof OBChannelType) {
       this.eventSubject.onNext(
         OBChannelEventRemoved.builder()
           .setMessage(this.strings.channelDeleted())
-          .putAttributes(this.strings.channel(), removedNode.name().value())
+          .putAttributes(this.strings.channel(), name)
           .setChannel((OBChannelType) removedNode)
           .build()
       );
-    } else if (removedNode instanceof OBRegionType) {
+      return;
+    }
+
+    if (removedNode instanceof OBRegionType) {
       this.eventSubject.onNext(
         OBRegionEventRemoved.builder()
           .setMessage(this.strings.regionDeleted())
-          .putAttributes(this.strings.channel(), removedNode.name().value())
-          .setChannel((OBChannelType) removedEvent.parent())
-          .setRegion((OBRegionType) removedNode)
+          .putAttributes(this.strings.channel(), name)
+          .setChannel(this.graph.channelOf(removedNode))
+          .setRegion((OBRegionType<?>) removedNode)
           .build()
       );
-    } else {
-      throw new UnreachableCodeException();
+      return;
     }
+
+    throw new UnreachableCodeException();
   }
 
   private void onGraphEventAdded(
     final OBGraphNodeAddedEvent graphEvent)
   {
     final var addedNode = graphEvent.nodeTarget();
+    final var name = addedNode.nodeMetadata().read().name().value();
+
     if (addedNode instanceof OBChannelType) {
       this.eventSubject.onNext(
         OBChannelEventAdded.builder()
           .setMessage(this.strings.channelCreated())
-          .putAttributes(this.strings.channel(), addedNode.name().value())
+          .putAttributes(this.strings.channel(), name)
           .setChannel((OBChannelType) addedNode)
           .build()
       );
-    } else if (addedNode instanceof OBRegionType) {
+      return;
+    }
+
+    if (addedNode instanceof OBRegionType) {
       this.eventSubject.onNext(
         OBRegionEventAdded.builder()
           .setMessage(this.strings.regionCreated())
-          .putAttributes(this.strings.channel(), addedNode.name().value())
-          .setChannel((OBChannelType) graphEvent.nodeSource())
-          .setRegion((OBRegionType) addedNode)
+          .putAttributes(this.strings.channel(), name)
+          .setChannel(this.graph.channelOf(addedNode))
+          .setRegion((OBRegionType<?>) addedNode)
           .build()
       );
-    } else {
-      throw new UnreachableCodeException();
+      return;
     }
-  }
 
-  @Override
-  public OBMetadata metadata()
-  {
-    return this.metadata;
+    throw new UnreachableCodeException();
   }
 
   @Override
@@ -164,22 +230,15 @@ public final class OBComposition implements OBCompositionType
   }
 
   @Override
-  public void setMetadata(
-    final OBMetadata inMetadata)
+  public OBPropertyType<OBCompositionMetadata> metadata()
   {
-    this.metadata = Objects.requireNonNull(inMetadata, "Metadata");
-    this.eventSubject.onNext(
-      OBMetadataChangedEvent.builder()
-        .setMessage(this.strings.metadataChanged())
-        .setMetadata(inMetadata)
-        .build()
-    );
+    return this.metadata;
   }
 
   @Override
-  public void setFileName(final Path file)
+  public OBPropertyType<Optional<Path>> fileName()
   {
-    this.fileName = Optional.of(file);
+    return this.fileName;
   }
 
   @Override
@@ -187,7 +246,7 @@ public final class OBComposition implements OBCompositionType
   {
     return new OBCompositionSnapshot(
       this.graph.snapshot(),
-      this.metadata
+      this.metadata.read()
     );
   }
 
@@ -195,11 +254,5 @@ public final class OBComposition implements OBCompositionType
   public Observable<OBCompositionEventType> events()
   {
     return this.eventSubject;
-  }
-
-  @Override
-  public Optional<Path> fileName()
-  {
-    return this.fileName;
   }
 }

@@ -30,7 +30,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>com.io7m.olivebench.strings</artifactId>
+      <artifactId>com.io7m.olivebench.services.api</artifactId>
       <version>${project.version}</version>
     </dependency>
 

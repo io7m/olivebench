@@ -21,11 +21,14 @@ import com.io7m.olivebench.composition_parser.api.OBCompositionParsers;
 import com.io7m.olivebench.composition_parser.api.OBCompositionParsersType;
 import com.io7m.olivebench.composition_serializer.api.OBCompositionSerializers;
 import com.io7m.olivebench.model.OBCompositionType;
+import com.io7m.olivebench.services.api.OBServiceDirectoryType;
 import com.io7m.olivebench.strings.OBStrings;
 import com.io7m.olivebench.strings.OBStringsType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +45,7 @@ public final class OBCompositionParsersTest
   private OBCompositionParsersType parsers;
   private OBStringsType strings;
   private Path directory;
+  private OBServiceDirectoryType services;
 
   private static void serializeTo(
     final OBCompositionType composition0,
@@ -62,6 +66,9 @@ public final class OBCompositionParsersTest
   {
     for (final var error : errors) {
       LOG.error("error: {}", error);
+      error.exception().ifPresent(ex -> {
+        LOG.error("exception: ", ex);
+      });
     }
   }
 
@@ -69,8 +76,19 @@ public final class OBCompositionParsersTest
   public void testSetup()
     throws IOException
   {
-    this.parsers = OBCompositionParsers.create();
-    this.strings = OBStrings.of(OBStrings.getResourceBundle());
+    this.strings =
+      OBStrings.of(OBStrings.getResourceBundle());
+    this.parsers =
+      OBCompositionParsers.create();
+
+    this.services =
+      Mockito.mock(OBServiceDirectoryType.class);
+
+    Mockito.when(this.services.requireService(OBStringsType.class))
+      .thenReturn(this.strings);
+    Mockito.when(this.services.requireService(OBCompositionParsersType.class))
+      .thenReturn(this.parsers);
+
     this.directory = OBTestDirectories.createTempDirectory();
   }
 
@@ -109,13 +127,16 @@ public final class OBCompositionParsersTest
 
     Assertions.assertEquals(
       composition0.graph().id(),
-      composition1.graph().id());
+      composition1.graph().id()
+    );
     Assertions.assertEquals(
-      composition0.metadata(),
-      composition1.metadata());
+      composition0.metadata().read(),
+      composition1.metadata().read()
+    );
     Assertions.assertEquals(
       composition0.graph().nodes().keySet(),
-      composition1.graph().nodes().keySet());
+      composition1.graph().nodes().keySet()
+    );
   }
 
   private OBCompositionType parse(
@@ -124,7 +145,7 @@ public final class OBCompositionParsersTest
   {
     try (var stream = Files.newInputStream(path)) {
       try (var parser =
-             this.parsers.createParser(this.strings, path.toUri(), stream)) {
+             this.parsers.createParser(this.services, path.toUri(), stream)) {
         final var result = parser.execute();
         logErrors(parser.errors());
         return result.orElseThrow();

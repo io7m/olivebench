@@ -20,23 +20,23 @@ import com.io7m.blackthorne.api.BTElementHandlerConstructorType;
 import com.io7m.blackthorne.api.BTElementHandlerType;
 import com.io7m.blackthorne.api.BTElementParsingContextType;
 import com.io7m.blackthorne.api.BTQualifiedName;
-import com.io7m.olivebench.model.metadata.OBMetadata;
+import com.io7m.olivebench.model.metadata.OBCompositionMetadata;
 import com.io7m.olivebench.model.metadata.OBMetadataProperty;
 
 import java.util.Map;
 
 public final class OB1MetadataParser
-  implements BTElementHandlerType<OBMetadataProperty, OBMetadata>
+  implements BTElementHandlerType<OBMetadataProperty, OBCompositionMetadata>
 {
-  private final OBMetadata.Builder builder;
+  private final OBCompositionMetadata.Builder builder;
 
   public OB1MetadataParser()
   {
-    this.builder = OBMetadata.builder();
+    this.builder = OBCompositionMetadata.builder();
   }
 
   @Override
-  public OBMetadata onElementFinished(
+  public OBCompositionMetadata onElementFinished(
     final BTElementParsingContextType context)
   {
     return this.builder.build();

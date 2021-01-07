@@ -28,6 +28,7 @@ module com.io7m.olivebench.model
   requires com.io7m.jregions.core;
   requires com.io7m.jspatial.api;
   requires com.io7m.jspatial.implementation;
+  requires com.io7m.jtensors.core;
   requires com.io7m.junreachable.core;
   requires com.io7m.olivebench.events;
   requires com.io7m.olivebench.exceptions;
@@ -37,9 +38,10 @@ module com.io7m.olivebench.model
   requires org.jgrapht.core;
 
   exports com.io7m.olivebench.model.graph;
+  exports com.io7m.olivebench.model.metadata;
   exports com.io7m.olivebench.model.names;
+  exports com.io7m.olivebench.model.properties;
   exports com.io7m.olivebench.model.spaces;
   exports com.io7m.olivebench.model.spatial;
   exports com.io7m.olivebench.model;
-  exports com.io7m.olivebench.model.metadata;
 }

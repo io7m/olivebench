@@ -21,14 +21,13 @@ import com.io7m.blackthorne.api.BTElementHandlerType;
 import com.io7m.blackthorne.api.BTElementParsingContextType;
 import com.io7m.blackthorne.api.BTQualifiedName;
 import com.io7m.jaffirm.core.Preconditions;
-import com.io7m.jregions.core.parameterized.areas.PAreaL;
 import com.io7m.olivebench.exceptions.OBException;
 import com.io7m.olivebench.model.graph.OBCompositionGraph;
 import com.io7m.olivebench.model.graph.OBCompositionGraphType;
 import com.io7m.olivebench.model.graph.OBCompositionNodeType;
 import com.io7m.olivebench.model.graph.OBTextRegion;
-import com.io7m.olivebench.model.spaces.OBSpaceRegionType;
-import com.io7m.olivebench.strings.OBStringsType;
+import com.io7m.olivebench.model.graph.OBTextRegionData;
+import com.io7m.olivebench.services.api.OBServiceDirectoryType;
 import org.jgrapht.graph.DirectedAcyclicGraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,14 +46,14 @@ public final class OB1GraphParser
   private static final Logger LOG =
     LoggerFactory.getLogger(OB1GraphParser.class);
 
-  private final OBStringsType strings;
+  private final OBServiceDirectoryType services;
   private OB1Nodes nodes;
   private OB1Edges edges;
 
-  public OB1GraphParser(
-    final OBStringsType inStrings)
+  OB1GraphParser(
+    final OBServiceDirectoryType inServices)
   {
-    this.strings = Objects.requireNonNull(inStrings, "strings");
+    this.services = Objects.requireNonNull(inServices, "services");
   }
 
   @Override
@@ -72,7 +71,7 @@ public final class OB1GraphParser
           .orElseThrow();
 
       final var compositionGraph =
-        OBCompositionGraph.createWith(this.strings, root.id());
+        OBCompositionGraph.createWith(this.services, root.id());
 
       final var edgeGraph =
         new DirectedAcyclicGraph<UUID, OB1CompositionEdge>(
@@ -143,7 +142,11 @@ public final class OB1GraphParser
         channel.id(),
         id
       );
-      return compositionGraph.createChannel(id, channel.name());
+      return compositionGraph.createChannel(
+        id,
+        channel.nodeMetadata(),
+        channel.channelMetadata()
+      );
     }
 
     final var region = regions.get(id);
@@ -155,18 +158,16 @@ public final class OB1GraphParser
         id
       );
 
-      final var regionArea =
-        PAreaL.<OBSpaceRegionType>builder()
-          .from(region.area())
-          .build();
-
       if (region instanceof OB1TextRegion) {
+        final var textRegion = (OB1TextRegion) region;
         return compositionGraph.createRegion(
           parentNode,
           id,
-          regionArea,
-          (graph, id1, area) ->
-            OBTextRegion.create(graph, this.strings, id1, area)
+          region.nodeMetadata(),
+          OBTextRegion::create,
+          OBTextRegionData.builder()
+            .setText(textRegion.text())
+            .build()
         );
       }
     }

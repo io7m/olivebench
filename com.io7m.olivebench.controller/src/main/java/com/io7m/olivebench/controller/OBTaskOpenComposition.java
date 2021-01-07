@@ -19,6 +19,7 @@ package com.io7m.olivebench.controller;
 import com.io7m.olivebench.composition_parser.api.OBCompositionParserType;
 import com.io7m.olivebench.composition_parser.api.OBCompositionParsersType;
 import com.io7m.olivebench.preferences.OBPreferencesControllerType;
+import com.io7m.olivebench.services.api.OBServiceDirectoryType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +31,7 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.OptionalDouble;
 
 public final class OBTaskOpenComposition implements OBControllerTaskType
@@ -37,17 +39,21 @@ public final class OBTaskOpenComposition implements OBControllerTaskType
   private static final Logger LOG =
     LoggerFactory.getLogger(OBTaskOpenComposition.class);
 
-  private final OBController controller;
-  private final Path file;
   private final OBCompositionParsersType parsers;
+  private final OBController controller;
   private final OBPreferencesControllerType preferences;
+  private final OBServiceDirectoryType services;
+  private final Path file;
 
-  public OBTaskOpenComposition(
+  private OBTaskOpenComposition(
+    final OBServiceDirectoryType inServices,
     final OBController inController,
     final OBCompositionParsersType inParsers,
     final OBPreferencesControllerType inPreferences,
     final Path inFile)
   {
+    this.services =
+      Objects.requireNonNull(inServices, "inServices");
     this.controller =
       Objects.requireNonNull(inController, "inController");
     this.parsers =
@@ -56,6 +62,20 @@ public final class OBTaskOpenComposition implements OBControllerTaskType
       Objects.requireNonNull(inPreferences, "inPreferences");
     this.file =
       Objects.requireNonNull(inFile, "file");
+  }
+
+  public static OBControllerTaskType create(
+    final OBServiceDirectoryType inServices,
+    final OBController inController,
+    final Path inFile)
+  {
+    return new OBTaskOpenComposition(
+      inServices,
+      inController,
+      inServices.requireService(OBCompositionParsersType.class),
+      inServices.requireService(OBPreferencesControllerType.class),
+      inFile
+    );
   }
 
   @Override
@@ -68,8 +88,7 @@ public final class OBTaskOpenComposition implements OBControllerTaskType
   public void taskDo()
     throws OBTaskFailureException
   {
-    final var strings =
-      this.controller.strings();
+    final var strings = this.controller.strings();
 
     this.controller.publishEvent(
       OBControllerEventTaskProgressChanged.of(
@@ -81,14 +100,17 @@ public final class OBTaskOpenComposition implements OBControllerTaskType
 
     try (var stream = Files.newInputStream(this.file)) {
       try (var parser =
-             this.parsers.createParser(strings, this.file.toUri(), stream)) {
+             this.parsers.createParser(
+               this.services,
+               this.file.toUri(),
+               stream)) {
         final var compositionOpt = parser.execute();
         if (!parser.errors().isEmpty()) {
           throw this.publishParseErrors(parser);
         }
 
         final var composition = compositionOpt.get();
-        composition.setFileName(this.file);
+        composition.fileName().set(Optional.of(this.file));
         this.controller.setComposition(composition);
 
         this.preferences.updateQuietly(prefs -> {

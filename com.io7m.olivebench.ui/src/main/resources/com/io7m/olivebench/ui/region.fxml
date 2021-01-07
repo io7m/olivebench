@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefHeight="400.0" prefWidth="600.0" styleClass="obRegion" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+  <children>
+    <HBox maxHeight="-Infinity" minHeight="-Infinity" prefHeight="24.0" styleClass="obRegionTitlebar">
+      <children>
+        <Label fx:id="titleLabel" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="24.0" styleClass="obRegionTitlebarLabel" text="%ui.placeholder" HBox.hgrow="ALWAYS">
+          <padding>
+            <Insets left="4.0" />
+          </padding>
+        </Label>
+      </children>
+    </HBox>
+    <Pane maxHeight="-Infinity" minHeight="-Infinity" prefHeight="1.0" styleClass="obRegionSeparator" VBox.vgrow="NEVER" />
+    <Pane prefHeight="200.0" prefWidth="200.0" styleClass="obRegionContent" VBox.vgrow="ALWAYS" />
+  </children>
+</VBox>

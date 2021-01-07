@@ -10,32 +10,43 @@
   <ob:Graph>
     <ob:Nodes>
       <ob:Root id="5f40bbd6-057e-411c-99d9-a82b6c825421">
-        <ob:Area maximumX="0"
-                 maximumY="0"
-                 minimumX="0"
-                 minimumY="0"/>
+        <ob:NodeMetadata>
+          <ob:Area maximumX="0"
+                   maximumY="0"
+                   minimumX="0"
+                   minimumY="0"/>
+        </ob:NodeMetadata>
       </ob:Root>
       <ob:Channel id="516d9a23-ba20-4691-99d2-527933f23c87">
-        <ob:Area minimumX="0"
-                 minimumY="0"
-                 maximumX="0"
-                 maximumY="0"/>
+        <ob:NodeMetadata>
+          <ob:Area maximumX="0"
+                   maximumY="0"
+                   minimumX="0"
+                   minimumY="0"/>
+        </ob:NodeMetadata>
+        <ob:ChannelMetadata>
+          <ob:Color red="1.0"
+                    green="1.0"
+                    blue="1.0"/>
+        </ob:ChannelMetadata>
       </ob:Channel>
       <ob:TextRegion id="be96cb65-c722-40cd-8e38-83da20f22367"
-                     name="Region 0"
                      text="Some text">
-        <ob:Area minimumX="0"
-                 minimumY="0"
-                 maximumX="100"
-                 maximumY="100"/>
+        <ob:NodeMetadata name="Region 0">
+          <ob:Area minimumX="0"
+                   minimumY="0"
+                   maximumX="100"
+                   maximumY="100"/>
+        </ob:NodeMetadata>
       </ob:TextRegion>
       <ob:TextRegion id="3b74de99-62e0-469b-abed-623727bf6263"
-                     name="Region 0"
                      text="Some text">
-        <ob:Area minimumX="0"
-                 minimumY="0"
-                 maximumX="100"
-                 maximumY="100"/>
+        <ob:NodeMetadata name="Region 0">
+          <ob:Area minimumX="0"
+                   minimumY="0"
+                   maximumX="100"
+                   maximumY="100"/>
+        </ob:NodeMetadata>
       </ob:TextRegion>
     </ob:Nodes>
 

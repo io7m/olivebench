@@ -17,17 +17,21 @@
 package com.io7m.olivebench.model.graph;
 
 import com.io7m.olivebench.strings.OBStringsType;
+import io.reactivex.rxjava3.core.Observable;
 
 import java.util.UUID;
 
 final class OBCompositionRoot extends OBAbstractNode
 {
+  private final Observable<Object> changes;
+
   OBCompositionRoot(
     final OBCompositionGraphType inGraph,
     final OBStringsType inStrings,
     final UUID inId)
   {
     super(inGraph, inStrings, inId);
+    this.changes = Observable.never();
   }
 
   @Override
@@ -46,5 +50,11 @@ final class OBCompositionRoot extends OBAbstractNode
   public OBCompositionNodeKind kind()
   {
     return OBCompositionNodeKind.ROOT;
+  }
+
+  @Override
+  public Observable<Object> changes()
+  {
+    return this.changes;
   }
 }

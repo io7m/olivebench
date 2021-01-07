@@ -47,6 +47,8 @@ public final class OB1AreaParser
         Long.parseLong(attributes.getValue("maximumX")));
       this.builder.setMaximumY(
         Long.parseLong(attributes.getValue("maximumY")));
+
+      this.builder.build();
     } catch (final Exception e) {
       throw context.parseException(e);
     }

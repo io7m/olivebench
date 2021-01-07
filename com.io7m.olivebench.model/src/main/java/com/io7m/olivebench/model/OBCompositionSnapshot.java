@@ -17,7 +17,9 @@
 package com.io7m.olivebench.model;
 
 import com.io7m.olivebench.model.graph.OBCompositionGraphReadableType;
-import com.io7m.olivebench.model.metadata.OBMetadata;
+import com.io7m.olivebench.model.metadata.OBCompositionMetadata;
+import com.io7m.olivebench.model.properties.OBProperty;
+import com.io7m.olivebench.model.properties.OBPropertyReadableType;
 import io.reactivex.rxjava3.core.Observable;
 
 import java.nio.file.Path;
@@ -27,22 +29,16 @@ import java.util.Optional;
 final class OBCompositionSnapshot implements OBCompositionReadableType
 {
   private final OBCompositionGraphReadableType graph;
-  private final OBMetadata metadata;
+  private final OBCompositionMetadata metadata;
 
   OBCompositionSnapshot(
     final OBCompositionGraphReadableType inGraph,
-    final OBMetadata inMetadata)
+    final OBCompositionMetadata inMetadata)
   {
     this.graph =
       Objects.requireNonNull(inGraph, "graph");
     this.metadata =
       Objects.requireNonNull(inMetadata, "metadata");
-  }
-
-  @Override
-  public OBMetadata metadata()
-  {
-    return this.metadata;
   }
 
   @Override
@@ -60,12 +56,18 @@ final class OBCompositionSnapshot implements OBCompositionReadableType
   @Override
   public Observable<OBCompositionEventType> events()
   {
-    return Observable.empty();
+    return Observable.never();
   }
 
   @Override
-  public Optional<Path> fileName()
+  public OBPropertyReadableType<OBCompositionMetadata> metadata()
   {
-    return Optional.empty();
+    return OBProperty.create(this.metadata);
+  }
+
+  @Override
+  public OBPropertyReadableType<Optional<Path>> fileName()
+  {
+    return OBProperty.create(Optional.empty());
   }
 }

@@ -16,22 +16,23 @@
 
 package com.io7m.olivebench.model.graph;
 
-import com.io7m.jregions.core.parameterized.areas.PAreaL;
 import com.io7m.olivebench.exceptions.OBException;
 import com.io7m.olivebench.model.names.OBName;
-import com.io7m.olivebench.model.spaces.OBSpaceRegionType;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public interface OBCompositionGraphType extends OBCompositionGraphReadableType
 {
   OBChannelType createChannel(
     UUID id,
-    OBName name)
+    OBNodeMetadata nodeMetadata,
+    OBChannelMetadata channelMetadata)
     throws OBException;
 
   OBChannelType createChannel(
-    OBName name)
+    OBNodeMetadata nodeMetadata,
+    OBChannelMetadata channelMetadata)
     throws OBException;
 
   default OBChannelType createChannel(
@@ -39,14 +40,27 @@ public interface OBCompositionGraphType extends OBCompositionGraphReadableType
     final String name)
     throws OBException
   {
-    return this.createChannel(id, OBName.of(name));
+    return this.createChannel(
+      id,
+      OBNodeMetadata.builder()
+        .setName(OBName.of(name))
+        .build(),
+      OBChannelMetadata.builder()
+        .build()
+    );
   }
 
   default OBChannelType createChannel(
     final String name)
     throws OBException
   {
-    return this.createChannel(OBName.of(name));
+    return this.createChannel(
+      OBNodeMetadata.builder()
+        .setName(OBName.of(name))
+        .build(),
+      OBChannelMetadata.builder()
+        .build()
+    );
   }
 
   void nodeDelete(
@@ -58,15 +72,57 @@ public interface OBCompositionGraphType extends OBCompositionGraphReadableType
 
   UUID createId();
 
-  <T extends OBRegionType> T createRegion(
-    OBCompositionNodeType owner,
-    PAreaL<OBSpaceRegionType> area,
-    OBRegionConstructorType<T> constructor);
+  default <A, T extends OBRegionType<A>> T createRegion(
+    final OBCompositionNodeType owner,
+    final OBRegionConstructorType<A, T> constructor,
+    final A regionData)
+    throws OBException
+  {
+    Objects.requireNonNull(owner, "owner");
+    Objects.requireNonNull(constructor, "constructor");
+    Objects.requireNonNull(regionData, "regionData");
 
-  <T extends OBRegionType> T createRegion(
+    return this.createRegion(
+      owner,
+      OBNodeMetadata.builder().build(),
+      constructor,
+      regionData
+    );
+  }
+
+  default <A, T extends OBRegionType<A>> T createRegion(
+    final OBCompositionNodeType owner,
+    final UUID id,
+    final OBRegionConstructorType<A, T> constructor,
+    final A regionData)
+    throws OBException
+  {
+    Objects.requireNonNull(owner, "owner");
+    Objects.requireNonNull(id, "id");
+    Objects.requireNonNull(constructor, "constructor");
+    Objects.requireNonNull(regionData, "regionData");
+
+    return this.createRegion(
+      owner,
+      id,
+      OBNodeMetadata.builder().build(),
+      constructor,
+      regionData
+    );
+  }
+
+  <A, T extends OBRegionType<A>> T createRegion(
+    OBCompositionNodeType owner,
+    OBNodeMetadata nodeMetadata,
+    OBRegionConstructorType<A, T> constructor,
+    A regionData)
+    throws OBException;
+
+  <A, T extends OBRegionType<A>> T createRegion(
     OBCompositionNodeType owner,
     UUID id,
-    PAreaL<OBSpaceRegionType> area,
-    OBRegionConstructorType<T> constructor)
+    OBNodeMetadata nodeMetadata,
+    OBRegionConstructorType<A, T> constructor,
+    A regionData)
     throws OBException;
 }

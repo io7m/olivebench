@@ -16,18 +16,17 @@
 
 package com.io7m.olivebench.ui;
 
-import com.io7m.olivebench.controller.OBControllerEventCompositionChanged;
 import com.io7m.olivebench.controller.OBControllerEventCompositionStatusChanged;
 import com.io7m.olivebench.controller.OBControllerType;
-import com.io7m.olivebench.model.OBCompositionReadableType;
+import com.io7m.olivebench.model.OBCompositionMetadataChangedEvent;
+import com.io7m.olivebench.model.metadata.OBCompositionMetadata;
 import com.io7m.olivebench.model.metadata.OBMetadataProperty;
 import com.io7m.olivebench.model.metadata.OBMetadatas;
+import com.io7m.olivebench.services.api.OBServiceDirectoryType;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -39,9 +38,6 @@ import java.util.Objects;
 
 public final class OBMetadataViewController implements OBViewControllerType
 {
-  private static final Logger LOG =
-    LoggerFactory.getLogger(OBMetadataViewController.class);
-
   private final CompositeDisposable subscriptions;
 
   @FXML
@@ -78,7 +74,7 @@ public final class OBMetadataViewController implements OBViewControllerType
   {
     final var value =
       this.controller.compositionSnapshot()
-        .map(OBCompositionReadableType::metadata)
+        .map(meta -> meta.metadata().read())
         .flatMap(metadata -> metadata.findValue(key))
         .orElse("");
 
@@ -141,10 +137,12 @@ public final class OBMetadataViewController implements OBViewControllerType
 
   @Override
   public void initialize(
-    final OBControllerType inController)
+    final OBServiceDirectoryType inServices)
   {
+    Objects.requireNonNull(inServices, "services");
+
     this.controller =
-      Objects.requireNonNull(inController, "controller");
+      inServices.requireService(OBControllerType.class);
 
     this.fields =
       List.of(
@@ -159,21 +157,44 @@ public final class OBMetadataViewController implements OBViewControllerType
 
     this.subscriptions.add(
       this.controller.events()
+        .ofType(OBCompositionMetadataChangedEvent.class)
+        .subscribe(this::onMetadataChanged));
+
+    this.subscriptions.add(
+      this.controller.events()
         .ofType(OBControllerEventCompositionStatusChanged.class)
         .subscribe(this::onCompositionStatusChanged)
     );
 
-    this.subscriptions.add(
-      this.controller.events()
-        .ofType(OBControllerEventCompositionChanged.class)
-        .subscribe(this::onCompositionChanged)
-    );
+    this.controller.compositionSnapshot().ifPresent(snapshot -> {
+      this.configureFieldsForMetadata(snapshot.metadata().read());
+    });
   }
 
-  private void onCompositionChanged(
-    final OBControllerEventCompositionChanged event)
+  private void onMetadataChanged(
+    final OBCompositionMetadataChangedEvent metadata)
   {
+    final var meta = metadata.metadata();
+    Platform.runLater(() -> {
+      this.configureFieldsForMetadata(meta);
+    });
+  }
 
+  private void configureFieldsForMetadata(
+    final OBCompositionMetadata meta)
+  {
+    this.creator.setText(
+      meta.findValueOrDefault("dc:creator", ""));
+    this.date.setText(
+      meta.findValueOrDefault("dc:date", ""));
+    this.publisher.setText(
+      meta.findValueOrDefault("dc:publisher", ""));
+    this.rights.setText(
+      meta.findValueOrDefault("dc:rights", ""));
+    this.source.setText(
+      meta.findValueOrDefault("dc:source", ""));
+    this.title.setText(
+      meta.findValueOrDefault("dc:title", ""));
   }
 
   private void onCompositionStatusChanged(
@@ -183,30 +204,14 @@ public final class OBMetadataViewController implements OBViewControllerType
       switch (event.statusNow()) {
         case STATUS_SAVED:
         case STATUS_UNSAVED: {
-          final var snapshotOpt = this.controller.compositionSnapshot();
-          if (snapshotOpt.isEmpty()) {
-            return;
-          }
-
-          final var snapshot = snapshotOpt.get();
-          this.identifier.setText(snapshot.graph().id().toString());
-
-          final var meta = snapshot.metadata();
-          this.creator.setText(
-            meta.findValueOrDefault("dc:creator", ""));
-          this.date.setText(
-            meta.findValueOrDefault("dc:date", ""));
-          this.publisher.setText(
-            meta.findValueOrDefault("dc:publisher", ""));
-          this.rights.setText(
-            meta.findValueOrDefault("dc:rights", ""));
-          this.source.setText(
-            meta.findValueOrDefault("dc:source", ""));
-          this.title.setText(
-            meta.findValueOrDefault("dc:title", ""));
+          this.configureFieldsForMetadata(
+            this.controller.compositionSnapshot()
+              .orElseThrow()
+              .metadata()
+              .read()
+          );
           break;
         }
-
         case STATUS_NOT_LOADED: {
           for (final var field : this.fields) {
             field.clear();

@@ -18,4 +18,12 @@
   <description>Olivebench (Strings)</description>
   <url>http://github.com/io7m/olivebench</url>
 
+  <dependencies>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>com.io7m.olivebench.services.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+
 </project>

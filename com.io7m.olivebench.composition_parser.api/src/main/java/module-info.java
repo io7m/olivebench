@@ -30,6 +30,7 @@ module com.io7m.olivebench.composition_parser.api
   requires com.io7m.jlexing.core;
   requires com.io7m.olivebench.composition_parser.spi;
   requires com.io7m.olivebench.model;
+  requires com.io7m.olivebench.services.api;
   requires com.io7m.olivebench.strings;
   requires org.slf4j;
 

@@ -37,5 +37,5 @@ public interface OBRegionEventAddedType extends OBRegionEventType
   OBChannelType channel();
 
   @Override
-  OBRegionType region();
+  OBRegionType<?> region();
 }

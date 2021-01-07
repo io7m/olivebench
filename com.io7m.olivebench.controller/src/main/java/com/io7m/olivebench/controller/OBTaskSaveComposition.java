@@ -18,21 +18,44 @@ package com.io7m.olivebench.controller;
 
 import com.io7m.olivebench.composition_serializer.api.OBCompositionSerializersType;
 import com.io7m.olivebench.preferences.OBPreferencesControllerType;
+import com.io7m.olivebench.services.api.OBServiceDirectoryType;
+import com.io7m.olivebench.strings.OBStringsType;
+
+import java.nio.file.Path;
 
 public final class OBTaskSaveComposition implements OBControllerTaskType
 {
   private final OBController controller;
   private final OBCompositionSerializersType serializers;
   private final OBPreferencesControllerType preferences;
+  private final OBServiceDirectoryType services;
+  private final OBStringsType strings;
 
-  public OBTaskSaveComposition(
+  private OBTaskSaveComposition(
+    final OBServiceDirectoryType inServices,
     final OBController inController,
+    final OBStringsType inStrings,
     final OBCompositionSerializersType inSerializers,
     final OBPreferencesControllerType inPreferences)
   {
+    this.services = inServices;
+    this.strings = inStrings;
     this.controller = inController;
     this.serializers = inSerializers;
     this.preferences = inPreferences;
+  }
+
+  public static OBControllerTaskType create(
+    final OBServiceDirectoryType services,
+    final OBController inController)
+  {
+    return new OBTaskSaveComposition(
+      services,
+      inController,
+      services.requireService(OBStringsType.class),
+      services.requireService(OBCompositionSerializersType.class),
+      services.requireService(OBPreferencesControllerType.class)
+    );
   }
 
   @Override
@@ -45,12 +68,11 @@ public final class OBTaskSaveComposition implements OBControllerTaskType
   public void taskDo()
     throws OBTaskFailureException
   {
-    new OBTaskSaveAsComposition(
-      this.controller,
-      this.serializers,
-      this.preferences,
-      this.controller.composition().fileName().orElseThrow()
-    ).taskDo();
+    final var fileName =
+      this.controller.composition().fileName().read().orElseThrow();
+
+    OBTaskSaveAsComposition.create(this.services, this.controller, fileName)
+      .taskDo();
   }
 
   @Override

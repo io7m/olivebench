@@ -19,7 +19,7 @@ package com.io7m.olivebench.composition_parser.spi;
 import com.io7m.blackthorne.api.BTElementHandlerType;
 import com.io7m.jxe.core.JXESchemaDefinition;
 import com.io7m.olivebench.model.OBCompositionType;
-import com.io7m.olivebench.strings.OBStringsType;
+import com.io7m.olivebench.services.api.OBServiceDirectoryType;
 
 /**
  * The SPI implemented by parsers.
@@ -42,11 +42,11 @@ public interface OBCompositionSPIParsersType
   JXESchemaDefinition schema();
 
   /**
-   * @param strings The string
+   * @param services A service directory
    *
    * @return A content handler for parsing documents
    */
 
   BTElementHandlerType<?, OBCompositionType> createHandler(
-    OBStringsType strings);
+    OBServiceDirectoryType services);
 }

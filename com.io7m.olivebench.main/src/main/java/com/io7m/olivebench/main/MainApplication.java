@@ -16,6 +16,7 @@
 
 package com.io7m.olivebench.main;
 
+import com.io7m.olivebench.controller.OBControllerType;
 import com.io7m.olivebench.strings.OBStrings;
 import com.io7m.olivebench.ui.OBMainViewController;
 import javafx.application.Application;
@@ -26,6 +27,10 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.file.Path;
+import java.util.Objects;
+import java.util.Optional;
+
 /**
  * The main application.
  */
@@ -35,13 +40,12 @@ public final class MainApplication extends Application
   private static final Logger LOG =
     LoggerFactory.getLogger(MainApplication.class);
 
-  /**
-   * Construct an application.
-   */
+  private final Optional<Path> openFile;
 
-  public MainApplication()
+  public MainApplication(
+    final Optional<Path> inOpenFile)
   {
-
+    this.openFile = Objects.requireNonNull(inOpenFile, "openFile");
   }
 
   @Override
@@ -50,6 +54,8 @@ public final class MainApplication extends Application
   {
     LOG.debug("starting application");
 
+    final var mainServices =
+      MainServices.create();
     final var mainXML =
       OBMainViewController.class.getResource("olivebench.fxml");
     final var loader =
@@ -64,6 +70,12 @@ public final class MainApplication extends Application
     stage.titleProperty().setValue("Olivebench");
     stage.show();
 
+    controller.setServices(mainServices);
     controller.setStage(stage);
+
+    this.openFile.ifPresent(path -> {
+      mainServices.requireService(OBControllerType.class)
+        .openComposition(path);
+    });
   }
 }

@@ -16,35 +16,50 @@
 
 package com.io7m.olivebench.model.graph;
 
-import com.io7m.jregions.core.parameterized.areas.PAreaL;
-import com.io7m.olivebench.model.names.OBName;
+import com.io7m.olivebench.model.properties.OBProperty;
+import com.io7m.olivebench.model.properties.OBPropertyType;
+import com.io7m.olivebench.services.api.OBServiceDirectoryType;
 import com.io7m.olivebench.strings.OBStringsType;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public final class OBChannel extends OBAbstractNode implements OBChannelType
 {
+  private final OBPropertyType<OBChannelMetadata> channelMetadata;
+
   private OBChannel(
     final OBCompositionGraphType inGraph,
     final OBStringsType inStrings,
     final UUID inId,
-    final OBName inName)
+    final OBNodeMetadata nodeMetadata,
+    final OBChannelMetadata channelMetadata)
   {
     super(
       inGraph,
       inStrings,
       inId,
-      PAreaL.of(0L, 0L, 0L, 0L),
-      inName);
+      nodeMetadata
+    );
+
+    this.channelMetadata =
+      OBProperty.create(
+        Objects.requireNonNull(channelMetadata, "channelMetadata"));
   }
 
   public static OBChannelType create(
-    final OBCompositionGraphType inGraph,
-    final OBStringsType inStrings,
-    final UUID inId,
-    final OBName inName)
+    final OBServiceDirectoryType services,
+    final OBCompositionGraphType graph,
+    final UUID id,
+    final OBNodeMetadata nodeMetadata,
+    final OBChannelMetadata channelMetadata)
   {
-    return new OBChannel(inGraph, inStrings, inId, inName);
+    return new OBChannel(
+      graph,
+      services.requireService(OBStringsType.class),
+      id,
+      nodeMetadata,
+      channelMetadata);
   }
 
   @Override
@@ -59,6 +74,12 @@ public final class OBChannel extends OBAbstractNode implements OBChannelType
     return String.format(
       "[OBChannel %s '%s']",
       this.id(),
-      super.name().value());
+      super.nodeMetadata().read().name().value());
+  }
+
+  @Override
+  public OBPropertyType<OBChannelMetadata> channelMetadata()
+  {
+    return this.channelMetadata;
   }
 }

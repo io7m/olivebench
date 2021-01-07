@@ -42,8 +42,8 @@ public final class OBMetadatas
    * @return Updated metadata
    */
 
-  public static OBMetadata put(
-    final OBMetadata data,
+  public static OBCompositionMetadata put(
+    final OBCompositionMetadata data,
     final String key,
     final String value)
   {
@@ -53,7 +53,7 @@ public final class OBMetadatas
         .filter(property -> !Objects.equals(property.name(), key));
     final var with =
       Stream.of(OBMetadataProperty.of(key, value));
-    return OBMetadata.of(
+    return OBCompositionMetadata.of(
       Stream.concat(without, with)
         .collect(Collectors.toList()));
   }

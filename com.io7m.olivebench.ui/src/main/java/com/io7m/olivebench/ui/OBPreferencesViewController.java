@@ -16,7 +16,7 @@
 
 package com.io7m.olivebench.ui;
 
-import com.io7m.olivebench.controller.OBControllerType;
+import com.io7m.olivebench.services.api.OBServiceDirectoryType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +40,7 @@ public final class OBPreferencesViewController implements OBViewControllerType
 
   @Override
   public void initialize(
-    final OBControllerType controller)
+    final OBServiceDirectoryType services)
   {
 
   }

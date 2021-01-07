@@ -16,7 +16,12 @@
 
 package com.io7m.olivebench.main;
 
-import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.stage.Stage;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Optional;
 
 /**
  * The main application entry point.
@@ -32,6 +37,21 @@ public final class Main
   public static void main(
     final String[] args)
   {
-    Application.launch(MainApplication.class, args);
+    final Optional<Path> openFile;
+    if (args.length > 0) {
+      openFile = Optional.of(Paths.get(args[0]));
+    } else {
+      openFile = Optional.empty();
+    }
+
+    Platform.startup(() -> {
+      try {
+        final Stage stage = new Stage();
+        final var mainApplication = new MainApplication(openFile);
+        mainApplication.start(stage);
+      } catch (final Exception e) {
+        throw new IllegalStateException(e);
+      }
+    });
   }
 }

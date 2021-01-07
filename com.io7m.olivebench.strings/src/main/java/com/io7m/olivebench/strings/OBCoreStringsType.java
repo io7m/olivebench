@@ -22,13 +22,19 @@ public interface OBCoreStringsType extends OBStringResourcesType
 
   String composition();
 
+  String existingType();
+
   String identifier();
 
   String name();
 
+  String newType();
+
+  String noteBlock();
+
   String region();
 
-  String existingType();
+  String metadata();
 
-  String newType();
+  String channels();
 }

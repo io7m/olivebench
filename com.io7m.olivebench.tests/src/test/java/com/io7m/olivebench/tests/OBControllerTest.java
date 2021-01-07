@@ -33,6 +33,8 @@ import com.io7m.olivebench.model.names.OBName;
 import com.io7m.olivebench.preferences.OBPreferencesControllerType;
 import com.io7m.olivebench.preferences.OBPreferencesType;
 import com.io7m.olivebench.preferences.OBPreferencesUndoType;
+import com.io7m.olivebench.services.api.OBServiceDirectory;
+import com.io7m.olivebench.services.api.OBServiceDirectoryType;
 import com.io7m.olivebench.strings.OBStrings;
 import com.io7m.olivebench.strings.OBStringsType;
 import io.reactivex.rxjava3.core.Observable;
@@ -69,6 +71,7 @@ public final class OBControllerTest
   private OBPreferencesControllerType preferencesController;
   private OBPreferencesUndoType preferencesUndo;
   private OBPreferencesType preferences;
+  private OBServiceDirectory services;
 
   private static void checkEvents(
     final List<? extends Class<?>> eventClasses,
@@ -116,12 +119,22 @@ public final class OBControllerTest
   public void testSetup()
     throws IOException
   {
+    this.strings = OBStrings.of(OBStrings.getResourceBundle());
+    this.parsers = OBCompositionParsers.create();
+    this.serializers = OBCompositionSerializers.create();
+
     this.preferencesController =
       Mockito.mock(OBPreferencesControllerType.class);
     this.preferences =
       Mockito.mock(OBPreferencesType.class);
     this.preferencesUndo =
       Mockito.mock(OBPreferencesUndoType.class);
+
+    this.services = new OBServiceDirectory();
+    this.services.register(OBCompositionParsersType.class, this.parsers);
+    this.services.register(OBCompositionSerializersType.class, this.serializers);
+    this.services.register(OBStringsType.class, this.strings);
+    this.services.register(OBPreferencesControllerType.class, this.preferencesController);
 
     Mockito.when(this.preferencesController.preferences())
       .thenReturn(this.preferences);
@@ -130,21 +143,13 @@ public final class OBControllerTest
     Mockito.when(Integer.valueOf(this.preferencesUndo.historySize()))
       .thenReturn(Integer.valueOf(100));
 
-    this.strings = OBStrings.of(OBStrings.getResourceBundle());
-    this.parsers = OBCompositionParsers.create();
-    this.serializers = OBCompositionSerializers.create();
     this.eventLog = Collections.synchronizedList(new LinkedList<>());
     this.directory = OBTestDirectories.createTempDirectory();
   }
 
   private OBController createController()
   {
-    return OBController.create(
-      this.strings,
-      this.parsers,
-      this.serializers,
-      this.preferencesController
-    );
+    return OBController.create(this.services);
   }
 
   @Test

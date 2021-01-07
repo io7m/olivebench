@@ -17,18 +17,21 @@
 package com.io7m.olivebench.controller;
 
 import com.io7m.olivebench.model.OBCompositionReadableType;
-import com.io7m.olivebench.model.metadata.OBMetadata;
+import com.io7m.olivebench.model.graph.OBChannelMetadata;
+import com.io7m.olivebench.model.metadata.OBCompositionMetadata;
 import com.io7m.olivebench.model.names.OBName;
+import com.io7m.olivebench.services.api.OBServiceType;
 import com.io7m.olivebench.strings.OBStringsType;
 import io.reactivex.rxjava3.core.Observable;
 
 import java.io.Closeable;
 import java.nio.file.Path;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
-public interface OBControllerType extends Closeable
+public interface OBControllerType extends Closeable, OBServiceType
 {
   CompletableFuture<?> newComposition();
 
@@ -54,7 +57,12 @@ public interface OBControllerType extends Closeable
 
   Optional<OBCompositionReadableType> compositionSnapshot();
 
+  CompletableFuture<?> updateChannelMetadata(
+    UUID channelId,
+    Function<OBChannelMetadata, OBChannelMetadata> updater
+  );
+
   CompletableFuture<?> updateMetadata(
-    Function<OBMetadata, OBMetadata> updater
+    Function<OBCompositionMetadata, OBCompositionMetadata> updater
   );
 }

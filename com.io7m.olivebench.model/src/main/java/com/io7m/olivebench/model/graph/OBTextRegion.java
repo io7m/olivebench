@@ -16,54 +16,49 @@
 
 package com.io7m.olivebench.model.graph;
 
-import com.io7m.jregions.core.parameterized.areas.PAreaL;
-import com.io7m.olivebench.model.names.OBName;
-import com.io7m.olivebench.model.spaces.OBSpaceRegionType;
+import com.io7m.olivebench.services.api.OBServiceDirectoryType;
 import com.io7m.olivebench.strings.OBStringsType;
 
-import java.util.Objects;
 import java.util.UUID;
 
-public final class OBTextRegion
-  extends OBAbstractRegion implements OBTextRegionType
-{
-  private volatile String text = "";
+import static com.io7m.olivebench.model.graph.OBRegionType.OBDecorativeRegionType.OBTextRegionType;
 
+public final class OBTextRegion
+  extends OBAbstractRegion<OBTextRegionData> implements OBTextRegionType
+{
   private OBTextRegion(
     final OBCompositionGraphType inGraph,
     final OBStringsType inStrings,
     final UUID inId,
-    final PAreaL<OBSpaceRegionType> area,
-    final OBName inName)
+    final OBNodeMetadata inMetadata,
+    final OBTextRegionData inData)
   {
-    super(inGraph, inStrings, inId, area, inName);
+    super(inGraph, inStrings, inId, inMetadata, inData);
   }
 
   public static OBTextRegionType create(
-    final OBCompositionGraphType inGraph,
-    final OBStringsType inStrings,
-    final UUID inId,
-    final PAreaL<OBSpaceRegionType> area)
+    final OBServiceDirectoryType services,
+    final OBCompositionGraphType graph,
+    final UUID id,
+    final OBNodeMetadata nodeMetadata,
+    final OBTextRegionData regionData)
   {
-    return new OBTextRegion(inGraph, inStrings, inId, area, OBName.of(""));
+    return new OBTextRegion(
+      graph,
+      services.requireService(OBStringsType.class),
+      id,
+      nodeMetadata,
+      regionData
+    );
   }
 
   @Override
   public String toString()
   {
-    return String.format("[OBTextRegion %s '%s']", this.id(), this.text);
-  }
-
-  @Override
-  public String text()
-  {
-    return this.text;
-  }
-
-  @Override
-  public void setText(
-    final String newText)
-  {
-    this.text = Objects.requireNonNull(newText, "text");
+    return String.format(
+      "[OBTextRegion %s '%s']",
+      this.id(),
+      this.text()
+    );
   }
 }

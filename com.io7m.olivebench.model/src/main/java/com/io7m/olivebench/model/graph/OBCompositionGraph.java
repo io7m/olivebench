@@ -18,14 +18,13 @@ package com.io7m.olivebench.model.graph;
 
 import com.io7m.jaffirm.core.Invariants;
 import com.io7m.jaffirm.core.Preconditions;
-import com.io7m.jregions.core.parameterized.areas.PAreaL;
 import com.io7m.olivebench.exceptions.OBDuplicateException;
 import com.io7m.olivebench.exceptions.OBException;
 import com.io7m.olivebench.model.OBCompositionEvents;
-import com.io7m.olivebench.model.names.OBName;
-import com.io7m.olivebench.model.spaces.OBSpaceRegionType;
+import com.io7m.olivebench.services.api.OBServiceDirectoryType;
 import com.io7m.olivebench.strings.OBStringsType;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import io.reactivex.rxjava3.subjects.Subject;
 import net.jcip.annotations.NotThreadSafe;
@@ -45,53 +44,109 @@ public final class OBCompositionGraph implements OBCompositionGraphType
 {
   private final AsUnmodifiableGraph<OBCompositionNodeType, OBCompositionEdge> graphRead;
   private final DirectedAcyclicGraph<OBCompositionNodeType, OBCompositionEdge> graph;
+  private final HashMap<UUID, Disposable> subscriptions;
   private final HashMap<UUID, OBCompositionNodeType> nodes;
   private final Map<UUID, OBCompositionNodeType> nodesRead;
   private final OBCompositionEvents eventFactory;
-  private final OBCompositionRoot root;
+  private final OBServiceDirectoryType services;
   private final OBStringsType strings;
   private final Subject<OBGraphEventType> eventSubject;
+  private volatile OBCompositionRoot root;
 
   private OBCompositionGraph(
-    final OBStringsType inStrings,
-    final UUID inId)
+    final AsUnmodifiableGraph<OBCompositionNodeType, OBCompositionEdge> graphRead,
+    final DirectedAcyclicGraph<OBCompositionNodeType, OBCompositionEdge> graph,
+    final HashMap<UUID, OBCompositionNodeType> nodes,
+    final HashMap<UUID, Disposable> subscriptions,
+    final Map<UUID, OBCompositionNodeType> nodesRead,
+    final OBCompositionEvents eventFactory,
+    final Subject<OBGraphEventType> eventSubject,
+    final OBServiceDirectoryType services,
+    final OBStringsType strings)
   {
-    this.strings = Objects.requireNonNull(inStrings, "strings");
-    Objects.requireNonNull(inId, "id");
-
-    this.eventSubject =
-      PublishSubject.<OBGraphEventType>create()
-        .toSerialized();
     this.eventFactory =
-      new OBCompositionEvents(this.strings);
-
+      Objects.requireNonNull(eventFactory, "eventFactory");
+    this.eventSubject =
+      Objects.requireNonNull(eventSubject, "eventSubject");
     this.graph =
-      new DirectedAcyclicGraph<>(OBCompositionEdge.class);
+      Objects.requireNonNull(graph, "graph");
     this.graphRead =
-      new AsUnmodifiableGraph<>(this.graph);
-
+      Objects.requireNonNull(graphRead, "graphRead");
     this.nodes =
-      new HashMap<>(1024);
+      Objects.requireNonNull(nodes, "nodes");
     this.nodesRead =
-      Collections.unmodifiableMap(this.nodes);
-    this.root =
-      new OBCompositionRoot(this, inStrings, inId);
-
-    this.nodes.put(this.root.id(), this.root);
-    this.graph.addVertex(this.root);
+      Objects.requireNonNull(nodesRead, "nodesRead");
+    this.services =
+      Objects.requireNonNull(services, "services");
+    this.subscriptions =
+      Objects.requireNonNull(subscriptions, "subscriptions");
+    this.strings =
+      Objects.requireNonNull(strings, "strings");
   }
 
   public static OBCompositionGraphType create(
-    final OBStringsType inStrings)
+    final OBServiceDirectoryType services)
   {
-    return new OBCompositionGraph(inStrings, UUID.randomUUID());
+    return createWith(services, UUID.randomUUID());
   }
 
   public static OBCompositionGraphType createWith(
-    final OBStringsType strings,
+    final OBServiceDirectoryType services,
     final UUID id)
   {
-    return new OBCompositionGraph(strings, id);
+    Objects.requireNonNull(services, "services");
+    Objects.requireNonNull(id, "id");
+
+    final var strings =
+      services.requireService(OBStringsType.class);
+
+    final var eventSubject =
+      PublishSubject.<OBGraphEventType>create().toSerialized();
+    final var eventFactory =
+      new OBCompositionEvents(strings);
+
+    final var graph =
+      new DirectedAcyclicGraph<OBCompositionNodeType, OBCompositionEdge>(
+        OBCompositionEdge.class);
+    final var graphRead =
+      new AsUnmodifiableGraph<>(graph);
+
+    final var nodes =
+      new HashMap<UUID, OBCompositionNodeType>(1024);
+    final var subscriptions =
+      new HashMap<UUID, Disposable>(1024);
+    final var nodesRead =
+      Collections.unmodifiableMap(nodes);
+
+    final var compositionGraph =
+      new OBCompositionGraph(
+        graphRead,
+        graph,
+        nodes,
+        subscriptions,
+        nodesRead,
+        eventFactory,
+        eventSubject,
+        services,
+        strings
+      );
+
+    final var root = new OBCompositionRoot(compositionGraph, strings, id);
+    compositionGraph.setRoot(root);
+    return compositionGraph;
+  }
+
+  private void setRoot(
+    final OBCompositionRoot newRoot)
+  {
+    Preconditions.checkPreconditionV(
+      this.root == null,
+      "Root must not have been set"
+    );
+
+    this.root = Objects.requireNonNull(newRoot, "root");
+    this.nodes.put(newRoot.id(), newRoot);
+    this.graph.addVertex(newRoot);
   }
 
   private void announce(
@@ -155,35 +210,64 @@ public final class OBCompositionGraph implements OBCompositionGraphType
 
   @Override
   public OBChannelType createChannel(
-    final UUID channelId,
-    final OBName name)
+    final UUID id,
+    final OBNodeMetadata nodeMetadata,
+    final OBChannelMetadata channelMetadata)
     throws OBException
   {
-    Objects.requireNonNull(channelId, "channelId");
-    Objects.requireNonNull(name, "name");
+    Objects.requireNonNull(id, "id");
+    Objects.requireNonNull(nodeMetadata, "nodeMetadata");
+    Objects.requireNonNull(channelMetadata, "channelMetadata");
 
-    final var existing = this.nodes.get(channelId);
-    if (this.nodes.containsKey(channelId)) {
+    final var existing = this.nodes.get(id);
+    if (this.nodes.containsKey(id)) {
       throw OBDuplicateException.objectDuplicate(
         this.strings,
         existing.type(),
-        channelId.toString()
+        id.toString()
       );
     }
 
-    final var channel = this.makeChannel(name, channelId);
+    final var channel = this.makeChannel(id, nodeMetadata, channelMetadata);
     this.announce(this.eventFactory.graphNodeAdded(this.root, channel));
+    this.subscribe(channel);
     return channel;
+  }
+
+  private void subscribe(
+    final OBCompositionNodeType node)
+  {
+    Preconditions.checkPreconditionV(
+      !this.subscriptions.containsKey(node.id()),
+      "Subscription cannot exist for %s",
+      node.id()
+    );
+
+    final var nodeSub =
+      node.changes().subscribe(ignored -> {
+        this.eventSubject.onNext(
+          OBGraphNodeModifiedEvent.builder()
+            .setMessage(this.strings.nodeModified())
+            .setNodeTarget(node)
+            .build()
+        );
+      });
+
+    this.subscriptions.put(node.id(), nodeSub);
   }
 
   @Override
   public OBChannelType createChannel(
-    final OBName name)
+    final OBNodeMetadata nodeMetadata,
+    final OBChannelMetadata channelMetadata)
   {
-    Objects.requireNonNull(name, "name");
+    Objects.requireNonNull(nodeMetadata, "nodeMetadata");
+    Objects.requireNonNull(channelMetadata, "channelMetadata");
 
-    final var channel = this.makeChannel(name, this.createId());
+    final var channel =
+      this.makeChannel(this.createId(), nodeMetadata, channelMetadata);
     this.announce(this.eventFactory.graphNodeAdded(this.root, channel));
+    this.subscribe(channel);
     return channel;
   }
 
@@ -217,7 +301,21 @@ public final class OBCompositionGraph implements OBCompositionGraphType
 
     this.graph.removeVertex(node);
     this.nodes.remove(node.id());
+    this.unsubscribe(node);
     this.announce(this.eventFactory.graphNodeRemoved(edge.nodeSource(), node));
+  }
+
+  private void unsubscribe(
+    final OBCompositionNodeType node)
+  {
+    Preconditions.checkPreconditionV(
+      this.subscriptions.containsKey(node.id()),
+      "Subscription must exist for %s",
+      node.id()
+    );
+
+    final var subscription = this.subscriptions.remove(node.id());
+    subscription.dispose();
   }
 
   @Override
@@ -229,15 +327,23 @@ public final class OBCompositionGraph implements OBCompositionGraphType
   }
 
   private OBChannelType makeChannel(
-    final OBName name,
-    final UUID channelId)
+    final UUID id,
+    final OBNodeMetadata nodeMetadata,
+    final OBChannelMetadata channelMetadata)
   {
     final var channel =
-      OBChannel.create(this, this.strings, channelId, name);
+      OBChannel.create(
+        this.services,
+        this,
+        id,
+        nodeMetadata,
+        channelMetadata
+      );
+
     final var edge = OBCompositionEdge.of(this.root, channel);
     this.graph.addVertex(channel);
     this.graph.addEdge(this.root, channel, edge);
-    this.nodes.put(channelId, channel);
+    this.nodes.put(id, channel);
     return channel;
   }
 
@@ -271,17 +377,44 @@ public final class OBCompositionGraph implements OBCompositionGraphType
   }
 
   @Override
-  public <T extends OBRegionType> T createRegion(
+  public <A, T extends OBRegionType<A>> T createRegion(
+    final OBCompositionNodeType owner,
+    final OBNodeMetadata nodeMetadata,
+    final OBRegionConstructorType<A, T> constructor,
+    final A regionData)
+  {
+    Objects.requireNonNull(owner, "owner");
+    Objects.requireNonNull(nodeMetadata, "nodeMetadata");
+    Objects.requireNonNull(constructor, "constructor");
+    Objects.requireNonNull(regionData, "regionData");
+
+    final T region =
+      this.makeRegion(
+        owner,
+        this.createId(),
+        nodeMetadata,
+        constructor,
+        regionData
+      );
+    this.announce(this.eventFactory.graphNodeAdded(owner, region));
+    this.subscribe(region);
+    return region;
+  }
+
+  @Override
+  public <A, T extends OBRegionType<A>> T createRegion(
     final OBCompositionNodeType owner,
     final UUID id,
-    final PAreaL<OBSpaceRegionType> area,
-    final OBRegionConstructorType<T> constructor)
+    final OBNodeMetadata nodeMetadata,
+    final OBRegionConstructorType<A, T> constructor,
+    final A regionData)
     throws OBException
   {
     Objects.requireNonNull(owner, "owner");
     Objects.requireNonNull(id, "id");
-    Objects.requireNonNull(area, "area");
+    Objects.requireNonNull(nodeMetadata, "nodeMetadata");
     Objects.requireNonNull(constructor, "constructor");
+    Objects.requireNonNull(regionData, "regionData");
 
     final var existing = this.nodes.get(id);
     if (this.nodes.containsKey(id)) {
@@ -292,31 +425,25 @@ public final class OBCompositionGraph implements OBCompositionGraphType
       );
     }
 
-    final var region = this.makeRegion(owner, area, constructor, id);
+    final var region =
+      this.makeRegion(
+        owner,
+        id,
+        nodeMetadata,
+        constructor,
+        regionData
+      );
     this.announce(this.eventFactory.graphNodeAdded(owner, region));
+    this.subscribe(region);
     return region;
   }
 
-  @Override
-  public <T extends OBRegionType> T createRegion(
+  private <A, T extends OBRegionType<A>> T makeRegion(
     final OBCompositionNodeType owner,
-    final PAreaL<OBSpaceRegionType> area,
-    final OBRegionConstructorType<T> constructor)
-  {
-    Objects.requireNonNull(owner, "owner");
-    Objects.requireNonNull(area, "area");
-    Objects.requireNonNull(constructor, "constructor");
-
-    final T region = this.makeRegion(owner, area, constructor, this.createId());
-    this.announce(this.eventFactory.graphNodeAdded(owner, region));
-    return region;
-  }
-
-  private <T extends OBRegionType> T makeRegion(
-    final OBCompositionNodeType owner,
-    final PAreaL<OBSpaceRegionType> area,
-    final OBRegionConstructorType<T> constructor,
-    final UUID id)
+    final UUID id,
+    final OBNodeMetadata nodeMetadata,
+    final OBRegionConstructorType<A, T> constructor,
+    final A regionData)
   {
     final var existingOwner = this.nodes.get(owner.id());
     Preconditions.checkPreconditionV(
@@ -329,7 +456,8 @@ public final class OBCompositionGraph implements OBCompositionGraphType
       owner
     );
 
-    final var region = constructor.construct(this, id, area);
+    final var region =
+      constructor.construct(this.services, this, id, nodeMetadata, regionData);
     final var edge = OBCompositionEdge.of(owner, region);
     this.graph.addVertex(region);
     this.graph.addEdge(owner, region, edge);

@@ -16,10 +16,13 @@
 
 package com.io7m.olivebench.ui;
 
-import com.io7m.olivebench.controller.OBControllerType;
+import com.io7m.olivebench.services.api.OBServiceDirectoryType;
+
+import java.io.IOException;
 
 public interface OBViewControllerType
 {
   void initialize(
-    OBControllerType controller);
+    OBServiceDirectoryType services)
+    throws IOException;
 }

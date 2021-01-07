@@ -149,4 +149,13 @@ public final class OBCompositionSerializers implements
       this.serializer.close();
     }
   }
+
+  @Override
+  public String toString()
+  {
+    return String.format(
+      "[OBCompositionSerializers 0x%s]",
+      Integer.toUnsignedString(System.identityHashCode(this), 16)
+    );
+  }
 }

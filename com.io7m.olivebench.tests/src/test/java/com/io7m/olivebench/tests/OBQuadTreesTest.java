@@ -43,7 +43,7 @@ public final class OBQuadTreesTest
     final var nodeId =
       UUID.randomUUID();
 
-    Mockito.when(node.areaRelative()).thenReturn(nodeArea);
+    Mockito.when(node.nodeArea()).thenReturn(nodeArea);
     Mockito.when(node.id()).thenReturn(nodeId);
     return node;
   }
@@ -60,7 +60,7 @@ public final class OBQuadTreesTest
     final var rootArea =
       PAreaL.<OBSpaceRegionType>of(0L, 1L, 0L, 1L);
 
-    Mockito.when(root.areaRelative()).thenReturn(rootArea);
+    Mockito.when(root.nodeArea()).thenReturn(rootArea);
     graph.addVertex(root);
 
     final var trees = new OBQuadTrees(graph, root);

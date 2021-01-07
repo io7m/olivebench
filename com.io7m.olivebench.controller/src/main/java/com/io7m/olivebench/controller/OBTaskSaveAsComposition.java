@@ -18,6 +18,8 @@ package com.io7m.olivebench.controller;
 
 import com.io7m.olivebench.composition_serializer.api.OBCompositionSerializersType;
 import com.io7m.olivebench.preferences.OBPreferencesControllerType;
+import com.io7m.olivebench.services.api.OBServiceDirectoryType;
+import com.io7m.olivebench.strings.OBStringsType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,35 +35,50 @@ public final class OBTaskSaveAsComposition implements OBControllerTaskType
   private final OBCompositionSerializersType serializers;
   private final Path file;
   private final OBPreferencesControllerType preferences;
+  private final OBStringsType strings;
 
   public OBTaskSaveAsComposition(
     final OBController inController,
     final OBCompositionSerializersType inSerializers,
     final OBPreferencesControllerType inPreferences,
+    final OBStringsType inStrings,
     final Path inFile)
   {
     this.controller = inController;
     this.serializers = inSerializers;
     this.preferences = inPreferences;
+    this.strings = inStrings;
     this.file = inFile;
+  }
+
+  public static OBControllerTaskType create(
+    final OBServiceDirectoryType services,
+    final OBController controller,
+    final Path file)
+  {
+    return new OBTaskSaveAsComposition(
+      controller,
+      services.requireService(OBCompositionSerializersType.class),
+      services.requireService(OBPreferencesControllerType.class),
+      services.requireService(OBStringsType.class),
+      file
+    );
   }
 
   @Override
   public String name()
   {
-    return this.controller.strings().controllerSaveComposition();
+    return this.strings.controllerSaveComposition();
   }
 
   @Override
   public void taskDo()
     throws OBTaskFailureException
   {
-    final var strings = this.controller.strings();
-
     this.controller.publishEvent(
       OBControllerEventTaskProgressChanged.of(
         this.name(),
-        strings.controllerSaveCompositionSaving(this.file),
+        this.strings.controllerSaveCompositionSaving(this.file),
         OptionalDouble.empty(),
         OptionalDouble.empty()
       ));
@@ -88,7 +105,7 @@ public final class OBTaskSaveAsComposition implements OBControllerTaskType
       throw new OBTaskFailureException(
         e,
         OBControllerEventTaskFailed.builder()
-          .setTitle(strings.controllerOpenCompositionFailed())
+          .setTitle(this.strings.controllerOpenCompositionFailed())
           .setMessage(e.getMessage())
           .setException(e)
           .build()

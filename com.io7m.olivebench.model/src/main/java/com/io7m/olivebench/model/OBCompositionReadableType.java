@@ -17,7 +17,8 @@
 package com.io7m.olivebench.model;
 
 import com.io7m.olivebench.model.graph.OBCompositionGraphReadableType;
-import com.io7m.olivebench.model.metadata.OBMetadata;
+import com.io7m.olivebench.model.metadata.OBCompositionMetadata;
+import com.io7m.olivebench.model.properties.OBPropertyReadableType;
 import io.reactivex.rxjava3.core.Observable;
 
 import java.nio.file.Path;
@@ -25,13 +26,13 @@ import java.util.Optional;
 
 public interface OBCompositionReadableType
 {
-  OBMetadata metadata();
-
   OBCompositionGraphReadableType graph();
 
   OBCompositionReadableType snapshot();
 
   Observable<OBCompositionEventType> events();
 
-  Optional<Path> fileName();
+  OBPropertyReadableType<OBCompositionMetadata> metadata();
+
+  OBPropertyReadableType<Optional<Path>> fileName();
 }

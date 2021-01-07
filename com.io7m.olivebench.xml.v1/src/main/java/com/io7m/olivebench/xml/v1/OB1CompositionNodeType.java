@@ -16,8 +16,7 @@
 
 package com.io7m.olivebench.xml.v1;
 
-import com.io7m.jregions.core.parameterized.areas.PAreaL;
-import com.io7m.olivebench.model.names.OBName;
+import com.io7m.olivebench.model.graph.OBNodeMetadata;
 
 import java.util.UUID;
 
@@ -25,7 +24,5 @@ public interface OB1CompositionNodeType
 {
   UUID id();
 
-  OBName name();
-
-  PAreaL<?> area();
+  OBNodeMetadata nodeMetadata();
 }

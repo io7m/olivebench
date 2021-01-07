@@ -14,17 +14,29 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.olivebench.model.graph;
+package com.io7m.olivebench.ui;
 
-public interface OBTextRegionType extends OBRegionType
+import javafx.scene.canvas.Canvas;
+
+public final class OBResizableCanvas extends Canvas
 {
-  @Override
-  default OBCompositionNodeKind kind()
+  public OBResizableCanvas()
   {
-    return OBCompositionNodeKind.TEXT_REGION;
+
   }
 
-  String text();
+  @Override
+  public boolean isResizable() {
+    return true;
+  }
 
-  void setText(String text);
+  @Override
+  public double prefWidth(final double height) {
+    return this.getWidth();
+  }
+
+  @Override
+  public double prefHeight(final double width) {
+    return this.getHeight();
+  }
 }

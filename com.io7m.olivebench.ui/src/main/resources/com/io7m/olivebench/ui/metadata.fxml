@@ -19,13 +19,15 @@
          <children>
             <HBox alignment="CENTER" layoutX="10.0" layoutY="10.0" prefHeight="32.0">
                <children>
-                  <Label prefHeight="32.0" prefWidth="128.0" text="%ui.metadata.identifier" HBox.hgrow="NEVER" />
+                  <Label alignment="CENTER_RIGHT" prefHeight="32.0" prefWidth="80.0" text="%ui.metadata.identifier" HBox.hgrow="NEVER" />
+                  <Region maxWidth="-Infinity" minWidth="-Infinity" prefWidth="8.0" />
                   <TextField fx:id="identifier" disable="true" editable="false" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="32.0" styleClass="metaField" HBox.hgrow="ALWAYS" />
                </children>
             </HBox>
             <HBox alignment="CENTER" prefHeight="32.0" VBox.vgrow="NEVER">
                <children>
-                  <Label prefHeight="32.0" prefWidth="128.0" text="%ui.metadata.title" HBox.hgrow="NEVER" />
+                  <Label alignment="CENTER_RIGHT" prefHeight="32.0" prefWidth="80.0" text="%ui.metadata.title" HBox.hgrow="NEVER" />
+                  <Region maxWidth="-Infinity" minWidth="-Infinity" prefWidth="8.0" />
                   <TextField fx:id="title" editable="false" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="32.0" styleClass="metaField" HBox.hgrow="ALWAYS" />
                   <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onMetadataFieldEditTitle" prefHeight="32.0" prefWidth="32.0">
                      <graphic>
@@ -43,7 +45,8 @@
             </HBox>
             <HBox alignment="CENTER" layoutX="10.0" layoutY="10.0" prefHeight="32.0" VBox.vgrow="NEVER">
                <children>
-                  <Label prefHeight="32.0" prefWidth="128.0" text="%ui.metadata.date" HBox.hgrow="NEVER" />
+                  <Label alignment="CENTER_RIGHT" prefHeight="32.0" prefWidth="80.0" text="%ui.metadata.date" HBox.hgrow="NEVER" />
+                  <Region maxWidth="-Infinity" minWidth="-Infinity" prefWidth="8.0" />
                   <TextField fx:id="date" editable="false" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="32.0" styleClass="metaField" HBox.hgrow="ALWAYS" />
                   <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onMetadataFieldEditDate" prefHeight="32.0" prefWidth="32.0">
                      <graphic>
@@ -73,7 +76,8 @@
             </HBox>
             <HBox alignment="CENTER" layoutX="10.0" layoutY="42.0" prefHeight="32.0">
                <children>
-                  <Label prefHeight="32.0" prefWidth="128.0" text="%ui.metadata.creator" HBox.hgrow="NEVER" />
+                  <Label alignment="CENTER_RIGHT" prefHeight="32.0" prefWidth="80.0" text="%ui.metadata.creator" HBox.hgrow="NEVER" />
+                  <Region maxWidth="-Infinity" minWidth="-Infinity" prefWidth="8.0" />
                   <TextField fx:id="creator" editable="false" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="32.0" styleClass="metaField" HBox.hgrow="ALWAYS" />
                   <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onMetadataFieldEditCreator" prefHeight="32.0" prefWidth="32.0">
                      <graphic>
@@ -91,7 +95,8 @@
             </HBox>
             <HBox alignment="CENTER" layoutX="10.0" layoutY="74.0" prefHeight="32.0">
                <children>
-                  <Label prefHeight="32.0" prefWidth="128.0" text="%ui.metadata.rights" HBox.hgrow="NEVER" />
+                  <Label alignment="CENTER_RIGHT" prefHeight="32.0" prefWidth="80.0" text="%ui.metadata.rights" HBox.hgrow="NEVER" />
+                  <Region maxWidth="-Infinity" minWidth="-Infinity" prefWidth="8.0" />
                   <TextField fx:id="rights" editable="false" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="32.0" styleClass="metaField" HBox.hgrow="ALWAYS" />
                   <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onMetadataFieldEditRights" prefHeight="32.0" prefWidth="32.0">
                      <graphic>
@@ -109,7 +114,8 @@
             </HBox>
             <HBox alignment="CENTER" layoutX="10.0" layoutY="106.0" prefHeight="32.0">
                <children>
-                  <Label prefHeight="32.0" prefWidth="128.0" text="%ui.metadata.publisher" HBox.hgrow="NEVER" />
+                  <Label alignment="CENTER_RIGHT" prefHeight="32.0" prefWidth="80.0" text="%ui.metadata.publisher" HBox.hgrow="NEVER" />
+                  <Region maxWidth="-Infinity" minWidth="-Infinity" prefWidth="8.0" />
                   <TextField fx:id="publisher" editable="false" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="32.0" styleClass="metaField" HBox.hgrow="ALWAYS" />
                   <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onMetadataFieldEditPublisher" prefHeight="32.0" prefWidth="32.0">
                      <graphic>
@@ -127,7 +133,8 @@
             </HBox>
             <HBox alignment="CENTER" layoutX="10.0" layoutY="138.0" prefHeight="32.0">
                <children>
-                  <Label prefHeight="32.0" prefWidth="128.0" text="%ui.metadata.source" HBox.hgrow="NEVER" />
+                  <Label alignment="CENTER_RIGHT" prefHeight="32.0" prefWidth="80.0" text="%ui.metadata.source" HBox.hgrow="NEVER" />
+                  <Region maxWidth="-Infinity" minWidth="-Infinity" prefWidth="8.0" />
                   <TextField fx:id="source" editable="false" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="32.0" styleClass="metaField" HBox.hgrow="ALWAYS" />
                   <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onMetadataFieldEditSource" prefHeight="32.0" prefWidth="32.0">
                      <graphic>

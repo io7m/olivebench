@@ -56,6 +56,41 @@
     </xsd:complexType>
   </xsd:element>
 
+  <xsd:element name="NodeMetadata">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="ob:Area"/>
+      </xsd:sequence>
+
+      <xsd:attribute name="name"
+                     type="ob:nameType"
+                     use="optional"
+                     default=""/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="ChannelMetadata">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="ob:Color"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="Color">
+    <xsd:complexType>
+      <xsd:attribute name="red"
+                     type="xsd:double"
+                     use="required"/>
+      <xsd:attribute name="green"
+                     type="xsd:double"
+                     use="required"/>
+      <xsd:attribute name="blue"
+                     type="xsd:double"
+                     use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
   <xsd:element name="Area">
     <xsd:complexType>
       <xsd:attribute name="minimumX"
@@ -75,13 +110,8 @@
 
   <xsd:complexType name="NodeType">
     <xsd:sequence>
-      <xsd:element ref="ob:Area"/>
+      <xsd:element ref="ob:NodeMetadata"/>
     </xsd:sequence>
-
-    <xsd:attribute name="name"
-                   type="ob:nameType"
-                   use="optional"
-                   default=""/>
     <xsd:attribute name="id"
                    type="ob:uuidType"
                    use="required"/>
@@ -98,7 +128,11 @@
   <xsd:element name="Channel">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="ob:NodeType"/>
+        <xsd:extension base="ob:NodeType">
+          <xsd:sequence>
+            <xsd:element ref="ob:ChannelMetadata"/>
+          </xsd:sequence>
+        </xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>

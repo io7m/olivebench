@@ -32,6 +32,7 @@
 .button,
 .check-box,
 .choice-box,
+.color-picker,
 .color-picker.split-button,
 .combo-box-base,
 .container,
@@ -50,6 +51,13 @@
   -fx-border-radius: 0 0 0 0;
 }
 
+.obCompositionScrollPane {
+  -fx-background-color: transparent;
+}
+.obCompositionScrollPane  .viewport {
+  -fx-background-color: transparent;
+}
+
 .tabButton {
   -fx-font-size: 8pt;
 }
@@ -62,4 +70,65 @@
 .metaField {
   -fx-font-size: 9pt;
   -fx-font-family: "Monospace";
+}
+
+.obRegion
+{
+
+}
+.obRegionTitlebarLabel
+{
+  -fx-font-size: 7pt;
+  -fx-font-family: "Monospace";
+  -fx-text-fill: rgb(0, 0, 0);
+}
+.obRegionSeparator
+{
+  -fx-background-color: rgb(255, 255, 255);
+  -fx-border-color: rgb(255, 255, 255);
+  -fx-border-insets: 0 0 0 0;
+  -fx-opacity: 80%;
+}
+.obRegionTitlebar
+{
+  -fx-background-color: rgb(255, 255, 255, 255);
+  -fx-border-color: rgb(255, 255, 255);
+  -fx-border-insets: 0 0 0 0;
+  -fx-opacity: 75%;
+}
+.obRegionContent
+{
+  -fx-background-color: rgb(255, 255, 255);
+  -fx-border-color: rgb(255, 255, 255);
+  -fx-border-insets: 0 0 0 0;
+  -fx-opacity: 50%;
+}
+
+#obCompositionArea
+{
+
+}
+
+#obCompositionScrollArea
+{
+
+}
+
+.obChannelListItem
+{
+
+}
+.obChannelListIcon
+{
+
+}
+.obChannelListColorPicker
+{
+  -fx-border-color: #404040;
+  -fx-border-insets: 0 0 0 0;
+}
+
+.obNoxious
+{
+  -fx-background-color: #ff00ff;
 }

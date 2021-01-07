@@ -25,26 +25,9 @@
   <inceptionYear>2020</inceptionYear>
 
   <modules>
-    <module>com.io7m.olivebench.composition_parser.api</module>
-    <module>com.io7m.olivebench.composition_parser.spi</module>
-    <module>com.io7m.olivebench.composition_serializer.api</module>
-    <module>com.io7m.olivebench.composition_serializer.spi</module>
-    <module>com.io7m.olivebench.controller</module>
-    <module>com.io7m.olivebench.events</module>
-    <module>com.io7m.olivebench.exceptions</module>
-    <module>com.io7m.olivebench.model</module>
-    <module>com.io7m.olivebench.presentable</module>
-    <module>com.io7m.olivebench.strings</module>
-    <module>com.io7m.olivebench.tests</module>
-    <module>com.io7m.olivebench.xml.v1</module>
-    <module>com.io7m.olivebench.ui</module>
-    <module>com.io7m.olivebench.main</module>
-    <module>com.io7m.olivebench.preferences</module>
-    <module>com.io7m.olivebench.services.api</module>
   </modules>
 
   <properties>
-    <com.codacy.id>da626820d81647cf88e5633d7812ccb8</com.codacy.id>
     <com.io7m.immutables.version>2.8.3</com.io7m.immutables.version>
     <com.io7m.jade.version>0.0.1</com.io7m.jade.version>
     <com.io7m.jspatial.version>3.0.0-beta0003</com.io7m.jspatial.version>

@@ -1,0 +1,410 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:dc="http://purl.org/dc/elements/1.1/"
+            xmlns:c="urn:com.io7m.olivebench:xml:1"
+            targetNamespace="urn:com.io7m.olivebench:xml:1"
+            elementFormDefault="qualified">
+
+  <xsd:import namespace="http://purl.org/dc/elements/1.1/"
+              schemaLocation="dc.xsd"/>
+  <xsd:import namespace="http://www.w3.org/XML/1998/namespace"
+              schemaLocation="xml.xsd"/>
+
+  <xsd:annotation>
+    <xsd:documentation>
+      A schema describing the format of Waxmill virtual machine configurations.
+    </xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:simpleType name="UuidType">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A UUID value.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:attributeGroup name="standardXMLAttributes">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        The standard elements expected to appear in XML texts.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute ref="xml:base"/>
+    <xsd:attribute ref="xml:lang"/>
+  </xsd:attributeGroup>
+
+  <xsd:element name="DCMetadata">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        An element containing Dublin Core metadata.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType>
+      <xsd:group ref="dc:elementsGroup"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="TimeConfiguration">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        An element containing timing information for the composition.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType>
+      <xsd:attribute name="ticksPerQuarterNote"
+                     type="xsd:unsignedInt"
+                     use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="Metadata">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        An element containing document metadata.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="c:DCMetadata"/>
+        <xsd:element ref="c:TimeConfiguration"/>
+      </xsd:sequence>
+      <xsd:attribute name="id"
+                     type="c:UuidType"
+                     use="required"/>
+      <xsd:attributeGroup ref="c:standardXMLAttributes"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="Color3F">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        An RGB value.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType>
+      <xsd:attribute name="red"
+                     type="xsd:double"
+                     use="required"/>
+      <xsd:attribute name="green"
+                     type="xsd:double"
+                     use="required"/>
+      <xsd:attribute name="blue"
+                     type="xsd:double"
+                     use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="Color4F">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        An RGBA value.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType>
+      <xsd:attribute name="red"
+                     type="xsd:double"
+                     use="required"/>
+      <xsd:attribute name="green"
+                     type="xsd:double"
+                     use="required"/>
+      <xsd:attribute name="blue"
+                     type="xsd:double"
+                     use="required"/>
+      <xsd:attribute name="alpha"
+                     type="xsd:double"
+                     use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="Area">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        An area with integer bounds.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType>
+      <xsd:attribute name="minimumX"
+                     type="xsd:long"
+                     use="required"/>
+      <xsd:attribute name="minimumY"
+                     type="xsd:long"
+                     use="required"/>
+      <xsd:attribute name="maximumX"
+                     type="xsd:long"
+                     use="required"/>
+      <xsd:attribute name="maximumY"
+                     type="xsd:long"
+                     use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:simpleType name="TimeSignatureLowerNumeral">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        The lower numeral of a time signature.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:restriction base="xsd:integer">
+      <xsd:minInclusive value="1"/>
+      <xsd:maxInclusive value="64"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="TimeSignatureUpperNumeral">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        The upper numeral of a time signature.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:restriction base="xsd:integer">
+      <xsd:minInclusive value="1"/>
+      <xsd:maxInclusive value="65535"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:element name="TimeSignature">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A time signature.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType>
+      <xsd:attribute name="lowerNumeral"
+                     type="c:TimeSignatureLowerNumeral"
+                     use="required"/>
+      <xsd:attribute name="upperNumeral"
+                     type="c:TimeSignatureUpperNumeral"
+                     use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:simpleType name="PitchSignificance">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        The significance of a pitch class.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="GREATER"/>
+      <xsd:enumeration value="LESSER"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:element name="SignificantPitchClass">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A significant pitch class.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType>
+      <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+
+      </xsd:sequence>
+
+      <xsd:attribute name="significance"
+                     type="c:PitchSignificance"
+                     use="required"/>
+      <xsd:attribute name="pitchClass"
+                     type="xsd:nonNegativeInteger"
+                     use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="KeySignature">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A key signature.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType>
+      <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="c:SignificantPitchClass"/>
+      </xsd:sequence>
+
+      <xsd:attribute name="notesPerOctave"
+                     type="xsd:positiveInteger"
+                     use="required"/>
+      <xsd:attribute name="pitchClassOffset"
+                     type="xsd:nonNegativeInteger"
+                     use="required"/>
+      <xsd:attribute name="name"
+                     type="xsd:string"
+                     use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="Note">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A musical note.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType>
+      <xsd:attribute name="note"
+                     type="xsd:nonNegativeInteger"
+                     use="required"/>
+      <xsd:attribute name="start"
+                     type="xsd:long"
+                     use="required"/>
+      <xsd:attribute name="length"
+                     type="xsd:positiveInteger"
+                     use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="Text">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A piece of text.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:simpleType>
+      <xsd:restriction base="xsd:string"/>
+    </xsd:simpleType>
+  </xsd:element>
+
+  <xsd:element name="RegionMusic">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A region containing musical notes.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="c:Area"/>
+        <xsd:element ref="c:KeySignature"/>
+        <xsd:element ref="c:TimeSignature"/>
+        <xsd:sequence minOccurs="0"
+                      maxOccurs="unbounded">
+          <xsd:element ref="c:Note"/>
+        </xsd:sequence>
+      </xsd:sequence>
+
+      <xsd:attribute name="id"
+                     type="c:UuidType"
+                     use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="RegionText">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A region containing text.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="c:Area"/>
+        <xsd:element ref="c:Text"/>
+      </xsd:sequence>
+
+      <xsd:attribute name="id"
+                     type="c:UuidType"
+                     use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:group name="RegionGroup">
+    <xsd:choice>
+      <xsd:element ref="c:RegionMusic"/>
+      <xsd:element ref="c:RegionText"/>
+    </xsd:choice>
+  </xsd:group>
+
+  <xsd:element name="TrackMetadata">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Metadata regarding a track within the composition.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="c:Color3F"/>
+      </xsd:sequence>
+
+      <xsd:attribute name="name"
+                     type="xsd:string"
+                     use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="Track">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A single track within the composition.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="c:TrackMetadata"/>
+        <xsd:sequence minOccurs="0"
+                      maxOccurs="unbounded">
+          <xsd:group ref="c:RegionGroup"/>
+        </xsd:sequence>
+      </xsd:sequence>
+
+      <xsd:attribute name="id"
+                     type="c:UuidType"
+                     use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="Tracks">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        The set of tracks within the composition.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType>
+      <xsd:sequence minOccurs="0"
+                    maxOccurs="unbounded">
+        <xsd:element ref="c:Track"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="Composition">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        The main composition.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="c:Metadata"/>
+        <xsd:element ref="c:Tracks"/>
+      </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:unique name="IdentifiersAreUnique">
+      <xsd:selector xpath="./c:Tracks/c:Track|./c:Metadata|./c:Tracks/c:Track/c:RegionMusic|./c:Metadata|./c:Tracks/c:Track/c:RegionText"/>
+      <xsd:field xpath="@id"/>
+    </xsd:unique>
+  </xsd:element>
+
+</xsd:schema>

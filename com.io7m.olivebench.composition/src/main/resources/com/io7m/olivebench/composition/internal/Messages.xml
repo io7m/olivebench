@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+
+<properties>
+
+  <entry key="trackAlreadyDeleted"><![CDATA[Track already deleted.
+  Track ID: {0}
+]]></entry>
+
+  <entry key="regionAlreadyDeleted"><![CDATA[Region already deleted.
+  Region ID: {0}
+]]></entry>
+
+  <entry key="identifierAlreadyUsed"><![CDATA[Identifier already used.
+  Identifier: {0}
+  Object:     {1}
+]]></entry>
+
+</properties>

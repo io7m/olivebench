@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ob:Composition xmlns:ob="urn:com.io7m.olivebench:xml:1" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <ob:Metadata id="778cc84c-5cd8-4dc3-8bb7-648c44ac371c">
+    <ob:DCMetadata>
+      <dc:contributor>Example Contributor</dc:contributor>
+      <dc:coverage>Coverage</dc:coverage>
+      <dc:creator>Example Creator</dc:creator>
+      <dc:date>2021-01-23</dc:date>
+      <dc:description>Example Description</dc:description>
+      <dc:format>Format</dc:format>
+      <dc:identifier>778cc84c-5cd8-4dc3-8bb7-648c44ac371c</dc:identifier>
+      <dc:language>en</dc:language>
+      <dc:publisher>Example Publisher</dc:publisher>
+      <dc:relation>Relation</dc:relation>
+      <dc:rights>Rights</dc:rights>
+      <dc:source>Source</dc:source>
+      <dc:subject>Subject</dc:subject>
+      <dc:title>Example Composition</dc:title>
+      <dc:type>Type</dc:type>
+    </ob:DCMetadata>
+    <ob:TimeConfiguration ticksPerQuarterNote="1024"/>
+  </ob:Metadata>
+  <ob:Tracks>
+    <ob:Track id="ae3e5e10-95b3-48a6-9765-d08046bcbdee">
+      <ob:TrackMetadata name="Track 0">
+        <ob:Color3F red="0.7" green="0.5" blue="0.3"/>
+      </ob:TrackMetadata>
+      <ob:RegionText id="419fbc23-8648-44d1-94a1-d3a79c202b5a">
+        <ob:Area minimumX="0" minimumY="0" maximumX="1024" maximumY="20"/>
+        <ob:Text>Some more text.</ob:Text>
+      </ob:RegionText>
+      <ob:RegionMusic id="62c2bc37-13d5-47ef-a197-b052a6ecae17">
+        <ob:Area minimumX="0" minimumY="0" maximumX="4096" maximumY="256"/>
+        <ob:KeySignature name="C Major" notesPerOctave="12" pitchClassOffset="0">
+          <ob:SignificantPitchClass pitchClass="6" significance="GREATER"/>
+        </ob:KeySignature>
+        <ob:TimeSignature lowerNumeral="4" upperNumeral="4"/>
+        <ob:Note note="0" start="0" length="1024"/>
+        <ob:Note note="4" start="1024" length="1024"/>
+      </ob:RegionMusic>
+      <ob:RegionText id="e6a872d3-47cd-49b9-928b-2400d1794867">
+        <ob:Area minimumX="0" minimumY="0" maximumX="1024" maximumY="20"/>
+        <ob:Text>Some text.</ob:Text>
+      </ob:RegionText>
+    </ob:Track>
+    <ob:Track id="e1510946-8537-46c4-aca6-984ba6b909f3">
+      <ob:TrackMetadata name="Track 1">
+        <ob:Color3F red="0.7" green="0.5" blue="0.3"/>
+      </ob:TrackMetadata>
+      <ob:RegionText id="0e48cd2d-fba8-4b28-ab3f-2fd2ac50e4d4">
+        <ob:Area minimumX="0" minimumY="0" maximumX="1024" maximumY="20"/>
+        <ob:Text>Some more text.</ob:Text>
+      </ob:RegionText>
+      <ob:RegionText id="275dcebb-4753-4fe6-9049-263455d0205e">
+        <ob:Area minimumX="0" minimumY="0" maximumX="1024" maximumY="20"/>
+        <ob:Text>Some text.</ob:Text>
+      </ob:RegionText>
+      <ob:RegionMusic id="a7f31bf4-e89e-40c0-bf36-0df51f52a1d9">
+        <ob:Area minimumX="0" minimumY="0" maximumX="4096" maximumY="256"/>
+        <ob:KeySignature name="C Major" notesPerOctave="12" pitchClassOffset="0">
+          <ob:SignificantPitchClass pitchClass="6" significance="GREATER"/>
+        </ob:KeySignature>
+        <ob:TimeSignature lowerNumeral="4" upperNumeral="4"/>
+        <ob:Note note="0" start="0" length="1024"/>
+        <ob:Note note="4" start="1024" length="1024"/>
+      </ob:RegionMusic>
+    </ob:Track>
+  </ob:Tracks>
+</ob:Composition>

@@ -22,7 +22,17 @@ package com.io7m.olivebench.composition.regions;
 
 public interface OBRegionTextType extends OBRegionType
 {
+  /**
+   * @return The region text
+   */
+
   String text();
+
+  /**
+   * Set the region text.
+   *
+   * @param text The new text
+   */
 
   void setText(String text);
 

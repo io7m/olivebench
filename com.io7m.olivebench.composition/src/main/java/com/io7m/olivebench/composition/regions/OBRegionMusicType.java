@@ -27,18 +27,48 @@ import java.util.SortedSet;
 
 public interface OBRegionMusicType extends OBRegionType
 {
+  /**
+   * @return The time signature of the region
+   */
+
   OBTimeSignature timeSignature();
 
+  /**
+   * @return The key signature of the region
+   */
+
   OBKeySignature keySignature();
+
+  /**
+   * Set the time signature of the region.
+   *
+   * @param timeSignature The time signature
+   */
 
   void setTimeSignature(
     OBTimeSignature timeSignature);
 
+  /**
+   * Set the key signature of the region.
+   *
+   * @param keySignature The key signature
+   */
+
   void setKeySignature(
     OBKeySignature keySignature);
 
+  /**
+   * Add a note to the region.
+   *
+   * @param note The note
+   */
+
   void addNote(
     OBNote note);
+
+  /**
+   * @return A read-only view of the notes in the region
+   */
 
   SortedSet<OBNote> notes();
 

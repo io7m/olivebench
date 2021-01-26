@@ -17,7 +17,6 @@
 package com.io7m.olivebench.tests.controller;
 
 import com.io7m.olivebench.controller.api.OBCommandContextType;
-import com.io7m.olivebench.controller.api.OBCommandUndoStyle;
 import com.io7m.olivebench.controller.api.OBCommandUndoableExecutor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +28,8 @@ import java.util.LinkedList;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.io7m.olivebench.controller.api.OBCommandUndoStyle.*;
+import static com.io7m.olivebench.controller.api.OBCommandUndoStyle.CANNOT_UNDO;
+import static com.io7m.olivebench.controller.api.OBCommandUndoStyle.CLEARS_UNDO_STACK;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -64,7 +64,7 @@ public final class OBCommandUndoableExecutorTest
   public void testUndoRedo()
     throws Exception
   {
-    final var command = new OBCommandExample(this.execLog,"X");
+    final var command = new OBCommandExample(this.execLog, "X");
     assertEquals(0, command.doCount);
     assertEquals(0, command.undoCount);
     assertEquals(0, this.executor.undoStackSize());
@@ -101,9 +101,9 @@ public final class OBCommandUndoableExecutorTest
   public void testUndoRedoNoHistory()
     throws Exception
   {
-    final var c0 = new OBCommandExample(this.execLog,"X");
-    final var c1 = new OBCommandExample(this.execLog,"Y");
-    final var c2 = new OBCommandExample(this.execLog,"Z");
+    final var c0 = new OBCommandExample(this.execLog, "X");
+    final var c1 = new OBCommandExample(this.execLog, "Y");
+    final var c2 = new OBCommandExample(this.execLog, "Z");
 
     this.executor.setHistorySizeLimit(1);
     this.executor.execute(this.context, c0);
@@ -150,7 +150,7 @@ public final class OBCommandUndoableExecutorTest
   public void testUndoRedundant()
     throws Exception
   {
-    final var command = new OBCommandExample(this.execLog,"X");
+    final var command = new OBCommandExample(this.execLog, "X");
     assertEquals(0, command.doCount);
     assertEquals(0, command.undoCount);
     assertEquals(0, this.executor.undoStackSize());
@@ -181,7 +181,7 @@ public final class OBCommandUndoableExecutorTest
   public void testRedoRedundant()
     throws Exception
   {
-    final var command = new OBCommandExample(this.execLog,"X");
+    final var command = new OBCommandExample(this.execLog, "X");
     assertEquals(0, command.doCount);
     assertEquals(0, command.undoCount);
     assertEquals(0, this.executor.undoStackSize());
@@ -243,8 +243,8 @@ public final class OBCommandUndoableExecutorTest
   public void testUndoClears()
     throws Exception
   {
-    final var c0 = new OBCommandExample(this.execLog,"X");
-    final var c1 = new OBCommandExample(this.execLog,"Y");
+    final var c0 = new OBCommandExample(this.execLog, "X");
+    final var c1 = new OBCommandExample(this.execLog, "Y");
     final var c2 = new OBCommandExample(this.execLog, "Z", CLEARS_UNDO_STACK);
 
     this.executor.execute(this.context, c0);

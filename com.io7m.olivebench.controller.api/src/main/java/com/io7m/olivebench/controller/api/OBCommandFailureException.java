@@ -21,12 +21,6 @@ import java.util.Objects;
 public class OBCommandFailureException extends Exception
 {
   public OBCommandFailureException(
-    final String message)
-  {
-    super(Objects.requireNonNull(message, "message"));
-  }
-
-  public OBCommandFailureException(
     final Throwable cause)
   {
     super(Objects.requireNonNull(cause, "cause"));

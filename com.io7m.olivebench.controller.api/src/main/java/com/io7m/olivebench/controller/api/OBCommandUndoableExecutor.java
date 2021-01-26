@@ -16,11 +16,16 @@
 
 package com.io7m.olivebench.controller.api;
 
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.subjects.PublishSubject;
+import io.reactivex.rxjava3.subjects.Subject;
 import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.ThreadSafe;
 
 import java.util.LinkedList;
 import java.util.Objects;
+
+import static com.io7m.olivebench.controller.api.OBCommandUnit.COMMAND_UNIT;
 
 /**
  * The default implementation of the {@link OBCommandUndoableExecutorType} interface.
@@ -35,6 +40,7 @@ public final class OBCommandUndoableExecutor
   private final LinkedList<OBCommandType> stackUndo;
   @GuardedBy("stackLock")
   private final LinkedList<OBCommandType> stackRedo;
+  private final Subject<OBCommandUnit> events;
   private volatile int historySizeLimit;
 
   /**
@@ -50,6 +56,9 @@ public final class OBCommandUndoableExecutor
     this.stackLock = new Object();
     this.stackUndo = new LinkedList<>();
     this.stackRedo = new LinkedList<>();
+    this.events =
+      PublishSubject.<OBCommandUnit>create()
+        .toSerialized();
   }
 
   private static int checkHistorySizeLimit(
@@ -79,6 +88,14 @@ public final class OBCommandUndoableExecutor
         this.stackRedo.removeLast();
       }
     }
+
+    this.events.onNext(COMMAND_UNIT);
+  }
+
+  @Override
+  public Observable<OBCommandUnit> events()
+  {
+    return this.events;
   }
 
   @Override
@@ -107,12 +124,14 @@ public final class OBCommandUndoableExecutor
           }
           this.stackUndo.push(command);
         }
+        this.events.onNext(COMMAND_UNIT);
         break;
       }
       case CLEARS_UNDO_STACK: {
         synchronized (this.stackLock) {
           this.stackUndo.clear();
         }
+        this.events.onNext(COMMAND_UNIT);
         break;
       }
     }
@@ -134,6 +153,8 @@ public final class OBCommandUndoableExecutor
       }
     }
 
+    this.events.onNext(COMMAND_UNIT);
+
     try {
       command.commandUndo(context);
     } catch (final Exception e) {
@@ -146,6 +167,8 @@ public final class OBCommandUndoableExecutor
       }
       this.stackRedo.push(command);
     }
+
+    this.events.onNext(COMMAND_UNIT);
   }
 
   @Override
@@ -172,7 +195,9 @@ public final class OBCommandUndoableExecutor
       }
     }
 
+    this.events.onNext(COMMAND_UNIT);
     this.execute(context, command);
+    this.events.onNext(COMMAND_UNIT);
   }
 
   @Override

@@ -16,11 +16,15 @@
 
 package com.io7m.olivebench.controller.api;
 
+import com.io7m.olivebench.composition.OBCompositionType;
+
 /**
  * The execution context of a command.
  */
 
 public interface OBCommandContextType
 {
+  void compositionOpen(OBCompositionType composition);
 
+  void compositionClose();
 }

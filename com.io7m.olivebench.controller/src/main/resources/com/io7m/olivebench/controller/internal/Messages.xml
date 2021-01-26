@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+
+<properties>
+  <entry key="commandCompositionLoad">Load composition {0}.</entry>
+  <entry key="commandCompositionClose">Close composition.</entry>
+  <entry key="compositionNotOpen">No composition is open.</entry>
+</properties>

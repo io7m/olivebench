@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020 Mark Raynsford <code@io7m.com> http://io7m.com
+ * Copyright © 2021 Mark Raynsford <code@io7m.com> http://io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -14,23 +14,15 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-import com.io7m.olivebench.composition.parser.api.OBCompositionParsersType;
+package com.io7m.olivebench.controller.api;
+
+import com.io7m.olivebench.events.api.OBEventType;
 
 /**
- * Olivebench (Controller)
+ * The type of controller events.
  */
 
-module com.io7m.olivebench.controller
+public interface OBControllerEventType extends OBEventType
 {
-  requires static org.osgi.annotation.bundle;
-  requires static org.osgi.annotation.versioning;
 
-  requires com.io7m.olivebench.composition.parser.api;
-  requires com.io7m.olivebench.services.api;
-  requires com.io7m.jxtrand.vanilla;
-  requires com.io7m.olivebench.controller.api;
-
-  uses OBCompositionParsersType;
-
-  exports com.io7m.olivebench.controller;
 }

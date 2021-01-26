@@ -114,6 +114,7 @@ public final class OB1CompositionSerializer
 
     final var transformer = TransformerFactory.newInstance().newTransformer();
     transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+    transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
     transformer.setOutputProperty(OutputKeys.INDENT, "yes");
     transformer.setOutputProperty(
       "{http://xml.apache.org/xslt}indent-amount",
@@ -123,9 +124,15 @@ public final class OB1CompositionSerializer
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>".getBytes(UTF_8));
     this.output.write("\n".getBytes(UTF_8));
 
-    transformer.transform(
-      new StreamSource(new ByteArrayInputStream(buffer.toByteArray())),
-      new StreamResult(this.output));
+    final var lineSeparator = System.lineSeparator();
+    try {
+      System.setProperty("line.separator", "\n");
+      transformer.transform(
+        new StreamSource(new ByteArrayInputStream(buffer.toByteArray())),
+        new StreamResult(this.output));
+    } finally {
+      System.setProperty("line.separator", lineSeparator);
+    }
 
     this.output.flush();
   }

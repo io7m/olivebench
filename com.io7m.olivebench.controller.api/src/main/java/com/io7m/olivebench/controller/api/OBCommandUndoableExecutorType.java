@@ -16,6 +16,7 @@
 
 package com.io7m.olivebench.controller.api;
 
+import io.reactivex.rxjava3.core.Observable;
 import net.jcip.annotations.ThreadSafe;
 
 /**
@@ -27,6 +28,14 @@ import net.jcip.annotations.ThreadSafe;
 @ThreadSafe
 public interface OBCommandUndoableExecutorType
 {
+  /**
+   * A stream of events published whenever the undo/redo stack changes.
+   *
+   * @return An event stream
+   */
+
+  Observable<OBCommandUnit> events();
+
   /**
    * Execute the given command.
    *

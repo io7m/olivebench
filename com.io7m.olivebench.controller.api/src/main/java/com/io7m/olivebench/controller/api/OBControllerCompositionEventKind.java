@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020 Mark Raynsford <code@io7m.com> http://io7m.com
+ * Copyright © 2021 Mark Raynsford <code@io7m.com> http://io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -14,23 +14,29 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-import com.io7m.olivebench.composition.parser.api.OBCompositionParsersType;
+package com.io7m.olivebench.controller.api;
 
 /**
- * Olivebench (Controller)
+ * The kind of controller events.
  */
 
-module com.io7m.olivebench.controller
+public enum OBControllerCompositionEventKind
 {
-  requires static org.osgi.annotation.bundle;
-  requires static org.osgi.annotation.versioning;
+  /**
+   * A composition was opened.
+   */
 
-  requires com.io7m.olivebench.composition.parser.api;
-  requires com.io7m.olivebench.services.api;
-  requires com.io7m.jxtrand.vanilla;
-  requires com.io7m.olivebench.controller.api;
+  COMPOSITION_OPENED,
 
-  uses OBCompositionParsersType;
+  /**
+   * A composition undo status changed.
+   */
 
-  exports com.io7m.olivebench.controller;
+  COMPOSITION_UNDO_CHANGED,
+
+  /**
+   * A composition was closed.
+   */
+
+  COMPOSITION_CLOSED
 }

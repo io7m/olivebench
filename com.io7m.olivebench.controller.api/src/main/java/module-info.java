@@ -20,10 +20,13 @@
 
 module com.io7m.olivebench.controller.api
 {
+  requires static com.io7m.immutables.style;
+  requires static org.immutables.value;
   requires static org.osgi.annotation.bundle;
   requires static org.osgi.annotation.versioning;
-
   requires com.io7m.jcip.annotations;
+
+  requires transitive com.io7m.olivebench.composition;
 
   exports com.io7m.olivebench.controller.api;
 }

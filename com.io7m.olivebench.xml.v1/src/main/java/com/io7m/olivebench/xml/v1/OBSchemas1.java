@@ -79,6 +79,6 @@ public final class OBSchemas1
 
   public static List<JXESchemaDefinition> schemas1()
   {
-    return List.of(XML_SCHEMA, DC_SCHEMA, SCHEMA_1);
+    return List.of(XML_SCHEMA, DC_SCHEMA, schema1());
   }
 }

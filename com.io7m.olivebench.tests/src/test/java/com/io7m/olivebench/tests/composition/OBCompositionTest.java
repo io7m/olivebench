@@ -35,8 +35,10 @@ import java.util.UUID;
 
 import static com.io7m.olivebench.composition.OBCompositionChange.REGION_CREATED;
 import static com.io7m.olivebench.composition.OBCompositionChange.REGION_DELETED;
+import static com.io7m.olivebench.composition.OBCompositionChange.REGION_UNDELETED;
 import static com.io7m.olivebench.composition.OBCompositionChange.TRACK_CREATED;
 import static com.io7m.olivebench.composition.OBCompositionChange.TRACK_DELETED;
+import static com.io7m.olivebench.composition.OBCompositionChange.TRACK_UNDELETED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -127,6 +129,39 @@ public final class OBCompositionTest
   }
 
   @Test
+  public void testCreateUndeleteTrack()
+  {
+    final var metadata =
+      OBCompositionMetadata.builder()
+        .setId(UUID.randomUUID())
+        .setTimeConfiguration(this.timeConfiguration)
+        .build();
+
+    final var composition =
+      this.compositions.createComposition(Locale.getDefault(), metadata);
+    composition.events().subscribe(this::logEvent);
+
+    final var track = composition.createTrack();
+    assertFalse(track.isDeleted());
+    track.delete();
+    assertTrue(track.isDeleted());
+    track.undelete();
+    assertFalse(track.isDeleted());
+
+    assertEquals(metadata, composition.metadata());
+    assertEquals(1, composition.tracks().size());
+    assertEquals(3, this.events.size());
+
+    this.eventIs(TRACK_CREATED);
+    this.eventIs(TRACK_DELETED);
+    this.eventIs(TRACK_UNDELETED);
+
+    assertEquals(0, this.events.size());
+    assertThrows(IllegalStateException.class, track::undelete);
+    assertEquals(0, this.events.size());
+  }
+
+  @Test
   public void testCreateTrackIDUsed()
   {
     final var metadata =
@@ -199,6 +234,39 @@ public final class OBCompositionTest
     assertThrows(IllegalStateException.class, r2::delete);
     assertThrows(IllegalStateException.class, r1::delete);
     assertThrows(IllegalStateException.class, r0::delete);
+    assertEquals(0, this.events.size());
+  }
+
+  @Test
+  public void testCreateUndeleteRegion()
+  {
+    final var metadata =
+      OBCompositionMetadata.builder()
+        .setId(UUID.randomUUID())
+        .setTimeConfiguration(this.timeConfiguration)
+        .build();
+
+    final var composition =
+      this.compositions.createComposition(Locale.getDefault(), metadata);
+    composition.events().subscribe(this::logEvent);
+
+    final var track =
+      composition.createTrack();
+
+    final var r0 =
+      track.createTextRegion(PAreaL.of(0L, 1L, 0L, 1L));
+    r0.delete();
+    assertTrue(r0.isDeleted());
+    r0.undelete();
+    assertFalse(r0.isDeleted());
+
+    this.eventIs(TRACK_CREATED);
+    this.eventIs(REGION_CREATED);
+    this.eventIs(REGION_DELETED);
+    this.eventIs(REGION_UNDELETED);
+
+    assertEquals(0, this.events.size());
+    assertThrows(IllegalStateException.class, r0::undelete);
     assertEquals(0, this.events.size());
   }
 }

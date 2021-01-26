@@ -31,13 +31,22 @@ public interface OBDeleteableType<T extends OBDeleteableType<T>>
   boolean isDeleted();
 
   /**
-   * Delete the object.
+   * Delete the object. After this method has been called, subsequent
+   * calls to {@code isDeleted()} will return {@code true}.
    *
-   * @return this
-   *
-   * @throws IllegalStateException If {@code delete()} has already been called
+   * @throws IllegalStateException If {@code isDeleted()} is {@code true}
    */
 
-  T delete()
+  void delete()
+    throws IllegalStateException;
+
+  /**
+   * Undelete the object. After this method has been called, subsequent
+   * calls to {@code isDeleted()} will return {@code false}.
+   *
+   * @throws IllegalStateException If {@code isDeleted()} is {@code false}
+   */
+
+  void undelete()
     throws IllegalStateException;
 }

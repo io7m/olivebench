@@ -55,12 +55,6 @@ public final class OBRegionText
   }
 
   @Override
-  public OBRegionTextType delete()
-  {
-    return (OBRegionTextType) super.trackReal().regionDelete(this);
-  }
-
-  @Override
   public String toString()
   {
     return String.format("[OBRegionText %s]", this.id());

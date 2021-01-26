@@ -8,7 +8,15 @@
   Track ID: {0}
 ]]></entry>
 
+  <entry key="trackNotDeleted"><![CDATA[Track has not been deleted.
+  Track ID: {0}
+]]></entry>
+
   <entry key="regionAlreadyDeleted"><![CDATA[Region already deleted.
+  Region ID: {0}
+]]></entry>
+
+  <entry key="regionNotDeleted"><![CDATA[Region has not been deleted.
   Region ID: {0}
 ]]></entry>
 

@@ -104,12 +104,6 @@ public final class OBRegionMusic
   }
 
   @Override
-  public OBRegionMusicType delete()
-  {
-    return (OBRegionMusicType) super.trackReal().regionDelete(this);
-  }
-
-  @Override
   public String toString()
   {
     return String.format("[OBRegionMusic %s]", this.id());

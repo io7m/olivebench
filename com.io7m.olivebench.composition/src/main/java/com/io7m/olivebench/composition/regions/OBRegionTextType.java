@@ -35,7 +35,4 @@ public interface OBRegionTextType extends OBRegionType
    */
 
   void setText(String text);
-
-  @Override
-  OBRegionTextType delete();
 }

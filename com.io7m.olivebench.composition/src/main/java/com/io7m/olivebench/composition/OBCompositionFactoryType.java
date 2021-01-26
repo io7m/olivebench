@@ -29,7 +29,7 @@ public interface OBCompositionFactoryType extends OBServiceType
   /**
    * Create a new empty composition.
    *
-   * @param locale The locale
+   * @param locale   The locale
    * @param metadata The composition metadata
    *
    * @return A new empty composition

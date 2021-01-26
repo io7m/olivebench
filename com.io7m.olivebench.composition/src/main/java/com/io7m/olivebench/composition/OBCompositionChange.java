@@ -41,6 +41,12 @@ public enum OBCompositionChange
   TRACK_DELETED,
 
   /**
+   * A track was undeleted.
+   */
+
+  TRACK_UNDELETED,
+
+  /**
    * A region was created.
    */
 
@@ -56,5 +62,11 @@ public enum OBCompositionChange
    * A region was deleted.
    */
 
-  REGION_DELETED
+  REGION_DELETED,
+
+  /**
+   * A region was undeleted.
+   */
+
+  REGION_UNDELETED
 }

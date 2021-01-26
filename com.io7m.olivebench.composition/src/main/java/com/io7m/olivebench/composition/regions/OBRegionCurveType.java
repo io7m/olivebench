@@ -22,6 +22,5 @@ package com.io7m.olivebench.composition.regions;
 
 public interface OBRegionCurveType extends OBRegionType
 {
-  @Override
-  OBRegionCurveType delete();
+
 }

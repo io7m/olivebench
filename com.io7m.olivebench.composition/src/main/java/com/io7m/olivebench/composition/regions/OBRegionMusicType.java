@@ -71,7 +71,4 @@ public interface OBRegionMusicType extends OBRegionType
    */
 
   SortedSet<OBNote> notes();
-
-  @Override
-  OBRegionMusicType delete();
 }

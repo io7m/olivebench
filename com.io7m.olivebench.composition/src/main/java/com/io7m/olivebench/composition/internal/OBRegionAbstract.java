@@ -53,9 +53,18 @@ public abstract class OBRegionAbstract implements OBRegionType
     return this.track.regionIsDeleted(this);
   }
 
-  protected final OBTrack trackReal()
+  @Override
+  public final void delete()
+    throws IllegalStateException
   {
-    return this.track;
+    this.track.regionDelete(this);
+  }
+
+  @Override
+  public final void undelete()
+    throws IllegalStateException
+  {
+    this.track.regionUndelete(this);
   }
 
   @Override

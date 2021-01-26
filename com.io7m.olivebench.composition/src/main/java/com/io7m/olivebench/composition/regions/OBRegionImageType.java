@@ -22,6 +22,5 @@ package com.io7m.olivebench.composition.regions;
 
 public interface OBRegionImageType extends OBRegionType
 {
-  @Override
-  OBRegionImageType delete();
+
 }

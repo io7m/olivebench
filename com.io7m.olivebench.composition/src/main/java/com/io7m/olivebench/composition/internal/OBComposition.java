@@ -33,6 +33,7 @@ import java.util.concurrent.ConcurrentSkipListMap;
 
 import static com.io7m.olivebench.composition.OBCompositionChange.TRACK_CREATED;
 import static com.io7m.olivebench.composition.OBCompositionChange.TRACK_DELETED;
+import static com.io7m.olivebench.composition.OBCompositionChange.TRACK_UNDELETED;
 
 public final class OBComposition implements OBCompositionType
 {
@@ -70,32 +71,46 @@ public final class OBComposition implements OBCompositionType
     return newTrack;
   }
 
-  public boolean trackIsDeleted(
+  boolean trackIsDeleted(
     final OBTrack track)
   {
     return !Objects.equals(this.tracks.get(track.id()), track);
   }
 
-  public OBTrackType trackDelete(
+  OBTrackType trackDelete(
     final OBTrack track)
   {
-    final var deleted = this.tracks.remove(track.id(), track);
-    if (deleted) {
-      this.publish(OBCompositionModifiedEvent.of(TRACK_DELETED, track.id()));
-      return track;
+    if (this.trackIsDeleted(track)) {
+      throw new IllegalStateException(
+        this.strings().format("trackAlreadyDeleted", track.id())
+      );
     }
 
-    throw new IllegalStateException(
-      this.strings().format("trackAlreadyDeleted", track.id())
-    );
+    this.tracks.remove(track.id());
+    this.publish(OBCompositionModifiedEvent.of(TRACK_DELETED, track.id()));
+    return track;
   }
 
-  public OBObjectMap objects()
+  OBTrackType trackUndelete(
+    final OBTrack track)
+  {
+    if (!this.trackIsDeleted(track)) {
+      throw new IllegalStateException(
+        this.strings().format("trackNotDeleted", track.id())
+      );
+    }
+
+    this.tracks.put(track.id(), track);
+    this.publish(OBCompositionModifiedEvent.of(TRACK_UNDELETED, track.id()));
+    return track;
+  }
+
+  OBObjectMap objects()
   {
     return this.objects;
   }
 
-  public OBCompositionStrings strings()
+  OBCompositionStrings strings()
   {
     return this.strings;
   }

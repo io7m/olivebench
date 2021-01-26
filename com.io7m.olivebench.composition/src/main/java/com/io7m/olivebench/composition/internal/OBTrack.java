@@ -38,6 +38,7 @@ import java.util.concurrent.ConcurrentSkipListMap;
 
 import static com.io7m.olivebench.composition.OBCompositionChange.REGION_CREATED;
 import static com.io7m.olivebench.composition.OBCompositionChange.REGION_DELETED;
+import static com.io7m.olivebench.composition.OBCompositionChange.REGION_UNDELETED;
 import static com.io7m.olivebench.composition.OBCompositionChange.TRACK_METADATA_CHANGED;
 
 public final class OBTrack implements OBTrackType
@@ -64,10 +65,42 @@ public final class OBTrack implements OBTrackType
       Collections.unmodifiableSortedMap(this.regions);
   }
 
-  public void publish(
+  void publish(
     final OBCompositionEventType event)
   {
     this.composition.publish(event);
+  }
+
+  boolean regionIsDeleted(
+    final OBRegionType region)
+  {
+    return !Objects.equals(this.regions.get(region.id()), region);
+  }
+
+  void regionDelete(
+    final OBRegionType region)
+  {
+    if (this.regionIsDeleted(region)) {
+      throw new IllegalStateException(
+        this.composition.strings().format("regionAlreadyDeleted", region.id())
+      );
+    }
+
+    this.regions.remove(region.id());
+    this.publish(OBCompositionModifiedEvent.of(REGION_DELETED, region.id()));
+  }
+
+  void regionUndelete(
+    final OBRegionType region)
+  {
+    if (!this.regionIsDeleted(region)) {
+      throw new IllegalStateException(
+        this.composition.strings().format("regionNotDeleted", region.id())
+      );
+    }
+
+    this.regions.put(region.id(), region);
+    this.publish(OBCompositionModifiedEvent.of(REGION_UNDELETED, region.id()));
   }
 
   @Override
@@ -195,15 +228,16 @@ public final class OBTrack implements OBTrackType
   }
 
   @Override
-  public OBTrackType delete()
+  public void delete()
   {
-    return this.composition.trackDelete(this);
+    this.composition.trackDelete(this);
   }
 
-  public boolean regionIsDeleted(
-    final OBRegionType region)
+  @Override
+  public void undelete()
+    throws IllegalStateException
   {
-    return !Objects.equals(this.regions.get(region.id()), region);
+    this.composition.trackUndelete(this);
   }
 
   @Override
@@ -212,17 +246,4 @@ public final class OBTrack implements OBTrackType
     return String.format("[OBTrack %s]", this.id);
   }
 
-  public OBRegionType regionDelete(
-    final OBRegionType region)
-  {
-    final var deleted = this.regions.remove(region.id(), region);
-    if (deleted) {
-      this.publish(OBCompositionModifiedEvent.of(REGION_DELETED, region.id()));
-      return region;
-    }
-
-    throw new IllegalStateException(
-      this.composition.strings().format("regionAlreadyDeleted", region.id())
-    );
-  }
 }

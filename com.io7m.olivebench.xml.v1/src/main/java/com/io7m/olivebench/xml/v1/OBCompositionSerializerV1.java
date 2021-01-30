@@ -52,4 +52,13 @@ public final class OBCompositionSerializerV1
   {
     return new OB1CompositionSerializer(target, output, composition);
   }
+
+  @Override
+  public String toString()
+  {
+    return String.format(
+      "[OBCompositionSerializerV1 0x%08x]",
+      Integer.valueOf(this.hashCode())
+    );
+  }
 }

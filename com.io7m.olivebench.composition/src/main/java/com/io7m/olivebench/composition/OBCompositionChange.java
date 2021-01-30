@@ -23,6 +23,12 @@ package com.io7m.olivebench.composition;
 public enum OBCompositionChange
 {
   /**
+   * The composition metadata changed.
+   */
+
+  METADATA_CHANGED,
+
+  /**
    * A track was created.
    */
 

@@ -25,12 +25,17 @@ module com.io7m.olivebench.controller
   requires static org.osgi.annotation.bundle;
   requires static org.osgi.annotation.versioning;
 
-  requires com.io7m.olivebench.composition.parser.api;
-  requires com.io7m.olivebench.services.api;
+  requires com.io7m.jcip.annotations;
   requires com.io7m.jxtrand.vanilla;
+  requires com.io7m.olivebench.composition.parser.api;
+  requires com.io7m.olivebench.composition.serializer.api;
   requires com.io7m.olivebench.controller.api;
+  requires com.io7m.olivebench.services.api;
 
   uses OBCompositionParsersType;
+
+  opens com.io7m.olivebench.controller.internal
+    to com.io7m.jxtrand.vanilla;
 
   exports com.io7m.olivebench.controller;
 }

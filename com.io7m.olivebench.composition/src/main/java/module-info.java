@@ -40,6 +40,9 @@ module com.io7m.olivebench.composition
   requires com.io7m.jxtrand.vanilla;
   requires com.io7m.jxtrand.api;
 
+  opens com.io7m.olivebench.composition.internal
+    to com.io7m.jxtrand.vanilla;
+
   provides OBCompositionFactoryType with OBCompositions;
 
   exports com.io7m.olivebench.composition.annotations;

@@ -18,6 +18,7 @@ package com.io7m.olivebench.tests.controller;
 
 import com.io7m.olivebench.controller.api.OBCommandAbstract;
 import com.io7m.olivebench.controller.api.OBCommandContextType;
+import com.io7m.olivebench.controller.api.OBCommandDescription;
 import com.io7m.olivebench.controller.api.OBCommandUndoStyle;
 
 import java.util.Objects;
@@ -35,7 +36,13 @@ public final class OBCommandExample extends OBCommandAbstract
     final boolean inIsLongRunning,
     final Queue<String> inLog)
   {
-    super(inDescription, inUndoStyle, inIsLongRunning);
+    super(
+      OBCommandDescription.builder()
+        .setDescription(inDescription)
+        .setUndoStyle(inUndoStyle)
+        .setLongRunning(inIsLongRunning)
+        .build()
+    );
     this.log = Objects.requireNonNull(inLog, "log");
   }
 
@@ -59,7 +66,7 @@ public final class OBCommandExample extends OBCommandAbstract
     final OBCommandContextType context)
   {
     ++this.doCount;
-    this.log.add(String.format("commandDo %s", this.description()));
+    this.log.add(String.format("commandDo %s", this.description().description()));
   }
 
   @Override
@@ -67,6 +74,6 @@ public final class OBCommandExample extends OBCommandAbstract
     final OBCommandContextType context)
   {
     ++this.undoCount;
-    this.log.add(String.format("commandUndo %s", this.description()));
+    this.log.add(String.format("commandUndo %s", this.description().description()));
   }
 }

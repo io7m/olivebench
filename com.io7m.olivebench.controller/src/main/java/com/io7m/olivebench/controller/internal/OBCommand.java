@@ -18,7 +18,7 @@ package com.io7m.olivebench.controller.internal;
 
 import com.io7m.olivebench.controller.api.OBCommandAbstract;
 import com.io7m.olivebench.controller.api.OBCommandContextType;
-import com.io7m.olivebench.controller.api.OBCommandUndoStyle;
+import com.io7m.olivebench.controller.api.OBCommandDescription;
 import com.io7m.olivebench.services.api.OBServiceDirectoryType;
 
 import java.util.Objects;
@@ -31,11 +31,9 @@ public abstract class OBCommand extends OBCommandAbstract
   protected OBCommand(
     final OBServiceDirectoryType inServices,
     final OBCommandStrings inStrings,
-    final String inDescription,
-    final OBCommandUndoStyle inUndoStyle,
-    final boolean inIsLongRunning)
+    final OBCommandDescription inDescription)
   {
-    super(inDescription, inUndoStyle, inIsLongRunning);
+    super(inDescription);
     this.services =
       Objects.requireNonNull(inServices, "services");
     this.strings =

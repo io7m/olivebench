@@ -31,6 +31,9 @@ public interface OBControllerCommandFailedEventType extends
   OBControllerEventType
 {
   @Value.Parameter
+  String title();
+
+  @Value.Parameter
   String message();
 
   @Value.Parameter

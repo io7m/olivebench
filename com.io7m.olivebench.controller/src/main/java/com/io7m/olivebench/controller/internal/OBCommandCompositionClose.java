@@ -17,9 +17,9 @@
 package com.io7m.olivebench.controller.internal;
 
 import com.io7m.olivebench.controller.api.OBCommandContextType;
+import com.io7m.olivebench.controller.api.OBCommandDescription;
+import com.io7m.olivebench.controller.api.OBCommandUndoStyle;
 import com.io7m.olivebench.services.api.OBServiceDirectoryType;
-
-import static com.io7m.olivebench.controller.api.OBCommandUndoStyle.CLEARS_UNDO_STACK;
 
 public final class OBCommandCompositionClose extends OBCommand
 {
@@ -30,9 +30,11 @@ public final class OBCommandCompositionClose extends OBCommand
     super(
       inServices,
       inStrings,
-      inStrings.format("commandCompositionClose"),
-      CLEARS_UNDO_STACK,
-      true
+      OBCommandDescription.builder()
+        .setDescription(inStrings.format("commandCompositionClose"))
+        .setLongRunning(true)
+        .setUndoStyle(OBCommandUndoStyle.CLEARS_UNDO_STACK)
+        .build()
     );
   }
 

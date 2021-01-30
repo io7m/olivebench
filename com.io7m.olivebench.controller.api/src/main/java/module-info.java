@@ -26,6 +26,7 @@ module com.io7m.olivebench.controller.api
   requires static org.osgi.annotation.versioning;
   requires com.io7m.jcip.annotations;
 
+  requires org.slf4j;
   requires transitive com.io7m.olivebench.composition;
 
   exports com.io7m.olivebench.controller.api;

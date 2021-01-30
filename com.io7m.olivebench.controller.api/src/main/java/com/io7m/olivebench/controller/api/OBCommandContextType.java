@@ -27,4 +27,6 @@ public interface OBCommandContextType
   void compositionOpen(OBCompositionType composition);
 
   void compositionClose();
+
+  OBCompositionType composition();
 }

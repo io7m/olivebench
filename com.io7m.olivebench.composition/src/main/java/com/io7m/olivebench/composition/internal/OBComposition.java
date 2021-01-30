@@ -31,6 +31,7 @@ import java.util.SortedMap;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentSkipListMap;
 
+import static com.io7m.olivebench.composition.OBCompositionChange.METADATA_CHANGED;
 import static com.io7m.olivebench.composition.OBCompositionChange.TRACK_CREATED;
 import static com.io7m.olivebench.composition.OBCompositionChange.TRACK_DELETED;
 import static com.io7m.olivebench.composition.OBCompositionChange.TRACK_UNDELETED;
@@ -40,9 +41,9 @@ public final class OBComposition implements OBCompositionType
   private final ConcurrentSkipListMap<UUID, OBTrackType> tracks;
   private final SortedMap<UUID, OBTrackType> tracksRead;
   private final OBCompositionStrings strings;
-  private final OBCompositionMetadata metadata;
   private final OBObjectMap objects;
   private final Subject<OBCompositionEventType> eventSubject;
+  private volatile OBCompositionMetadata metadata;
 
   public OBComposition(
     final OBCompositionStrings inStrings,
@@ -125,6 +126,20 @@ public final class OBComposition implements OBCompositionType
   public OBCompositionMetadata metadata()
   {
     return this.metadata;
+  }
+
+  @Override
+  public void setMetadata(
+    final OBCompositionMetadata newMetadata)
+  {
+    final var newId = newMetadata.id();
+    final var oldId = this.metadata.id();
+    if (!Objects.equals(newId, oldId)) {
+      throw new IllegalArgumentException("Cannot change the composition ID");
+    }
+
+    this.metadata = Objects.requireNonNull(newMetadata, "newMetadata");
+    this.publish(OBCompositionModifiedEvent.of(METADATA_CHANGED, newId));
   }
 
   @Override

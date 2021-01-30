@@ -113,7 +113,7 @@ public final class OBCommandUndoableExecutor
       throw new OBCommandFailureException(e);
     }
 
-    switch (command.undoStyle()) {
+    switch (command.description().undoStyle()) {
       case CANNOT_UNDO: {
         break;
       }

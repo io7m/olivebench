@@ -102,16 +102,18 @@ public interface OBCompositionSerializersType extends OBServiceType
     final OBCompositionType composition)
     throws Exception
   {
-    try (var stream = Files.newOutputStream(outputTmp, CREATE_NEW, WRITE)) {
-      try (var serializer =
-             this.createSerializer(
-               services,
-               outputTmp.toUri(),
-               stream,
-               composition)) {
-        serializer.execute();
-        Files.move(outputTmp, output, ATOMIC_MOVE, REPLACE_EXISTING);
+    try {
+      try (var stream = Files.newOutputStream(outputTmp, CREATE_NEW, WRITE)) {
+        try (var serializer =
+               this.createSerializer(
+                 services,
+                 outputTmp.toUri(),
+                 stream,
+                 composition)) {
+          serializer.execute();
+        }
       }
+      Files.move(outputTmp, output, ATOMIC_MOVE, REPLACE_EXISTING);
     } finally {
       Files.deleteIfExists(outputTmp);
     }

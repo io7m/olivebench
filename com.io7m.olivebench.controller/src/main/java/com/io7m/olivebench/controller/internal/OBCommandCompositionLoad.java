@@ -19,13 +19,13 @@ package com.io7m.olivebench.controller.internal;
 import com.io7m.olivebench.composition.parser.api.OBCompositionParseException;
 import com.io7m.olivebench.composition.parser.api.OBCompositionParsersType;
 import com.io7m.olivebench.controller.api.OBCommandContextType;
+import com.io7m.olivebench.controller.api.OBCommandDescription;
+import com.io7m.olivebench.controller.api.OBCommandUndoStyle;
 import com.io7m.olivebench.services.api.OBServiceDirectoryType;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Objects;
-
-import static com.io7m.olivebench.controller.api.OBCommandUndoStyle.CLEARS_UNDO_STACK;
 
 public final class OBCommandCompositionLoad extends OBCommand
 {
@@ -39,9 +39,11 @@ public final class OBCommandCompositionLoad extends OBCommand
     super(
       inServices,
       inStrings,
-      inStrings.format("commandCompositionLoad", inFile),
-      CLEARS_UNDO_STACK,
-      false
+      OBCommandDescription.builder()
+        .setDescription(inStrings.format("commandCompositionLoad", inFile))
+        .setLongRunning(true)
+        .setUndoStyle(OBCommandUndoStyle.CLEARS_UNDO_STACK)
+        .build()
     );
 
     this.file =

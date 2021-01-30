@@ -17,22 +17,31 @@
 package com.io7m.olivebench.controller.api;
 
 import com.io7m.olivebench.composition.OBCompositionType;
+import com.io7m.olivebench.services.api.OBServiceType;
 import io.reactivex.rxjava3.core.Observable;
 
+import java.io.Closeable;
 import java.nio.file.Path;
+import java.time.OffsetDateTime;
 import java.util.Optional;
 
 /**
  * The (synchronous) controller API.
  */
 
-public interface OBControllerType
+public interface OBControllerType extends Closeable, OBServiceType
 {
   /**
    * @return A stream of controller events
    */
 
   Observable<OBControllerEventType> events();
+
+  /**
+   * @return The file currently being used for the composition
+   */
+
+  Optional<Path> compositionFile();
 
   /**
    * Open a composition.
@@ -43,10 +52,24 @@ public interface OBControllerType
   void compositionOpen(Path file);
 
   /**
+   * Save a composition.
+   *
+   * @param file The composition file
+   */
+
+  void compositionSave(Path file);
+
+  /**
    * Close the open composition.
    */
 
   void compositionClose();
+
+  /**
+   * Touch the open composition, marking it as having unsaved data.
+   */
+
+  void compositionTouch();
 
   /**
    * @return The open composition, if any
@@ -77,4 +100,22 @@ public interface OBControllerType
    */
 
   void redo();
+
+  /**
+   * @return The time that the composition was last saved to persistent storage
+   */
+
+  OffsetDateTime timeLastSaved();
+
+  /**
+   * @return The time that the composition was last modified
+   */
+
+  OffsetDateTime timeLastModified();
+
+  /**
+   * @return {@code true} if the last modification time implies that there is unsaved data
+   */
+
+  boolean isUnsaved();
 }

@@ -27,38 +27,18 @@ import java.util.Objects;
 @ProviderType
 public abstract class OBCommandAbstract implements OBCommandType
 {
-  private final String description;
-  private final OBCommandUndoStyle undoStyle;
-  private final boolean isLongRunning;
+  private final OBCommandDescription description;
 
   protected OBCommandAbstract(
-    final String inDescription,
-    final OBCommandUndoStyle inUndoStyle,
-    final boolean inIsLongRunning)
+    final OBCommandDescription inDescription)
   {
     this.description =
-      Objects.requireNonNull(inDescription, "description");
-    this.undoStyle =
-      Objects.requireNonNull(inUndoStyle, "undoStyle");
-    this.isLongRunning =
-      inIsLongRunning;
+      Objects.requireNonNull(inDescription, "inDescription");
   }
 
   @Override
-  public final String description()
+  public final OBCommandDescription description()
   {
     return this.description;
-  }
-
-  @Override
-  public final OBCommandUndoStyle undoStyle()
-  {
-    return this.undoStyle;
-  }
-
-  @Override
-  public final boolean isLongRunning()
-  {
-    return this.isLongRunning;
   }
 }

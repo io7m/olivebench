@@ -22,15 +22,7 @@ package com.io7m.olivebench.controller.api;
 
 public interface OBCommandType
 {
-  /**
-   * @return A humanly-readable description of the command
-   */
-
-  String description();
-
-  OBCommandUndoStyle undoStyle();
-
-  boolean isLongRunning();
+  OBCommandDescription description();
 
   void commandDo(
     OBCommandContextType context)

@@ -40,6 +40,14 @@ public interface OBCompositionType
   OBCompositionMetadata metadata();
 
   /**
+   * Set the metadata for the composition.
+   *
+   * @param metadata The metadata
+   */
+
+  void setMetadata(OBCompositionMetadata metadata);
+
+  /**
    * @return A read-only view of the tracks in the composition
    */
 

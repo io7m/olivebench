@@ -55,4 +55,13 @@ public final class OBCompositionParserV1 implements OBCompositionSPIParsersType
   {
     return new OB1CompositionParser(locale, services);
   }
+
+  @Override
+  public String toString()
+  {
+    return String.format(
+      "[OBCompositionParserV1 0x%08x]",
+      Integer.valueOf(this.hashCode())
+    );
+  }
 }

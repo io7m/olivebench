@@ -24,6 +24,8 @@ import com.io7m.olivebench.composition.parser.api.OBCompositionParsersType;
 import com.io7m.olivebench.composition.parser.spi.OBCompositionSPIParsersType;
 import com.io7m.olivebench.composition.serializer.spi.OBCompositionSPISerializersType;
 import com.io7m.olivebench.controller.OBController;
+import com.io7m.olivebench.controller.api.OBControllerCommandEvent;
+import com.io7m.olivebench.controller.api.OBControllerCommandEventKind;
 import com.io7m.olivebench.controller.api.OBControllerCommandFailedEvent;
 import com.io7m.olivebench.controller.api.OBControllerCompositionEvent;
 import com.io7m.olivebench.controller.api.OBControllerCompositionEventKind;
@@ -41,9 +43,11 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.Clock;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import static com.io7m.olivebench.controller.api.OBControllerCommandEventKind.*;
 import static com.io7m.olivebench.controller.api.OBControllerCompositionEventKind.COMPOSITION_CLOSED;
 import static com.io7m.olivebench.controller.api.OBControllerCompositionEventKind.COMPOSITION_OPENED;
 import static com.io7m.olivebench.controller.api.OBControllerCompositionEventKind.COMPOSITION_UNDO_CHANGED;
@@ -75,6 +79,13 @@ public final class OBControllerTest
     assertEquals(kind, event.kind());
   }
 
+  private void eventIs(
+    final OBControllerCommandEventKind kind)
+  {
+    final var event = (OBControllerCommandEvent) this.events.remove(0);
+    assertEquals(kind, event.kind());
+  }
+
   private <T extends Exception> T failedIs(
     final Class<T> exceptionClass)
   {
@@ -99,7 +110,7 @@ public final class OBControllerTest
       OBCompositionParsersType.class, new OBCompositionParsers());
 
     this.controller =
-      OBController.create(this.services, Locale.ENGLISH);
+      OBController.create(Clock.systemUTC(), this.services, Locale.ENGLISH);
     this.directory =
       OBTestDirectories.createTempDirectory();
     this.events =
@@ -122,10 +133,14 @@ public final class OBControllerTest
     assertFalse(this.controller.canUndo());
     assertFalse(this.controller.canRedo());
 
+    this.eventIs(COMMAND_STARTED);
     this.eventIs(COMPOSITION_OPENED);
     this.eventIs(COMPOSITION_UNDO_CHANGED);
+    this.eventIs(COMMAND_ENDED);
+    this.eventIs(COMMAND_STARTED);
     this.eventIs(COMPOSITION_CLOSED);
     this.eventIs(COMPOSITION_UNDO_CHANGED);
+    this.eventIs(COMMAND_ENDED);
     assertEquals(0, this.events.size());
   }
 
@@ -143,8 +158,12 @@ public final class OBControllerTest
     assertFalse(this.controller.canUndo());
     assertFalse(this.controller.canRedo());
 
+    this.eventIs(COMMAND_STARTED);
     this.failedIs(OBCompositionParseException.class);
+    this.eventIs(COMMAND_ENDED);
+    this.eventIs(COMMAND_STARTED);
     this.failedIs(IllegalStateException.class);
+    this.eventIs(COMMAND_ENDED);
     assertEquals(0, this.events.size());
   }
 

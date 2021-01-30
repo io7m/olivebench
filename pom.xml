@@ -25,17 +25,20 @@
   <inceptionYear>2020</inceptionYear>
 
   <modules>
-    <module>com.io7m.olivebench.composition</module>
-    <module>com.io7m.olivebench.controller.api</module>
-    <module>com.io7m.olivebench.tests</module>
-    <module>com.io7m.olivebench.controller</module>
     <module>com.io7m.olivebench.composition.parser.api</module>
-    <module>com.io7m.olivebench.services.api</module>
     <module>com.io7m.olivebench.composition.parser.spi</module>
-    <module>com.io7m.olivebench.xml.v1</module>
     <module>com.io7m.olivebench.composition.serializer.api</module>
     <module>com.io7m.olivebench.composition.serializer.spi</module>
+    <module>com.io7m.olivebench.composition</module>
+    <module>com.io7m.olivebench.controller.api</module>
+    <module>com.io7m.olivebench.controller</module>
     <module>com.io7m.olivebench.events.api</module>
+    <module>com.io7m.olivebench.gui.main</module>
+    <module>com.io7m.olivebench.gui</module>
+    <module>com.io7m.olivebench.services.api</module>
+    <module>com.io7m.olivebench.tests</module>
+    <module>com.io7m.olivebench.xml.v1</module>
+    <module>com.io7m.olivebench.controller.server</module>
   </modules>
 
   <properties>
@@ -47,6 +50,7 @@
     <com.io7m.jxtrand.version>1.0.0</com.io7m.jxtrand.version>
     <io7m.api.previousVersion>0.0.1-SNAPSHOT</io7m.api.previousVersion>
     <javafx.version>15.0.1</javafx.version>
+    <org.jline.version>3.19.0</org.jline.version>
   </properties>
 
   <licenses>
@@ -167,7 +171,7 @@
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
-        <version>1.3.0-alpha5</version>
+        <version>1.3.0-alpha4</version>
       </dependency>
       <dependency>
         <groupId>com.io7m.jcip</groupId>
@@ -212,6 +216,11 @@
       <dependency>
         <groupId>org.openjfx</groupId>
         <artifactId>javafx-controls</artifactId>
+        <version>${javafx.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-graphics</artifactId>
         <version>${javafx.version}</version>
       </dependency>
       <dependency>
@@ -273,6 +282,16 @@
         <groupId>com.io7m.jxtrand</groupId>
         <artifactId>com.io7m.jxtrand.vanilla</artifactId>
         <version>${com.io7m.jxtrand.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.graalvm.js</groupId>
+        <artifactId>js</artifactId>
+        <version>21.0.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.graalvm.sdk</groupId>
+        <artifactId>graal-sdk</artifactId>
+        <version>21.0.0</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

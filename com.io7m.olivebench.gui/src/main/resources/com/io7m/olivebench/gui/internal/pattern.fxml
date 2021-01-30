@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.canvas.Canvas?><?import javafx.scene.control.ToggleButton?><?import javafx.scene.control.ToggleGroup?><?import javafx.scene.layout.AnchorPane?><?import javafx.scene.layout.VBox?>
+<AnchorPane fx:id="patternRootPane"
+            prefHeight="400.0"
+            prefWidth="600.0"
+            xmlns="http://javafx.com/javafx/11.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.io7m.olivebench.gui.internal.OBPatternViewController">
+  <children>
+    <VBox fx:id="toolbar"
+          maxWidth="-Infinity"
+          minWidth="-Infinity"
+          prefWidth="32.0"
+          AnchorPane.bottomAnchor="0.0"
+          AnchorPane.leftAnchor="0.0"
+          AnchorPane.topAnchor="0.0">
+      <children>
+        <ToggleButton maxHeight="-Infinity"
+                      maxWidth="-Infinity"
+                      minHeight="-Infinity"
+                      minWidth="-Infinity"
+                      mnemonicParsing="false"
+                      prefHeight="32.0"
+                      prefWidth="32.0">
+          <toggleGroup>
+            <ToggleGroup fx:id="toolGroup"/>
+          </toggleGroup>
+        </ToggleButton>
+        <ToggleButton layoutX="10.0"
+                      layoutY="10.0"
+                      maxHeight="-Infinity"
+                      maxWidth="-Infinity"
+                      minHeight="-Infinity"
+                      minWidth="-Infinity"
+                      mnemonicParsing="false"
+                      prefHeight="32.0"
+                      prefWidth="32.0"
+                      toggleGroup="$toolGroup">
+
+        </ToggleButton>
+        <ToggleButton layoutX="10.0"
+                      layoutY="42.0"
+                      maxHeight="-Infinity"
+                      maxWidth="-Infinity"
+                      minHeight="-Infinity"
+                      minWidth="-Infinity"
+                      mnemonicParsing="false"
+                      prefHeight="32.0"
+                      prefWidth="32.0"
+                      toggleGroup="$toolGroup">
+
+        </ToggleButton>
+        <ToggleButton layoutX="10.0"
+                      layoutY="74.0"
+                      maxHeight="-Infinity"
+                      maxWidth="-Infinity"
+                      minHeight="-Infinity"
+                      minWidth="-Infinity"
+                      mnemonicParsing="false"
+                      prefHeight="32.0"
+                      prefWidth="32.0"
+                      toggleGroup="$toolGroup">
+
+        </ToggleButton>
+      </children>
+    </VBox>
+    <Canvas fx:id="timelineCanvas"
+            height="32.0"
+            width="570.0"
+            AnchorPane.leftAnchor="32.0"
+            AnchorPane.rightAnchor="-2.0"
+            AnchorPane.topAnchor="0.0"/>
+    <Canvas fx:id="patternCanvas"
+            height="368.0"
+            layoutX="32.0"
+            layoutY="32.0"
+            width="570.0"
+            AnchorPane.bottomAnchor="0.0"
+            AnchorPane.leftAnchor="32.0"
+            AnchorPane.rightAnchor="-2.0"
+            AnchorPane.topAnchor="32.0"/>
+  </children>
+</AnchorPane>

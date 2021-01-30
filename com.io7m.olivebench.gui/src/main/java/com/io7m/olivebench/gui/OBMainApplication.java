@@ -19,6 +19,8 @@ package com.io7m.olivebench.gui;
 import com.io7m.olivebench.gui.internal.OBMainServices;
 import com.io7m.olivebench.gui.internal.OBMainStrings;
 import com.io7m.olivebench.gui.internal.OBMainViewController;
+import com.io7m.olivebench.gui.internal.OBPatternViewController;
+import com.io7m.olivebench.services.api.OBServiceDirectoryType;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -26,6 +28,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Objects;
 
 public final class OBMainApplication extends Application
 {
@@ -53,6 +57,8 @@ public final class OBMainApplication extends Application
     final var loader =
       new FXMLLoader(mainXML, strings.resources());
 
+    loader.setControllerFactory(clazz -> createController(clazz, mainServices));
+
     final AnchorPane pane = loader.load();
     final var controller = (OBMainViewController) loader.getController();
 
@@ -64,5 +70,23 @@ public final class OBMainApplication extends Application
     stage.setScene(new Scene(pane));
     stage.setTitle(strings.format("programTitle"));
     stage.show();
+  }
+
+  private static Object createController(
+    final Class<?> clazz,
+    final OBServiceDirectoryType mainServices)
+  {
+    LOG.debug("createController: {}", clazz);
+
+    if (Objects.equals(clazz, OBMainViewController.class)) {
+      return new OBMainViewController();
+    }
+    if (Objects.equals(clazz, OBPatternViewController.class)) {
+      return new OBPatternViewController(mainServices);
+    }
+
+    throw new IllegalStateException(
+      String.format("Unrecognized class: %s", clazz)
+    );
   }
 }

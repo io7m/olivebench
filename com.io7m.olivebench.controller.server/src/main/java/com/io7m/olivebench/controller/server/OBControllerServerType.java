@@ -16,10 +16,12 @@
 
 package com.io7m.olivebench.controller.server;
 
+import com.io7m.olivebench.services.api.OBServiceType;
+
 import java.io.Closeable;
 import java.util.concurrent.CompletableFuture;
 
-public interface OBControllerServerType extends Closeable
+public interface OBControllerServerType extends Closeable, OBServiceType
 {
   CompletableFuture<Void> start();
 }

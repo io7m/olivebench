@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020 Mark Raynsford <code@io7m.com> http://io7m.com
+ * Copyright © 2021 Mark Raynsford <code@io7m.com> http://io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -14,22 +14,29 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.olivebench.services.api;
+package com.io7m.olivebench.gui.internal;
 
-import java.io.Closeable;
-import java.util.List;
-import java.util.Optional;
+/**
+ * The action to be taken with unsaved data.
+ */
 
-public interface OBServiceDirectoryType extends Closeable
+public enum OBUnsavedResolution
 {
-  <T extends OBServiceType> Optional<T> optionalService(
-    Class<T> clazz);
+  /**
+   * Save the data.
+   */
 
-  <T extends OBServiceType> T requireService(
-    Class<T> clazz)
-    throws OBServiceException;
+  REQUEST_SAVE,
 
-  <T extends OBServiceType> List<? extends T> optionalServices(
-    Class<T> clazz)
-    throws OBServiceException;
+  /**
+   * Discard the data.
+   */
+
+  REQUEST_DISCARD,
+
+  /**
+   * Cancel the request.
+   */
+
+  REQUEST_CANCEL
 }

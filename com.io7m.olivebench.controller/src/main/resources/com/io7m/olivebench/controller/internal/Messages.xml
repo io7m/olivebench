@@ -3,10 +3,12 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 
 <properties>
-  <entry key="commandCompositionLoad">Load composition {0}.</entry>
   <entry key="commandCompositionClose">Close composition.</entry>
+  <entry key="commandCompositionLoad">Load composition {0}.</entry>
+  <entry key="commandCompositionNew">Create a new composition.</entry>
+  <entry key="commandCompositionSave">Save composition {0}.</entry>
   <entry key="commandCompositionTouch">Touch composition.</entry>
   <entry key="compositionNotOpen">No composition is open.</entry>
-  <entry key="errorUndo">Unable to undo command.</entry>
   <entry key="errorRedo">Unable to redo command.</entry>
+  <entry key="errorUndo">Unable to undo command.</entry>
 </properties>

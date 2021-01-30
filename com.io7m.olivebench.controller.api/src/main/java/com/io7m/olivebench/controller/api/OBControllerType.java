@@ -60,6 +60,12 @@ public interface OBControllerType extends Closeable, OBServiceType
   void compositionSave(Path file);
 
   /**
+   * Create a new composition.
+   */
+
+  void compositionNew();
+
+  /**
    * Close the open composition.
    */
 

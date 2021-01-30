@@ -167,6 +167,28 @@ public final class OBControllerTest
     assertEquals(0, this.events.size());
   }
 
+  @Test
+  public void testNewComposition()
+    throws IOException
+  {
+    this.controller.compositionNew();
+    assertFalse(this.controller.canUndo());
+    assertFalse(this.controller.canRedo());
+    this.controller.compositionClose();
+    assertFalse(this.controller.canUndo());
+    assertFalse(this.controller.canRedo());
+
+    this.eventIs(COMMAND_STARTED);
+    this.eventIs(COMPOSITION_OPENED);
+    this.eventIs(COMPOSITION_UNDO_CHANGED);
+    this.eventIs(COMMAND_ENDED);
+    this.eventIs(COMMAND_STARTED);
+    this.eventIs(COMPOSITION_CLOSED);
+    this.eventIs(COMPOSITION_UNDO_CHANGED);
+    this.eventIs(COMMAND_ENDED);
+    assertEquals(0, this.events.size());
+  }
+
   private OBFileAndStream resource(
     final String name)
     throws IOException

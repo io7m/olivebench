@@ -21,6 +21,7 @@ import com.io7m.olivebench.controller.server.OBControllerClientInterpreters;
 import com.io7m.olivebench.controller.server.OBControllerServers;
 import com.io7m.olivebench.services.api.OBServiceDirectory;
 
+import java.io.ByteArrayOutputStream;
 import java.net.InetSocketAddress;
 import java.time.Clock;
 import java.util.Locale;
@@ -45,6 +46,9 @@ public final class OBControllerServerExample
       new OBControllerClientInterpreters(controller);
     final var servers =
       new OBControllerServers();
+
+    final var interpreter =
+      interpreters.create(ByteArrayOutputStream.nullOutputStream());
 
     try (var server =
            servers.create(

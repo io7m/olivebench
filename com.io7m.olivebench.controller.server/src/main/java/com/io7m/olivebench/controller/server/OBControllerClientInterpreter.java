@@ -56,6 +56,8 @@ public final class OBControllerClientInterpreter
         .allowHostAccess(HostAccess.ALL)
         .allowHostClassLookup(OBControllerClientInterpreter::isClassAllowed)
         .out(outputStream)
+        .option("js.ecmascript-version", "2020")
+        .option("js.strict", "true")
         .build();
 
     final var api = new OBControllerClientAPI(inController);
@@ -85,6 +87,7 @@ public final class OBControllerClientInterpreter
     final String line)
     throws Exception
   {
+    LOG.trace("evaluate: {}", line);
     this.context.eval("js", line);
   }
 }

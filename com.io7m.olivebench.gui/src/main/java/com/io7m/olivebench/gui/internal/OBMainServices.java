@@ -28,6 +28,7 @@ import com.io7m.olivebench.controller.OBController;
 import com.io7m.olivebench.controller.api.OBControllerAsynchronousDecorator;
 import com.io7m.olivebench.controller.api.OBControllerAsynchronousType;
 import com.io7m.olivebench.controller.server.OBControllerClientInterpreters;
+import com.io7m.olivebench.controller.server.OBControllerServerType;
 import com.io7m.olivebench.controller.server.OBControllerServers;
 import com.io7m.olivebench.services.api.OBServiceDirectory;
 import com.io7m.olivebench.services.api.OBServiceDirectoryType;
@@ -78,11 +79,12 @@ public final class OBMainServices
     services.register(OBControllerAsynchronousType.class, controllerAsync);
     services.register(OBMainStrings.class, strings);
 
-    createServer(controllerAsync);
+    createServer(services, controllerAsync);
     return services;
   }
 
   private static void createServer(
+    final OBServiceDirectory services,
     final OBControllerAsynchronousType controller)
     throws IOException
   {
@@ -95,8 +97,8 @@ public final class OBMainServices
         interpreters,
         new InetSocketAddress("localhost", 9700)
       );
-
     server.start();
+    services.register(OBControllerServerType.class, server);
   }
 
   private static <T extends OBServiceType> void loadFromServiceLoader(

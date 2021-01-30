@@ -20,7 +20,9 @@ import net.jcip.annotations.GuardedBy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -106,6 +108,40 @@ public final class OBServiceDirectory implements OBServiceDirectoryType
         .stream()
         .flatMap(xs -> xs.stream().map(clazz::cast))
         .collect(Collectors.toList());
+    }
+  }
+
+  @Override
+  public void close()
+    throws IOException
+  {
+    final List<Object> allServices;
+    synchronized (this.serviceLock) {
+      allServices =
+        this.services.values()
+          .stream()
+          .flatMap(Collection::stream)
+          .collect(Collectors.toList());
+    }
+
+    Exception exception = null;
+    for (final var service : allServices) {
+      if (service instanceof AutoCloseable) {
+        try {
+          LOG.debug("close: {}", service);
+          ((AutoCloseable) service).close();
+        } catch (final Exception e) {
+          if (exception == null) {
+            exception = e;
+          } else {
+            exception.addSuppressed(e);
+          }
+        }
+      }
+    }
+
+    if (exception != null) {
+      throw new IOException(exception);
     }
   }
 }

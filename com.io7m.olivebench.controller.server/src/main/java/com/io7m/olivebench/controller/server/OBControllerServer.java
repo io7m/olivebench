@@ -29,6 +29,7 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -45,6 +46,7 @@ public final class OBControllerServer implements OBControllerServerType
   private final InetSocketAddress address;
   private final ServerSocket serverSocket;
   private final AtomicBoolean closing;
+  private final ConcurrentHashMap<Socket, Socket> clientSockets;
 
   private OBControllerServer(
     final ExecutorService inExecutor,
@@ -62,6 +64,8 @@ public final class OBControllerServer implements OBControllerServerType
       Objects.requireNonNull(inServerSocket, "inServerSocket");
     this.closing =
       new AtomicBoolean(false);
+    this.clientSockets =
+      new ConcurrentHashMap<>();
   }
 
   public static OBControllerServerType create(
@@ -84,6 +88,8 @@ public final class OBControllerServer implements OBControllerServerType
 
     final var serverSocket =
       new ServerSocket(address.getPort(), 10, address.getAddress());
+    serverSocket.setPerformancePreferences(0, 1, 0);
+    serverSocket.setReuseAddress(true);
 
     return new OBControllerServer(
       executor,
@@ -102,6 +108,14 @@ public final class OBControllerServer implements OBControllerServerType
           this.serverSocket.close();
         } catch (final IOException e) {
           LOG.error("close: ", e);
+        }
+
+        for (final var socket : this.clientSockets.values()) {
+          try {
+            socket.close();
+          } catch (final IOException e) {
+            LOG.error("close: ", e);
+          }
         }
       });
       this.executor.shutdown();
@@ -126,6 +140,7 @@ public final class OBControllerServer implements OBControllerServerType
       while (!this.closing.get()) {
         try {
           final var clientSocket = this.serverSocket.accept();
+          this.clientSockets.put(clientSocket, clientSocket);
           this.executor.execute(() -> this.runForClient(clientSocket));
         } catch (final SocketTimeoutException e) {
           // Good.
@@ -171,7 +186,17 @@ public final class OBControllerServer implements OBControllerServerType
     } catch (final IOException e) {
       LOG.error("[{}] i/o error: ", clientAddress, e);
     } finally {
+      this.clientSockets.remove(clientSocket);
       LOG.info("[{}] disconnect", clientAddress);
     }
+  }
+
+  @Override
+  public String toString()
+  {
+    return String.format(
+      "[OBControllerServer 0x%08x]",
+      Integer.valueOf(this.hashCode())
+    );
   }
 }

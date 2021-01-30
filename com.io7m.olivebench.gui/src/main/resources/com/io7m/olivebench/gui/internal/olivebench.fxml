@@ -15,7 +15,7 @@
         <menus>
           <Menu mnemonicParsing="false" text="%menuFile">
             <items>
-                  <MenuItem mnemonicParsing="false" text="%menuFileNew">
+                  <MenuItem fx:id="fileNew" mnemonicParsing="false" onAction="#onFileRequestNew" text="%menuFileNew">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="N" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator>
@@ -39,7 +39,7 @@
                      </accelerator>
                   </MenuItem>
                   <SeparatorMenuItem mnemonicParsing="false" />
-              <MenuItem mnemonicParsing="false" text="%menuQuit">
+              <MenuItem fx:id="fileQuit" mnemonicParsing="false" onAction="#onFileRequestQuit" text="%menuQuit">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="Q" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator></MenuItem>

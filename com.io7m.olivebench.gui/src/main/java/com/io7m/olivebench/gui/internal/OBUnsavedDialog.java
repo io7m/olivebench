@@ -22,9 +22,9 @@ import javafx.scene.control.ButtonType;
 
 import java.util.Objects;
 
-import static com.io7m.olivebench.gui.internal.OBUnsavedDialog.OBUnsavedResolution.REQUEST_CANCEL;
-import static com.io7m.olivebench.gui.internal.OBUnsavedDialog.OBUnsavedResolution.REQUEST_DISCARD;
-import static com.io7m.olivebench.gui.internal.OBUnsavedDialog.OBUnsavedResolution.REQUEST_SAVE;
+import static com.io7m.olivebench.gui.internal.OBUnsavedResolution.REQUEST_CANCEL;
+import static com.io7m.olivebench.gui.internal.OBUnsavedResolution.REQUEST_DISCARD;
+import static com.io7m.olivebench.gui.internal.OBUnsavedResolution.REQUEST_SAVE;
 
 public final class OBUnsavedDialog
 {
@@ -67,28 +67,4 @@ public final class OBUnsavedDialog
     return REQUEST_CANCEL;
   }
 
-  /**
-   * The action to be taken with unsaved data.
-   */
-
-  public enum OBUnsavedResolution
-  {
-    /**
-     * Save the data.
-     */
-
-    REQUEST_SAVE,
-
-    /**
-     * Discard the data.
-     */
-
-    REQUEST_DISCARD,
-
-    /**
-     * Cancel the request.
-     */
-
-    REQUEST_CANCEL
-  }
 }

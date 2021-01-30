@@ -103,6 +103,12 @@ public final class OBControllerAsynchronousDecorator
   }
 
   @Override
+  public void compositionNew()
+  {
+    this.executor.execute(this.delegate::compositionNew);
+  }
+
+  @Override
   public void compositionClose()
   {
     this.executor.execute(this.delegate::compositionClose);

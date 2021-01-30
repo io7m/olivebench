@@ -47,6 +47,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+import static com.io7m.olivebench.gui.internal.OBUnsavedResolution.REQUEST_CANCEL;
+import static com.io7m.olivebench.gui.internal.OBUnsavedResolution.REQUEST_DISCARD;
+
 public final class OBMainViewController implements Initializable
 {
   private static final Logger LOG =
@@ -68,11 +71,15 @@ public final class OBMainViewController implements Initializable
   @FXML
   private MenuItem editRedo;
   @FXML
+  private MenuItem fileNew;
+  @FXML
   private MenuItem fileClose;
   @FXML
   private MenuItem fileSave;
   @FXML
   private MenuItem fileSaveAs;
+  @FXML
+  private MenuItem fileQuit;
 
   public OBMainViewController()
   {
@@ -80,6 +87,20 @@ public final class OBMainViewController implements Initializable
       JWFileChoosers.create();
     this.compositionSubscriptions =
       new CompositeDisposable();
+  }
+
+  @FXML
+  private boolean onFileRequestNew()
+  {
+    if (this.controller.isUnsaved()) {
+      if (!this.onFileRequestSave()) {
+        return false;
+      }
+      this.controller.compositionClose();
+    }
+
+    this.controller.compositionNew();
+    return true;
   }
 
   @FXML
@@ -103,7 +124,7 @@ public final class OBMainViewController implements Initializable
   }
 
   @FXML
-  private void onFileRequestSaveAs()
+  private boolean onFileRequestSaveAs()
   {
     final var chooser =
       this.fileChoosers.create(
@@ -119,17 +140,24 @@ public final class OBMainViewController implements Initializable
     final var files = chooser.showAndWait();
     if (!files.isEmpty()) {
       this.controller.compositionSave(files.get(0));
+      return true;
     }
+    return false;
   }
 
   @FXML
-  private void onFileRequestSave()
+  private boolean onFileRequestSave()
   {
-
+    final var file = this.controller.compositionFile();
+    if (file.isPresent()) {
+      this.controller.compositionSave(file.get());
+      return true;
+    }
+    return this.onFileRequestSaveAs();
   }
 
   @FXML
-  private void onFileRequestClose()
+  private OBUnsavedResolution onFileRequestClose()
   {
     if (this.controller.isUnsaved()) {
       final var save =
@@ -139,20 +167,40 @@ public final class OBMainViewController implements Initializable
         case REQUEST_SAVE: {
           final var fileOpt = this.controller.compositionFile();
           if (fileOpt.isPresent()) {
-            this.onFileRequestSave();
-          } else {
-            this.onFileRequestSaveAs();
+            return this.onFileRequestSave() ? save : REQUEST_CANCEL;
           }
-          break;
+          return this.onFileRequestSaveAs() ? save : REQUEST_CANCEL;
         }
         case REQUEST_DISCARD: {
           this.controller.compositionClose();
-          break;
+          return save;
         }
         case REQUEST_CANCEL: {
-          break;
+          return save;
         }
       }
+    }
+    return REQUEST_DISCARD;
+  }
+
+  @FXML
+  private void onFileRequestQuit()
+  {
+    final var resolution = this.onFileRequestClose();
+    switch (resolution) {
+      case REQUEST_SAVE:
+      case REQUEST_DISCARD: {
+        LOG.info("shutting down");
+        try {
+          this.mainServices.close();
+        } catch (final IOException e) {
+          LOG.error("i/o error: ", e);
+        }
+        Platform.exit();
+        break;
+      }
+      case REQUEST_CANCEL:
+        break;
     }
   }
 
@@ -173,8 +221,6 @@ public final class OBMainViewController implements Initializable
   private void onControllerEvent(
     final OBControllerEventType event)
   {
-    LOG.debug("onControllerEvent: {}", event);
-
     if (event instanceof OBControllerCommandFailedEvent) {
       this.onControllerEventCommandFailed(
         (OBControllerCommandFailedEvent) event);
@@ -285,7 +331,9 @@ public final class OBMainViewController implements Initializable
   {
     if (compositionFile.isPresent()) {
       if (hasUnsaved) {
-        return this.strings.format("programTitleWithFileUnsaved", compositionFile.get());
+        return this.strings.format(
+          "programTitleWithFileUnsaved",
+          compositionFile.get());
       }
       return this.strings.format("programTitleWithFile", compositionFile.get());
     }

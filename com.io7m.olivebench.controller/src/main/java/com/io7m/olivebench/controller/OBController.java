@@ -29,6 +29,7 @@ import com.io7m.olivebench.controller.api.OBControllerEventType;
 import com.io7m.olivebench.controller.api.OBControllerType;
 import com.io7m.olivebench.controller.internal.OBCommandCompositionClose;
 import com.io7m.olivebench.controller.internal.OBCommandCompositionLoad;
+import com.io7m.olivebench.controller.internal.OBCommandCompositionNew;
 import com.io7m.olivebench.controller.internal.OBCommandCompositionSave;
 import com.io7m.olivebench.controller.internal.OBCommandCompositionTouch;
 import com.io7m.olivebench.controller.internal.OBCommandStrings;
@@ -163,6 +164,16 @@ public final class OBController implements OBControllerType
 
     this.resetClock();
     this.compositionFile = Optional.of(file);
+  }
+
+  @Override
+  public void compositionNew()
+  {
+    this.executeCommand(
+      new OBCommandCompositionNew(this.services, this.strings));
+
+    this.resetClock();
+    this.compositionFile = Optional.empty();
   }
 
   @Override

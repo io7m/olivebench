@@ -50,4 +50,13 @@ public final class OBControllerClientAPI implements OBControllerClientAPIType
   {
     this.controller.compositionClose();
   }
+
+  @Override
+  public String toString()
+  {
+    return String.format(
+      "[OBControllerClientAPI 0x%08x]",
+      Integer.valueOf(this.hashCode())
+    );
+  }
 }

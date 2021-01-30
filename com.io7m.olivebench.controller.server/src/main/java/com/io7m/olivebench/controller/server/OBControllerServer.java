@@ -145,7 +145,9 @@ public final class OBControllerServer implements OBControllerServerType
         } catch (final SocketTimeoutException e) {
           // Good.
         } catch (final IOException e) {
-          LOG.error("accept: ", e);
+          if (!this.serverSocket.isClosed()) {
+            LOG.error("accept: ", e);
+          }
         }
       }
     });
@@ -184,7 +186,9 @@ public final class OBControllerServer implements OBControllerServerType
         }
       }
     } catch (final IOException e) {
-      LOG.error("[{}] i/o error: ", clientAddress, e);
+      if (!clientSocket.isClosed()) {
+        LOG.error("[{}] i/o error: ", clientAddress, e);
+      }
     } finally {
       this.clientSockets.remove(clientSocket);
       LOG.info("[{}] disconnect", clientAddress);

@@ -89,10 +89,15 @@ public final class OBControllerTest
   private <T extends Exception> T failedIs(
     final Class<T> exceptionClass)
   {
-    final var event = (OBControllerCommandFailedEvent) this.events.remove(0);
-    final var exception = event.exception().get().getCause();
-    assertEquals(exceptionClass, exception.getClass());
-    return exceptionClass.cast(exception);
+    final var event = this.events.remove(0);
+    if (event instanceof OBControllerCommandFailedEvent) {
+      final var exception =
+        ((OBControllerCommandFailedEvent) event).exception().get().getCause();
+      assertEquals(exceptionClass, exception.getClass());
+      return exceptionClass.cast(exception);
+    }
+
+    throw new IllegalStateException("Event is " + event);
   }
 
   @BeforeEach
@@ -162,7 +167,7 @@ public final class OBControllerTest
     this.failedIs(OBCompositionParseException.class);
     this.eventIs(COMMAND_ENDED);
     this.eventIs(COMMAND_STARTED);
-    this.failedIs(IllegalStateException.class);
+    this.eventIs(COMPOSITION_UNDO_CHANGED);
     this.eventIs(COMMAND_ENDED);
     assertEquals(0, this.events.size());
   }

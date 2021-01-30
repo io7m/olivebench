@@ -21,6 +21,7 @@ import com.io7m.olivebench.composition.internal.OBCompositionStrings;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.time.Clock;
 import java.util.Locale;
 
 /**
@@ -40,11 +41,16 @@ public final class OBCompositions implements OBCompositionFactoryType
 
   @Override
   public OBCompositionType createComposition(
+    final Clock clock,
     final Locale locale,
     final OBCompositionMetadata metadata)
   {
     try {
-      return new OBComposition(new OBCompositionStrings(locale), metadata);
+      return new OBComposition(
+        clock,
+        new OBCompositionStrings(locale),
+        metadata
+      );
     } catch (final IOException e) {
       throw new UncheckedIOException(e);
     }

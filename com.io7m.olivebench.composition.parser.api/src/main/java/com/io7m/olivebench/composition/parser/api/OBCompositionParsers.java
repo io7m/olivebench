@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.time.Clock;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -67,6 +68,8 @@ public final class OBCompositionParsers implements OBCompositionParsersType
 
     final var locale =
       Locale.getDefault();
+    final var clock =
+      Clock.systemUTC();
 
     final var rootElements =
       new HashMap<BTQualifiedName, BTElementHandlerConstructorType<?, OBCompositionType>>(
@@ -82,7 +85,7 @@ public final class OBCompositionParsers implements OBCompositionParsersType
       }
       rootElements.put(
         parser.rootName(),
-        c -> parser.createHandler(locale, services));
+        c -> parser.createHandler(clock, locale, services));
     }
 
     return new Parser(source, stream, rootElements, schemaMappings.build());

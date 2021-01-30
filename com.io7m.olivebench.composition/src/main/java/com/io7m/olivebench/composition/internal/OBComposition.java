@@ -18,13 +18,17 @@ package com.io7m.olivebench.composition.internal;
 
 import com.io7m.olivebench.composition.OBCompositionEventType;
 import com.io7m.olivebench.composition.OBCompositionMetadata;
+import com.io7m.olivebench.composition.OBCompositionModificationTimeChangedEvent;
 import com.io7m.olivebench.composition.OBCompositionModifiedEvent;
 import com.io7m.olivebench.composition.OBCompositionType;
 import com.io7m.olivebench.composition.OBTrackType;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import io.reactivex.rxjava3.subjects.Subject;
 
+import java.time.Clock;
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.SortedMap;
@@ -40,15 +44,21 @@ public final class OBComposition implements OBCompositionType
 {
   private final ConcurrentSkipListMap<UUID, OBTrackType> tracks;
   private final SortedMap<UUID, OBTrackType> tracksRead;
+  private final Clock clock;
   private final OBCompositionStrings strings;
   private final OBObjectMap objects;
   private final Subject<OBCompositionEventType> eventSubject;
+  private final Disposable modifiedSubscription;
+  private volatile OffsetDateTime timeLastModified;
   private volatile OBCompositionMetadata metadata;
 
   public OBComposition(
+    final Clock inClock,
     final OBCompositionStrings inStrings,
     final OBCompositionMetadata inMetadata)
   {
+    this.clock =
+      Objects.requireNonNull(inClock, "clock");
     this.strings =
       Objects.requireNonNull(inStrings, "strings");
     this.metadata =
@@ -59,9 +69,20 @@ public final class OBComposition implements OBCompositionType
       new ConcurrentSkipListMap<>();
     this.tracksRead =
       Collections.unmodifiableSortedMap(this.tracks);
+    this.timeLastModified =
+      OffsetDateTime.now(this.clock);
     this.eventSubject =
       PublishSubject.<OBCompositionEventType>create()
         .toSerialized();
+    this.modifiedSubscription =
+      this.eventSubject.ofType(OBCompositionModifiedEvent.class)
+        .subscribe(this::onModified);
+  }
+
+  private void onModified(
+    final OBCompositionModifiedEvent event)
+  {
+    this.setLastModified(OffsetDateTime.now(this.clock));
   }
 
   private OBTrackType trackSave(
@@ -162,6 +183,23 @@ public final class OBComposition implements OBCompositionType
   {
     return this.trackSave(
       this.objects.withSpecific(id, freshId -> new OBTrack(this, freshId))
+    );
+  }
+
+  @Override
+  public OffsetDateTime lastModified()
+  {
+    return this.timeLastModified;
+  }
+
+  @Override
+  public void setLastModified(
+    final OffsetDateTime time)
+  {
+    this.timeLastModified =
+      Objects.requireNonNull(time, "time");
+    this.eventSubject.onNext(
+      OBCompositionModificationTimeChangedEvent.of(this.timeLastModified)
     );
   }
 

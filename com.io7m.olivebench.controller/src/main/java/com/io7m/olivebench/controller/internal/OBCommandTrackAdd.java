@@ -16,55 +16,47 @@
 
 package com.io7m.olivebench.controller.internal;
 
-import com.io7m.olivebench.composition.OBCompositionMetadata;
-import com.io7m.olivebench.composition.OBCompositions;
-import com.io7m.olivebench.composition.OBTimeConfiguration;
+import com.io7m.olivebench.composition.OBTrackType;
+import com.io7m.olivebench.controller.api.OBCommandAbstractUndoable;
 import com.io7m.olivebench.controller.api.OBCommandContextType;
 import com.io7m.olivebench.controller.api.OBCommandDescription;
 import com.io7m.olivebench.controller.api.OBCommandUndoStyle;
-import com.io7m.olivebench.services.api.OBServiceDirectoryType;
 
-import java.util.UUID;
-
-public final class OBCommandCompositionNew extends OBCommand
+public final class OBCommandTrackAdd extends OBCommandAbstractUndoable
 {
-  public OBCommandCompositionNew(
-    final OBServiceDirectoryType inServices,
+  private OBTrackType trackCreated;
+
+  public OBCommandTrackAdd(
     final OBCommandStrings inStrings)
   {
     super(
-      inServices,
-      inStrings,
       OBCommandDescription.builder()
-        .setDescription(inStrings.format("commandCompositionNew"))
+        .setDescription(inStrings.format("commandTrackAdd"))
         .setLongRunning(false)
-        .setUndoStyle(OBCommandUndoStyle.CLEARS_UNDO_STACK)
+        .setUndoStyle(OBCommandUndoStyle.CAN_UNDO)
         .build()
     );
   }
 
   @Override
-  public void commandDo(
+  protected void commandDoActual(
     final OBCommandContextType context)
   {
-    final var timeConfiguration =
-      OBTimeConfiguration.builder()
-        .build();
+    final var composition = context.composition();
+    this.trackCreated = composition.createTrack();
+  }
 
-    final var meta =
-      OBCompositionMetadata.builder()
-        .setId(UUID.randomUUID())
-        .setTimeConfiguration(timeConfiguration)
-        .build();
+  @Override
+  protected void commandRedoActual(
+    final OBCommandContextType context)
+  {
+    this.trackCreated.undelete();
+  }
 
-    final var composition =
-      new OBCompositions()
-        .createComposition(
-          context.clock(),
-          context.locale(),
-          meta
-        );
-
-    context.compositionOpen(composition);
+  @Override
+  protected void commandUndoActual(
+    final OBCommandContextType context)
+  {
+    this.trackCreated.delete();
   }
 }

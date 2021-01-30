@@ -17,6 +17,8 @@
 package com.io7m.olivebench.controller.api;
 
 import com.io7m.olivebench.composition.OBCompositionType;
+import com.io7m.olivebench.composition.OBTrackMetadata;
+import com.io7m.olivebench.composition.OBTrackType;
 import com.io7m.olivebench.services.api.OBServiceType;
 import io.reactivex.rxjava3.core.Observable;
 
@@ -124,4 +126,21 @@ public interface OBControllerType extends Closeable, OBServiceType
    */
 
   boolean isUnsaved();
+
+  /**
+   * Create a new track in the composition.
+   */
+
+  void trackCreate();
+
+  /**
+   * Replace the metadata for a given track.
+   *
+   * @param track       The track
+   * @param newMetadata The new metadata
+   */
+
+  void trackSetMetadata(
+    OBTrackType track,
+    OBTrackMetadata newMetadata);
 }

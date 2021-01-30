@@ -23,6 +23,7 @@ import com.io7m.olivebench.composition.OBCompositionType;
 import com.io7m.olivebench.services.api.OBServiceDirectoryType;
 import com.io7m.olivebench.services.api.OBServiceType;
 
+import java.time.Clock;
 import java.util.List;
 import java.util.Locale;
 
@@ -53,6 +54,7 @@ public interface OBCompositionSPIParsersType extends OBServiceType
   BTQualifiedName rootName();
 
   /**
+   * @param clock    The clock
    * @param locale   The locale used for the composition
    * @param services A service directory
    *
@@ -60,6 +62,7 @@ public interface OBCompositionSPIParsersType extends OBServiceType
    */
 
   BTElementHandlerType<?, OBCompositionType> createHandler(
+    Clock clock,
     Locale locale,
     OBServiceDirectoryType services);
 }

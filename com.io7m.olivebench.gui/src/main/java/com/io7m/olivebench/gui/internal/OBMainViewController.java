@@ -21,6 +21,7 @@ import com.io7m.jwheatsheaf.api.JWFileChooserConfiguration;
 import com.io7m.jwheatsheaf.api.JWFileChoosersType;
 import com.io7m.jwheatsheaf.ui.JWFileChoosers;
 import com.io7m.olivebench.composition.OBCompositionEventType;
+import com.io7m.olivebench.composition.OBCompositionModificationTimeChangedEvent;
 import com.io7m.olivebench.composition.OBCompositionModifiedEvent;
 import com.io7m.olivebench.controller.api.OBControllerAsynchronousType;
 import com.io7m.olivebench.controller.api.OBControllerCommandEvent;
@@ -180,6 +181,8 @@ public final class OBMainViewController implements Initializable
         }
       }
     }
+
+    this.controller.compositionClose();
     return REQUEST_DISCARD;
   }
 
@@ -202,6 +205,18 @@ public final class OBMainViewController implements Initializable
       case REQUEST_CANCEL:
         break;
     }
+  }
+
+  @FXML
+  private void onEditRequestUndo()
+  {
+    this.controller.undo();
+  }
+
+  @FXML
+  private void onEditRequestRedo()
+  {
+    this.controller.redo();
   }
 
   public void setServices(
@@ -259,6 +274,7 @@ public final class OBMainViewController implements Initializable
     Platform.runLater(() -> {
       switch (event.kind()) {
         case COMPOSITION_OPENED: {
+          LOG.debug("composition opened");
           final var composition =
             this.controller.composition()
               .orElseThrow(IllegalStateException::new);
@@ -278,12 +294,25 @@ public final class OBMainViewController implements Initializable
         }
 
         case COMPOSITION_UNDO_CHANGED: {
-          this.editRedo.setDisable(!this.controller.canRedo());
-          this.editUndo.setDisable(!this.controller.canUndo());
+          final var canRedo = this.controller.canRedo();
+          final var canUndo = this.controller.canUndo();
+          LOG.trace(
+            "canUndo: {} canRedo: {}",
+            Boolean.valueOf(canUndo),
+            Boolean.valueOf(canRedo)
+          );
+          this.editRedo.setDisable(!canRedo);
+          this.editUndo.setDisable(!canUndo);
+          break;
+        }
+
+        case COMPOSITION_SAVED: {
+          this.onSaveStatusChanged();
           break;
         }
 
         case COMPOSITION_CLOSED: {
+          LOG.debug("composition closed");
           this.fileClose.setDisable(true);
           this.fileSaveAs.setDisable(true);
           this.compositionPane.setVisible(false);
@@ -303,26 +332,39 @@ public final class OBMainViewController implements Initializable
     final OBCompositionEventType event)
   {
     if (event instanceof OBCompositionModifiedEvent) {
-      this.onCompositionModifiedEvent((OBCompositionModifiedEvent) event);
+      this.onCompositionModifiedEvent(
+        (OBCompositionModifiedEvent) event);
+    } else if (event instanceof OBCompositionModificationTimeChangedEvent) {
+      this.onCompositionModificationTimeChangedEvent(
+        (OBCompositionModificationTimeChangedEvent) event);
     } else {
       throw new IllegalStateException();
     }
   }
 
+  private void onCompositionModificationTimeChangedEvent(
+    final OBCompositionModificationTimeChangedEvent event)
+  {
+    LOG.trace("modification time: {}", event.time());
+  }
+
   private void onCompositionModifiedEvent(
     final OBCompositionModifiedEvent event)
   {
-    Platform.runLater(() -> {
-      final var compositionFile =
-        this.controller.compositionFile();
-      final var hasUnsaved =
-        this.controller.isUnsaved();
+    Platform.runLater(this::onSaveStatusChanged);
+  }
 
-      this.fileSave.setDisable(!hasUnsaved);
-      this.stage.setTitle(
-        this.determineWindowTitle(compositionFile, hasUnsaved)
-      );
-    });
+  private void onSaveStatusChanged()
+  {
+    final var compositionFile =
+      this.controller.compositionFile();
+    final var hasUnsaved =
+      this.controller.isUnsaved();
+
+    this.fileSave.setDisable(!hasUnsaved);
+    this.stage.setTitle(
+      this.determineWindowTitle(compositionFile, hasUnsaved)
+    );
   }
 
   private String determineWindowTitle(

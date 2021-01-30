@@ -18,6 +18,7 @@ package com.io7m.olivebench.composition;
 
 import com.io7m.olivebench.services.api.OBServiceType;
 
+import java.time.Clock;
 import java.util.Locale;
 
 /**
@@ -29,6 +30,7 @@ public interface OBCompositionFactoryType extends OBServiceType
   /**
    * Create a new empty composition.
    *
+   * @param clock    The clock
    * @param locale   The locale
    * @param metadata The composition metadata
    *
@@ -36,6 +38,7 @@ public interface OBCompositionFactoryType extends OBServiceType
    */
 
   OBCompositionType createComposition(
+    Clock clock,
     Locale locale,
     OBCompositionMetadata metadata);
 }

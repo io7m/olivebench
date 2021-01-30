@@ -16,6 +16,7 @@
 
 package com.io7m.olivebench.gui;
 
+import com.io7m.olivebench.gui.internal.OBArrangementViewController;
 import com.io7m.olivebench.gui.internal.OBMainServices;
 import com.io7m.olivebench.gui.internal.OBMainStrings;
 import com.io7m.olivebench.gui.internal.OBMainViewController;
@@ -83,6 +84,9 @@ public final class OBMainApplication extends Application
     }
     if (Objects.equals(clazz, OBPatternViewController.class)) {
       return new OBPatternViewController(mainServices);
+    }
+    if (Objects.equals(clazz, OBArrangementViewController.class)) {
+      return new OBArrangementViewController(mainServices);
     }
 
     throw new IllegalStateException(

@@ -17,6 +17,8 @@
 package com.io7m.olivebench.controller.api;
 
 import com.io7m.olivebench.composition.OBCompositionType;
+import com.io7m.olivebench.composition.OBTrackMetadata;
+import com.io7m.olivebench.composition.OBTrackType;
 import io.reactivex.rxjava3.core.Observable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -166,6 +168,20 @@ public final class OBControllerAsynchronousDecorator
   public boolean isUnsaved()
   {
     return this.delegate.isUnsaved();
+  }
+
+  @Override
+  public void trackCreate()
+  {
+    this.executor.execute(this.delegate::trackCreate);
+  }
+
+  @Override
+  public void trackSetMetadata(
+    final OBTrackType track,
+    final OBTrackMetadata newMetadata)
+  {
+    this.executor.execute(() -> this.delegate.trackSetMetadata(track, newMetadata));
   }
 
   @Override

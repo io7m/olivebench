@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020 Mark Raynsford <code@io7m.com> http://io7m.com
+ * Copyright © 2021 Mark Raynsford <code@io7m.com> http://io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -14,32 +14,25 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.olivebench.controller.api;
+package com.io7m.olivebench.composition;
 
-import org.osgi.annotation.versioning.ProviderType;
+import com.io7m.immutables.styles.ImmutablesStyleType;
+import org.immutables.value.Value;
 
-import java.util.Objects;
+import java.time.OffsetDateTime;
 
 /**
- * A convenient abstract command implementation.
+ * An event indicating that the modification time of a composition changed. This
+ * does not necessarily imply that the composition was modified; undoing an
+ * operation will reset the modification time of a composition and trigger
+ * an event of this type.
  */
 
-@ProviderType
-public abstract class OBCommandAbstract implements OBCommandType
+@ImmutablesStyleType
+@Value.Immutable
+public interface OBCompositionModificationTimeChangedEventType
+  extends OBCompositionEventType
 {
-  private final OBCommandDescription description;
-
-  protected OBCommandAbstract(
-    final OBCommandDescription inDescription)
-  {
-    this.description =
-      Objects.requireNonNull(inDescription, "inDescription");
-  }
-
-  @Override
-  public final OBCommandDescription description()
-  {
-    return this.description;
-  }
-
+  @Value.Parameter
+  OffsetDateTime time();
 }

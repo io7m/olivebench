@@ -24,6 +24,7 @@ import com.io7m.olivebench.composition.parser.spi.OBCompositionSPIParsersType;
 import com.io7m.olivebench.services.api.OBServiceDirectoryType;
 import com.io7m.olivebench.xml.v1.internal.OB1CompositionParser;
 
+import java.time.Clock;
 import java.util.List;
 import java.util.Locale;
 
@@ -50,10 +51,11 @@ public final class OBCompositionParserV1 implements OBCompositionSPIParsersType
 
   @Override
   public BTElementHandlerType<?, OBCompositionType> createHandler(
+    final Clock clock,
     final Locale locale,
     final OBServiceDirectoryType services)
   {
-    return new OB1CompositionParser(locale, services);
+    return new OB1CompositionParser(clock, locale, services);
   }
 
   @Override

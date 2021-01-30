@@ -25,6 +25,7 @@ import com.io7m.olivebench.composition.OBCompositionMetadata;
 import com.io7m.olivebench.composition.OBCompositionType;
 import com.io7m.olivebench.services.api.OBServiceDirectoryType;
 
+import java.time.Clock;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -36,15 +37,19 @@ import static java.util.Map.ofEntries;
 public final class OB1CompositionParser
   implements BTElementHandlerType<Object, OBCompositionType>
 {
+  private final Clock clock;
   private final Locale locale;
   private final OBCompositionFactoryType factory;
   private OBCompositionMetadata metadata;
   private OBCompositionType composition;
 
   public OB1CompositionParser(
+    final Clock inClock,
     final Locale inLocale,
     final OBServiceDirectoryType services)
   {
+    this.clock =
+      Objects.requireNonNull(inClock, "clock");
     this.locale =
       Objects.requireNonNull(inLocale, "locale");
     this.factory =
@@ -72,9 +77,8 @@ public final class OB1CompositionParser
   {
     if (result instanceof OBCompositionMetadata) {
       this.metadata = (OBCompositionMetadata) result;
-      this.composition = this.factory.createComposition(
-        this.locale,
-        this.metadata);
+      this.composition =
+        this.factory.createComposition(this.clock, this.locale, this.metadata);
       return;
     }
     if (result instanceof OB1Tracks) {

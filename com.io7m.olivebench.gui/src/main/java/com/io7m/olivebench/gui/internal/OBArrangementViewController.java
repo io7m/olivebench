@@ -19,6 +19,7 @@ package com.io7m.olivebench.gui.internal;
 import com.io7m.olivebench.composition.OBCompositionEventType;
 import com.io7m.olivebench.composition.OBCompositionModificationTimeChangedEvent;
 import com.io7m.olivebench.composition.OBCompositionModifiedEvent;
+import com.io7m.olivebench.composition.OBTrackType;
 import com.io7m.olivebench.controller.api.OBControllerAsynchronousType;
 import com.io7m.olivebench.controller.api.OBControllerCommandEvent;
 import com.io7m.olivebench.controller.api.OBControllerCommandFailedEvent;
@@ -27,37 +28,36 @@ import com.io7m.olivebench.controller.api.OBControllerEventType;
 import com.io7m.olivebench.services.api.OBServiceDirectoryType;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.canvas.Canvas;
+import javafx.scene.control.ListView;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
-public final class OBPatternViewController implements Initializable
+public final class OBArrangementViewController implements Initializable
 {
   private static final Logger LOG =
-    LoggerFactory.getLogger(OBPatternViewController.class);
+    LoggerFactory.getLogger(OBArrangementViewController.class);
 
   private final OBServiceDirectoryType services;
   private final OBControllerAsynchronousType controller;
   private final CompositeDisposable compositionSubscriptions;
 
   @FXML
-  private Pane patternRootPane;
+  private Pane rootPane;
   @FXML
   private Pane toolbar;
   @FXML
-  private Canvas timelineCanvas;
-  @FXML
-  private Canvas patternCanvas;
+  private ListView<OBTrackType> trackList;
 
-  public OBPatternViewController(
+  public OBArrangementViewController(
     final OBServiceDirectoryType inServices)
   {
     this.services =
@@ -75,25 +75,14 @@ public final class OBPatternViewController implements Initializable
   {
     LOG.debug("initialize");
 
-    this.patternRootPane.heightProperty()
-      .addListener(observable -> {
-        final var rootPaneHeight = this.patternRootPane.getHeight();
-        final var timelineCanvasHeight = this.timelineCanvas.getHeight();
-        this.patternCanvas.setHeight(rootPaneHeight - timelineCanvasHeight);
-        this.canvasUpdated();
-      });
-
-    this.patternRootPane.widthProperty()
-      .addListener(observable -> {
-        final var toolbarWidth = this.toolbar.getWidth();
-        final var rootPaneWidth = this.patternRootPane.getWidth();
-        this.timelineCanvas.setWidth(rootPaneWidth - toolbarWidth);
-        this.patternCanvas.setWidth(rootPaneWidth - toolbarWidth);
-        this.canvasUpdated();
-      });
-
     this.controller.events()
       .subscribe(this::onControllerEvent);
+  }
+
+  @FXML
+  private void onRequestTrackAdd()
+  {
+    this.controller.trackCreate();
   }
 
   private void onControllerEvent(
@@ -133,10 +122,6 @@ public final class OBPatternViewController implements Initializable
           break;
         }
 
-        case COMPOSITION_SAVED: {
-          break;
-        }
-
         case COMPOSITION_CLOSED: {
           this.compositionSubscriptions.dispose();
           break;
@@ -168,7 +153,18 @@ public final class OBPatternViewController implements Initializable
   private void onCompositionModifiedEvent(
     final OBCompositionModifiedEvent event)
   {
-    Platform.runLater(this::canvasUpdated);
+    Platform.runLater(() -> {
+      final var composition =
+        this.controller.composition()
+          .orElseThrow(IllegalStateException::new);
+
+      this.trackList.setCellFactory(
+        listView -> OBArrangementTrackViewController.create(this.services)
+      );
+      this.trackList.setItems(FXCollections.observableList(
+        new ArrayList<>(composition.tracks().values())
+      ));
+    });
   }
 
   private void onControllerEventCommand(
@@ -181,33 +177,5 @@ public final class OBPatternViewController implements Initializable
     final OBControllerCommandFailedEvent event)
   {
 
-  }
-
-  private void canvasUpdated()
-  {
-    this.renderCanvasTimeline();
-    this.renderCanvasPattern();
-  }
-
-  private void renderCanvasPattern()
-  {
-    final var graphics = this.patternCanvas.getGraphicsContext2D();
-    graphics.setFill(Color.BLUE);
-    graphics.fillRect(
-      0.0,
-      0.0,
-      this.patternCanvas.getWidth(),
-      this.patternCanvas.getHeight());
-  }
-
-  private void renderCanvasTimeline()
-  {
-    final var graphics = this.timelineCanvas.getGraphicsContext2D();
-    graphics.setFill(Color.RED);
-    graphics.fillRect(
-      0.0,
-      0.0,
-      this.timelineCanvas.getWidth(),
-      this.timelineCanvas.getHeight());
   }
 }

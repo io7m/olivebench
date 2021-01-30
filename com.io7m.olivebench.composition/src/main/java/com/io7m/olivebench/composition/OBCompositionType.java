@@ -18,6 +18,7 @@ package com.io7m.olivebench.composition;
 
 import io.reactivex.rxjava3.core.Observable;
 
+import java.time.OffsetDateTime;
 import java.util.SortedMap;
 import java.util.UUID;
 
@@ -72,4 +73,26 @@ public interface OBCompositionType
    */
 
   OBTrackType createTrack(UUID id);
+
+  /**
+   * Return the time that the loaded composition was last modified. Note
+   * that this <i>DOES NOT</i> refer to the last modified time of a composition
+   * serialized to persistent storage. This value is set to the current time
+   * when the composition is loaded, and is set to the current time each time
+   * an operation modifies the composition.
+   *
+   * @return The time the loaded composition was last modified
+   */
+
+  OffsetDateTime lastModified();
+
+  /**
+   * Set the last modified time.
+   *
+   * @param time The time
+   *
+   * @see #lastModified()
+   */
+
+  void setLastModified(OffsetDateTime time);
 }

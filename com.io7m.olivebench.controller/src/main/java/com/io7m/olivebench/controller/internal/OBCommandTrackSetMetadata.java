@@ -16,55 +16,59 @@
 
 package com.io7m.olivebench.controller.internal;
 
-import com.io7m.olivebench.composition.OBCompositionMetadata;
-import com.io7m.olivebench.composition.OBCompositions;
-import com.io7m.olivebench.composition.OBTimeConfiguration;
+import com.io7m.olivebench.composition.OBTrackMetadata;
+import com.io7m.olivebench.composition.OBTrackType;
+import com.io7m.olivebench.controller.api.OBCommandAbstractUndoable;
 import com.io7m.olivebench.controller.api.OBCommandContextType;
 import com.io7m.olivebench.controller.api.OBCommandDescription;
 import com.io7m.olivebench.controller.api.OBCommandUndoStyle;
-import com.io7m.olivebench.services.api.OBServiceDirectoryType;
 
-import java.util.UUID;
+import java.util.Objects;
 
-public final class OBCommandCompositionNew extends OBCommand
+public final class OBCommandTrackSetMetadata extends OBCommandAbstractUndoable
 {
-  public OBCommandCompositionNew(
-    final OBServiceDirectoryType inServices,
-    final OBCommandStrings inStrings)
+  private final OBTrackType track;
+  private final OBTrackMetadata newMetadata;
+  private OBTrackMetadata oldMetadata;
+
+  public OBCommandTrackSetMetadata(
+    final OBCommandStrings inStrings,
+    final OBTrackType inTrack,
+    final OBTrackMetadata inNewMetadata)
   {
     super(
-      inServices,
-      inStrings,
       OBCommandDescription.builder()
-        .setDescription(inStrings.format("commandCompositionNew"))
+        .setDescription(inStrings.format("commandTrackSetMetadata"))
         .setLongRunning(false)
-        .setUndoStyle(OBCommandUndoStyle.CLEARS_UNDO_STACK)
+        .setUndoStyle(OBCommandUndoStyle.CAN_UNDO)
         .build()
     );
+
+    this.track =
+      Objects.requireNonNull(inTrack, "track");
+    this.newMetadata =
+      Objects.requireNonNull(inNewMetadata, "newMetadata");
   }
 
   @Override
-  public void commandDo(
+  protected void commandDoActual(
     final OBCommandContextType context)
   {
-    final var timeConfiguration =
-      OBTimeConfiguration.builder()
-        .build();
+    this.oldMetadata = this.track.metadata();
+    this.track.setMetadata(this.newMetadata);
+  }
 
-    final var meta =
-      OBCompositionMetadata.builder()
-        .setId(UUID.randomUUID())
-        .setTimeConfiguration(timeConfiguration)
-        .build();
+  @Override
+  protected void commandRedoActual(
+    final OBCommandContextType context)
+  {
+    this.track.setMetadata(this.newMetadata);
+  }
 
-    final var composition =
-      new OBCompositions()
-        .createComposition(
-          context.clock(),
-          context.locale(),
-          meta
-        );
-
-    context.compositionOpen(composition);
+  @Override
+  protected void commandUndoActual(
+    final OBCommandContextType context)
+  {
+    this.track.setMetadata(this.oldMetadata);
   }
 }

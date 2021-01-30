@@ -20,6 +20,7 @@ import com.io7m.jregions.core.parameterized.areas.PAreaL;
 import com.io7m.olivebench.composition.OBCompositionChange;
 import com.io7m.olivebench.composition.OBCompositionEventType;
 import com.io7m.olivebench.composition.OBCompositionMetadata;
+import com.io7m.olivebench.composition.OBCompositionModificationTimeChangedEvent;
 import com.io7m.olivebench.composition.OBCompositionModifiedEvent;
 import com.io7m.olivebench.composition.OBCompositions;
 import com.io7m.olivebench.composition.OBTimeConfiguration;
@@ -29,6 +30,8 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Clock;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.UUID;
@@ -49,9 +52,15 @@ public final class OBCompositionTest
   private static final Logger LOG =
     LoggerFactory.getLogger(OBCompositionTest.class);
 
+  private final Clock clock =
+    Clock.systemUTC();
+  private final Locale locale =
+    Locale.getDefault();
+
   private OBCompositions compositions;
   private OBTimeConfiguration timeConfiguration;
   private ArrayList<OBEventType> events;
+  private OffsetDateTime eventPreviousTime;
 
   private void logEvent(
     final OBCompositionEventType event)
@@ -67,6 +76,13 @@ public final class OBCompositionTest
     assertEquals(change, event.change());
   }
 
+  private void eventIsIncreasedModTime()
+  {
+    final var event = (OBCompositionModificationTimeChangedEvent) this.events.remove(0);
+    assertTrue(event.time().isAfter(this.eventPreviousTime));
+    this.eventPreviousTime = event.time();
+  }
+
   @BeforeEach
   public void setup()
   {
@@ -76,6 +92,7 @@ public final class OBCompositionTest
         .setTicksPerQuarterNote(1024L)
         .build();
 
+    this.eventPreviousTime = OffsetDateTime.now(this.clock);
     this.events = new ArrayList<OBEventType>();
   }
 
@@ -89,7 +106,7 @@ public final class OBCompositionTest
         .build();
 
     final var composition =
-      this.compositions.createComposition(Locale.getDefault(), metadata);
+      this.compositions.createComposition(this.clock, this.locale, metadata);
     composition.events().subscribe(this::logEvent);
 
     assertEquals(metadata, composition.metadata());
@@ -107,7 +124,7 @@ public final class OBCompositionTest
         .build();
 
     final var composition =
-      this.compositions.createComposition(Locale.getDefault(), metadata);
+      this.compositions.createComposition(this.clock, this.locale, metadata);
     composition.events().subscribe(this::logEvent);
 
     final var track = composition.createTrack();
@@ -118,10 +135,12 @@ public final class OBCompositionTest
 
     assertEquals(metadata, composition.metadata());
     assertEquals(0, composition.tracks().size());
-    assertEquals(2, this.events.size());
+    assertEquals(4, this.events.size());
 
     this.eventIs(TRACK_CREATED);
+    this.eventIsIncreasedModTime();
     this.eventIs(TRACK_DELETED);
+    this.eventIsIncreasedModTime();
 
     assertEquals(0, this.events.size());
     assertThrows(IllegalStateException.class, track::delete);
@@ -138,7 +157,7 @@ public final class OBCompositionTest
         .build();
 
     final var composition =
-      this.compositions.createComposition(Locale.getDefault(), metadata);
+      this.compositions.createComposition(this.clock, this.locale, metadata);
     composition.events().subscribe(this::logEvent);
 
     final var track = composition.createTrack();
@@ -150,11 +169,14 @@ public final class OBCompositionTest
 
     assertEquals(metadata, composition.metadata());
     assertEquals(1, composition.tracks().size());
-    assertEquals(3, this.events.size());
+    assertEquals(6, this.events.size());
 
     this.eventIs(TRACK_CREATED);
+    this.eventIsIncreasedModTime();
     this.eventIs(TRACK_DELETED);
+    this.eventIsIncreasedModTime();
     this.eventIs(TRACK_UNDELETED);
+    this.eventIsIncreasedModTime();
 
     assertEquals(0, this.events.size());
     assertThrows(IllegalStateException.class, track::undelete);
@@ -171,7 +193,7 @@ public final class OBCompositionTest
         .build();
 
     final var composition =
-      this.compositions.createComposition(Locale.getDefault(), metadata);
+      this.compositions.createComposition(this.clock, this.locale, metadata);
     composition.events().subscribe(this::logEvent);
 
     final var id = UUID.randomUUID();
@@ -192,7 +214,7 @@ public final class OBCompositionTest
         .build();
 
     final var composition =
-      this.compositions.createComposition(Locale.getDefault(), metadata);
+      this.compositions.createComposition(this.clock, this.locale, metadata);
     composition.events().subscribe(this::logEvent);
 
     final var track =
@@ -220,15 +242,22 @@ public final class OBCompositionTest
     assertEquals(0, track.regions().size());
     assertEquals(metadata, composition.metadata());
     assertEquals(1, composition.tracks().size());
-    assertEquals(7, this.events.size());
+    assertEquals(14, this.events.size());
 
     this.eventIs(TRACK_CREATED);
+    this.eventIsIncreasedModTime();
     this.eventIs(REGION_CREATED);
+    this.eventIsIncreasedModTime();
     this.eventIs(REGION_CREATED);
+    this.eventIsIncreasedModTime();
     this.eventIs(REGION_CREATED);
+    this.eventIsIncreasedModTime();
     this.eventIs(REGION_DELETED);
+    this.eventIsIncreasedModTime();
     this.eventIs(REGION_DELETED);
+    this.eventIsIncreasedModTime();
     this.eventIs(REGION_DELETED);
+    this.eventIsIncreasedModTime();
 
     assertEquals(0, this.events.size());
     assertThrows(IllegalStateException.class, r2::delete);
@@ -247,7 +276,7 @@ public final class OBCompositionTest
         .build();
 
     final var composition =
-      this.compositions.createComposition(Locale.getDefault(), metadata);
+      this.compositions.createComposition(this.clock, this.locale, metadata);
     composition.events().subscribe(this::logEvent);
 
     final var track =
@@ -261,9 +290,13 @@ public final class OBCompositionTest
     assertFalse(r0.isDeleted());
 
     this.eventIs(TRACK_CREATED);
+    this.eventIsIncreasedModTime();
     this.eventIs(REGION_CREATED);
+    this.eventIsIncreasedModTime();
     this.eventIs(REGION_DELETED);
+    this.eventIsIncreasedModTime();
     this.eventIs(REGION_UNDELETED);
+    this.eventIsIncreasedModTime();
 
     assertEquals(0, this.events.size());
     assertThrows(IllegalStateException.class, r0::undelete);

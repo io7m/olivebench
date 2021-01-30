@@ -16,9 +16,9 @@
 
 package com.io7m.olivebench.controller;
 
-import com.io7m.olivebench.composition.OBCompositionEventType;
-import com.io7m.olivebench.composition.OBCompositionModifiedEvent;
 import com.io7m.olivebench.composition.OBCompositionType;
+import com.io7m.olivebench.composition.OBTrackMetadata;
+import com.io7m.olivebench.composition.OBTrackType;
 import com.io7m.olivebench.controller.api.OBCommandContextType;
 import com.io7m.olivebench.controller.api.OBCommandType;
 import com.io7m.olivebench.controller.api.OBCommandUndoableExecutor;
@@ -33,12 +33,13 @@ import com.io7m.olivebench.controller.internal.OBCommandCompositionNew;
 import com.io7m.olivebench.controller.internal.OBCommandCompositionSave;
 import com.io7m.olivebench.controller.internal.OBCommandCompositionTouch;
 import com.io7m.olivebench.controller.internal.OBCommandStrings;
+import com.io7m.olivebench.controller.internal.OBCommandTrackAdd;
+import com.io7m.olivebench.controller.internal.OBCommandTrackSetMetadata;
 import com.io7m.olivebench.services.api.OBServiceDirectoryType;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import io.reactivex.rxjava3.subjects.Subject;
-import net.jcip.annotations.GuardedBy;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -53,6 +54,7 @@ import static com.io7m.olivebench.controller.api.OBControllerCommandEventKind.CO
 import static com.io7m.olivebench.controller.api.OBControllerCommandEventKind.COMMAND_STARTED;
 import static com.io7m.olivebench.controller.api.OBControllerCompositionEventKind.COMPOSITION_CLOSED;
 import static com.io7m.olivebench.controller.api.OBControllerCompositionEventKind.COMPOSITION_OPENED;
+import static com.io7m.olivebench.controller.api.OBControllerCompositionEventKind.COMPOSITION_SAVED;
 import static com.io7m.olivebench.controller.api.OBControllerCompositionEventKind.COMPOSITION_UNDO_CHANGED;
 
 /**
@@ -68,21 +70,21 @@ public final class OBController implements OBControllerType
   private final OBCommandUndoableExecutor executor;
   private final Context context;
   private final CompositeDisposable compositionSubscriptions;
-  private final Object timeLock;
   private volatile OBCompositionType composition;
-  @GuardedBy("timeLock")
-  private OffsetDateTime timeLastSaved;
-  @GuardedBy("timeLock")
-  private OffsetDateTime timeLastModified;
+  private volatile OffsetDateTime timeLastSaved;
   private volatile Optional<Path> compositionFile;
+  private final Locale locale;
 
   private OBController(
     final Clock inClock,
+    final Locale inLocale,
     final OBServiceDirectoryType inServices,
     final OBCommandStrings inStrings)
   {
     this.clock =
       Objects.requireNonNull(inClock, "clock");
+    this.locale =
+      Objects.requireNonNull(inLocale, "locale");
     this.services =
       Objects.requireNonNull(inServices, "services");
     this.strings =
@@ -95,10 +97,9 @@ public final class OBController implements OBControllerType
     this.context =
       new Context(this);
 
+    this.timeLastSaved = OffsetDateTime.now(this.clock);
     this.compositionSubscriptions = new CompositeDisposable();
     this.compositionFile = Optional.empty();
-    this.timeLock = new Object();
-    this.resetClock();
 
     this.executor.events()
       .subscribe(e -> this.events.onNext(
@@ -124,6 +125,7 @@ public final class OBController implements OBControllerType
     try {
       return new OBController(
         inClock,
+        locale,
         services,
         new OBCommandStrings(locale)
       );
@@ -151,7 +153,6 @@ public final class OBController implements OBControllerType
     this.executeCommand(
       new OBCommandCompositionLoad(this.services, this.strings, file));
 
-    this.resetClock();
     this.compositionFile = Optional.of(file);
   }
 
@@ -162,8 +163,9 @@ public final class OBController implements OBControllerType
     this.executeCommand(
       new OBCommandCompositionSave(this.services, this.strings, file));
 
-    this.resetClock();
+    this.timeLastSaved = this.composition.lastModified();
     this.compositionFile = Optional.of(file);
+    this.events.onNext(OBControllerCompositionEvent.of(COMPOSITION_SAVED));
   }
 
   @Override
@@ -172,7 +174,6 @@ public final class OBController implements OBControllerType
     this.executeCommand(
       new OBCommandCompositionNew(this.services, this.strings));
 
-    this.resetClock();
     this.compositionFile = Optional.empty();
   }
 
@@ -181,8 +182,6 @@ public final class OBController implements OBControllerType
   {
     this.executeCommand(
       new OBCommandCompositionClose(this.services, this.strings));
-
-    this.resetClock();
     this.compositionFile = Optional.empty();
   }
 
@@ -191,14 +190,6 @@ public final class OBController implements OBControllerType
   {
     this.executeCommand(
       new OBCommandCompositionTouch(this.services, this.strings));
-  }
-
-  private void resetClock()
-  {
-    synchronized (this.timeLock) {
-      this.timeLastSaved = OffsetDateTime.now(this.clock);
-      this.timeLastModified = this.timeLastSaved;
-    }
   }
 
   @Override
@@ -250,25 +241,37 @@ public final class OBController implements OBControllerType
   @Override
   public OffsetDateTime timeLastSaved()
   {
-    synchronized (this.timeLock) {
-      return this.timeLastSaved;
-    }
+    return this.timeLastSaved;
   }
 
   @Override
   public OffsetDateTime timeLastModified()
   {
-    synchronized (this.timeLock) {
-      return this.timeLastModified;
+    if (this.composition == null) {
+      return this.timeLastSaved;
     }
+    return this.composition.lastModified();
   }
 
   @Override
   public boolean isUnsaved()
   {
-    synchronized (this.timeLock) {
-      return this.timeLastModified.isAfter(this.timeLastSaved);
-    }
+    return this.timeLastModified().isAfter(this.timeLastSaved);
+  }
+
+  @Override
+  public void trackCreate()
+  {
+    this.executeCommand(new OBCommandTrackAdd(this.strings));
+  }
+
+  @Override
+  public void trackSetMetadata(
+    final OBTrackType track,
+    final OBTrackMetadata newMetadata)
+  {
+    this.executeCommand(
+      new OBCommandTrackSetMetadata(this.strings, track, newMetadata));
   }
 
   private void executeCommand(
@@ -295,8 +298,7 @@ public final class OBController implements OBControllerType
   {
     final var existing = this.composition;
     if (existing == null) {
-      throw new IllegalStateException(
-        this.strings.format("compositionNotOpen"));
+      return;
     }
 
     this.events.onNext(OBControllerCompositionEvent.of(COMPOSITION_CLOSED));
@@ -308,21 +310,8 @@ public final class OBController implements OBControllerType
     final OBCompositionType inComposition)
   {
     this.composition = inComposition;
-    this.compositionSubscriptions.add(
-      this.composition.events()
-        .subscribe(this::onCompositionEvent)
-    );
+    this.timeLastSaved = this.composition.lastModified();
     this.events.onNext(OBControllerCompositionEvent.of(COMPOSITION_OPENED));
-  }
-
-  private void onCompositionEvent(
-    final OBCompositionEventType event)
-  {
-    if (event instanceof OBCompositionModifiedEvent) {
-      synchronized (this.timeLock) {
-        this.timeLastModified = OffsetDateTime.now(this.clock);
-      }
-    }
   }
 
   @Override
@@ -364,6 +353,18 @@ public final class OBController implements OBControllerType
         throw new IllegalStateException("No composition is open!");
       }
       return composition;
+    }
+
+    @Override
+    public Clock clock()
+    {
+      return this.controller.clock;
+    }
+
+    @Override
+    public Locale locale()
+    {
+      return this.controller.locale;
     }
   }
 }

@@ -18,6 +18,7 @@ package com.io7m.olivebench.controller.api;
 
 import org.osgi.annotation.versioning.ProviderType;
 
+import java.time.OffsetDateTime;
 import java.util.Objects;
 
 /**
@@ -25,15 +26,19 @@ import java.util.Objects;
  */
 
 @ProviderType
-public abstract class OBCommandAbstract implements OBCommandType
+public abstract class OBCommandAbstractUndoable implements OBCommandType
 {
   private final OBCommandDescription description;
+  private volatile boolean redo;
+  private OffsetDateTime timeUndo;
+  private OffsetDateTime timeRedo;
 
-  protected OBCommandAbstract(
+  protected OBCommandAbstractUndoable(
     final OBCommandDescription inDescription)
   {
     this.description =
       Objects.requireNonNull(inDescription, "inDescription");
+    this.redo = false;
   }
 
   @Override
@@ -42,4 +47,39 @@ public abstract class OBCommandAbstract implements OBCommandType
     return this.description;
   }
 
+  protected abstract void commandUndoActual(
+    OBCommandContextType context);
+
+  protected abstract void commandDoActual(
+    OBCommandContextType context);
+
+  protected abstract void commandRedoActual(
+    OBCommandContextType context);
+
+  @Override
+  public final void commandUndo(
+    final OBCommandContextType context)
+  {
+    final var composition = context.composition();
+    this.commandUndoActual(context);
+    composition.setLastModified(this.timeUndo);
+  }
+
+  @Override
+  public final void commandDo(
+    final OBCommandContextType context)
+  {
+    final var composition = context.composition();
+
+    if (this.redo) {
+      this.commandRedoActual(context);
+      composition.setLastModified(this.timeRedo);
+      return;
+    }
+
+    this.timeUndo = composition.lastModified();
+    this.commandDoActual(context);
+    this.timeRedo = composition.lastModified();
+    this.redo = true;
+  }
 }

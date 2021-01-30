@@ -18,6 +18,9 @@ package com.io7m.olivebench.controller.api;
 
 import com.io7m.olivebench.composition.OBCompositionType;
 
+import java.time.Clock;
+import java.util.Locale;
+
 /**
  * The execution context of a command.
  */
@@ -29,4 +32,8 @@ public interface OBCommandContextType
   void compositionClose();
 
   OBCompositionType composition();
+
+  Clock clock();
+
+  Locale locale();
 }

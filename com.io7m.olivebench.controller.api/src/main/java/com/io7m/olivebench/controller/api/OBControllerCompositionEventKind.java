@@ -35,6 +35,12 @@ public enum OBControllerCompositionEventKind
   COMPOSITION_UNDO_CHANGED,
 
   /**
+   * A composition was saved.
+   */
+
+  COMPOSITION_SAVED,
+
+  /**
    * A composition was closed.
    */
 

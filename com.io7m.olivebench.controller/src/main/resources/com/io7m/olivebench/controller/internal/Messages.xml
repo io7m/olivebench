@@ -8,6 +8,8 @@
   <entry key="commandCompositionNew">Create a new composition.</entry>
   <entry key="commandCompositionSave">Save composition {0}.</entry>
   <entry key="commandCompositionTouch">Touch composition.</entry>
+  <entry key="commandTrackAdd">Add a new track.</entry>
+  <entry key="commandTrackSetMetadata">Modify track metadata.</entry>
   <entry key="compositionNotOpen">No composition is open.</entry>
   <entry key="errorRedo">Unable to redo command.</entry>
   <entry key="errorUndo">Unable to undo command.</entry>

@@ -16,6 +16,10 @@
 
 package com.io7m.olivebench.tests.controller.server;
 
+import com.io7m.olivebench.composition.OBClockService;
+import com.io7m.olivebench.composition.OBClockServiceType;
+import com.io7m.olivebench.composition.OBLocaleService;
+import com.io7m.olivebench.composition.OBLocaleServiceType;
 import com.io7m.olivebench.controller.OBController;
 import com.io7m.olivebench.controller.server.OBControllerClientInterpreters;
 import com.io7m.olivebench.controller.server.OBControllerServers;
@@ -24,7 +28,6 @@ import com.io7m.olivebench.services.api.OBServiceDirectory;
 import java.io.ByteArrayOutputStream;
 import java.net.InetSocketAddress;
 import java.time.Clock;
-import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
 public final class OBControllerServerExample
@@ -40,8 +43,16 @@ public final class OBControllerServerExample
   {
     final var services =
       new OBServiceDirectory();
+
+    services.register(
+      OBClockServiceType.class,
+      new OBClockService(Clock.systemUTC()));
+    services.register(
+      OBLocaleServiceType.class,
+      new OBLocaleService());
+
     final var controller =
-      OBController.create(Clock.systemUTC(), services, Locale.ENGLISH);
+      OBController.create(services);
     final var interpreters =
       new OBControllerClientInterpreters(controller);
     final var servers =

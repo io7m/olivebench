@@ -19,14 +19,14 @@ package com.io7m.olivebench.xml.v1;
 import com.io7m.blackthorne.api.BTElementHandlerType;
 import com.io7m.blackthorne.api.BTQualifiedName;
 import com.io7m.jxe.core.JXESchemaDefinition;
+import com.io7m.olivebench.composition.OBClockServiceType;
 import com.io7m.olivebench.composition.OBCompositionType;
+import com.io7m.olivebench.composition.OBLocaleServiceType;
 import com.io7m.olivebench.composition.parser.spi.OBCompositionSPIParsersType;
 import com.io7m.olivebench.services.api.OBServiceDirectoryType;
 import com.io7m.olivebench.xml.v1.internal.OB1CompositionParser;
 
-import java.time.Clock;
 import java.util.List;
-import java.util.Locale;
 
 import static com.io7m.olivebench.xml.v1.internal.OB1Names.element;
 
@@ -51,8 +51,8 @@ public final class OBCompositionParserV1 implements OBCompositionSPIParsersType
 
   @Override
   public BTElementHandlerType<?, OBCompositionType> createHandler(
-    final Clock clock,
-    final Locale locale,
+    final OBClockServiceType clock,
+    final OBLocaleServiceType locale,
     final OBServiceDirectoryType services)
   {
     return new OB1CompositionParser(clock, locale, services);

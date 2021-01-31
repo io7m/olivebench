@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020 Mark Raynsford <code@io7m.com> http://io7m.com
+ * Copyright © 2021 Mark Raynsford <code@io7m.com> http://io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -16,26 +16,50 @@
 
 package com.io7m.olivebench.composition;
 
-import com.io7m.olivebench.services.api.OBServiceType;
+import java.util.Locale;
+import java.util.Objects;
 
 /**
- * The type of composition factories.
+ * The default locale service implementation.
  */
 
-public interface OBCompositionFactoryType extends OBServiceType
+public final class OBLocaleService implements OBLocaleServiceType
 {
+  private final Locale locale;
+
   /**
-   * Create a new empty composition.
+   * Construct a service.
    *
-   * @param clock    The clock
-   * @param locale   The locale
-   * @param metadata The composition metadata
-   *
-   * @return A new empty composition
+   * @param inLocale The locale
    */
 
-  OBCompositionType createComposition(
-    OBClockServiceType clock,
-    OBLocaleServiceType locale,
-    OBCompositionMetadata metadata);
+  public OBLocaleService(
+    final Locale inLocale)
+  {
+    this.locale = Objects.requireNonNull(inLocale, "locale");
+  }
+
+  /**
+   * Construct a service.
+   */
+
+  public OBLocaleService()
+  {
+    this(Locale.getDefault());
+  }
+
+  @Override
+  public Locale locale()
+  {
+    return this.locale;
+  }
+
+  @Override
+  public String toString()
+  {
+    return String.format(
+      "[OBLocaleService 0x%08x]",
+      Integer.valueOf(this.hashCode())
+    );
+  }
 }

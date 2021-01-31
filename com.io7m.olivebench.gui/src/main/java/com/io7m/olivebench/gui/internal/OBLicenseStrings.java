@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020 Mark Raynsford <code@io7m.com> http://io7m.com
+ * Copyright © 2021 Mark Raynsford <code@io7m.com> http://io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -14,28 +14,40 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.olivebench.composition;
+package com.io7m.olivebench.gui.internal;
 
+import com.io7m.jxtrand.api.JXTStringsType;
 import com.io7m.olivebench.services.api.OBServiceType;
 
-/**
- * The type of composition factories.
- */
+import java.util.Locale;
+import java.util.ResourceBundle;
 
-public interface OBCompositionFactoryType extends OBServiceType
+public final class OBLicenseStrings implements OBServiceType, JXTStringsType
 {
-  /**
-   * Create a new empty composition.
-   *
-   * @param clock    The clock
-   * @param locale   The locale
-   * @param metadata The composition metadata
-   *
-   * @return A new empty composition
-   */
+  private final ResourceBundle resources;
 
-  OBCompositionType createComposition(
-    OBClockServiceType clock,
-    OBLocaleServiceType locale,
-    OBCompositionMetadata metadata);
+  public OBLicenseStrings(
+    final Locale locale)
+  {
+    this.resources =
+      ResourceBundle.getBundle(
+        "/com/io7m/olivebench/gui/internal/Licenses",
+        locale
+      );
+  }
+
+  @Override
+  public ResourceBundle resources()
+  {
+    return this.resources;
+  }
+
+  @Override
+  public String toString()
+  {
+    return String.format(
+      "[OBLicenseStrings 0x%08x]",
+      Integer.valueOf(this.hashCode())
+    );
+  }
 }

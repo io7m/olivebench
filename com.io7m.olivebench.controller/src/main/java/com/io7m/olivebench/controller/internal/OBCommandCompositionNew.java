@@ -16,21 +16,32 @@
 
 package com.io7m.olivebench.controller.internal;
 
+import com.io7m.olivebench.composition.OBClockServiceType;
 import com.io7m.olivebench.composition.OBCompositionMetadata;
 import com.io7m.olivebench.composition.OBCompositions;
+import com.io7m.olivebench.composition.OBDublinCoreMetadata;
+import com.io7m.olivebench.composition.OBLocaleServiceType;
 import com.io7m.olivebench.composition.OBTimeConfiguration;
 import com.io7m.olivebench.controller.api.OBCommandContextType;
 import com.io7m.olivebench.controller.api.OBCommandDescription;
 import com.io7m.olivebench.controller.api.OBCommandUndoStyle;
 import com.io7m.olivebench.services.api.OBServiceDirectoryType;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public final class OBCommandCompositionNew extends OBCommand
 {
+  private final UUID id;
+  private final OBTimeConfiguration timeConfiguration;
+  private final OBDublinCoreMetadata dcMetadata;
+
   public OBCommandCompositionNew(
     final OBServiceDirectoryType inServices,
-    final OBCommandStrings inStrings)
+    final OBCommandStrings inStrings,
+    final UUID inId,
+    final OBTimeConfiguration inTimeConfiguration,
+    final OBDublinCoreMetadata inDCMetadata)
   {
     super(
       inServices,
@@ -41,27 +52,32 @@ public final class OBCommandCompositionNew extends OBCommand
         .setUndoStyle(OBCommandUndoStyle.CLEARS_UNDO_STACK)
         .build()
     );
+
+    this.id =
+      Objects.requireNonNull(inId, "inId");
+    this.timeConfiguration =
+      Objects.requireNonNull(inTimeConfiguration, "timeConfiguration");
+    this.dcMetadata =
+      Objects.requireNonNull(inDCMetadata, "dcMetadata");
   }
 
   @Override
   public void commandDo(
     final OBCommandContextType context)
   {
-    final var timeConfiguration =
-      OBTimeConfiguration.builder()
-        .build();
-
     final var meta =
       OBCompositionMetadata.builder()
-        .setId(UUID.randomUUID())
-        .setTimeConfiguration(timeConfiguration)
+        .setId(this.id)
+        .setTimeConfiguration(this.timeConfiguration)
+        .setDcMetadata(this.dcMetadata)
         .build();
 
+    final var services = this.services();
     final var composition =
       new OBCompositions()
         .createComposition(
-          context.clock(),
-          context.locale(),
+          services.requireService(OBClockServiceType.class),
+          services.requireService(OBLocaleServiceType.class),
           meta
         );
 

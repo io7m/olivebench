@@ -16,8 +16,12 @@
 
 package com.io7m.olivebench.gui.internal;
 
+import com.io7m.olivebench.composition.OBClockService;
+import com.io7m.olivebench.composition.OBClockServiceType;
 import com.io7m.olivebench.composition.OBCompositionFactoryType;
 import com.io7m.olivebench.composition.OBCompositions;
+import com.io7m.olivebench.composition.OBLocaleService;
+import com.io7m.olivebench.composition.OBLocaleServiceType;
 import com.io7m.olivebench.composition.parser.api.OBCompositionParsers;
 import com.io7m.olivebench.composition.parser.api.OBCompositionParsersType;
 import com.io7m.olivebench.composition.parser.spi.OBCompositionSPIParsersType;
@@ -61,23 +65,46 @@ public final class OBMainServices
       new OBServiceDirectory();
     final var strings =
       new OBMainStrings(locale);
+    final var licenseStrings =
+      new OBLicenseStrings(locale);
+    final var clockService =
+      new OBClockService(Clock.systemUTC());
+    final var localeService =
+      new OBLocaleService();
+
+    services.register(
+      OBLocaleServiceType.class,
+      localeService);
+    services.register(
+      OBClockServiceType.class,
+      clockService);
+
     final var controller =
-      OBController.create(Clock.systemUTC(), services, locale);
+      OBController.create(services);
     final var controllerAsync =
       OBControllerAsynchronousDecorator.create(controller);
 
     loadFromServiceLoader(services, OBCompositionSPISerializersType.class);
     loadFromServiceLoader(services, OBCompositionSPIParsersType.class);
 
-    services.register(OBCompositionFactoryType.class, new OBCompositions());
+    services.register(
+      OBCompositionFactoryType.class,
+      new OBCompositions());
     services.register(
       OBCompositionParsersType.class,
       new OBCompositionParsers());
     services.register(
       OBCompositionSerializersType.class,
       new OBCompositionSerializers());
-    services.register(OBControllerAsynchronousType.class, controllerAsync);
-    services.register(OBMainStrings.class, strings);
+    services.register(
+      OBControllerAsynchronousType.class,
+      controllerAsync);
+    services.register(
+      OBMainStrings.class,
+      strings);
+    services.register(
+      OBLicenseStrings.class,
+      licenseStrings);
 
     createServer(services, controllerAsync);
     return services;

@@ -129,10 +129,7 @@ public final class OBPatternViewController implements Initializable
           break;
         }
 
-        case COMPOSITION_UNDO_CHANGED: {
-          break;
-        }
-
+        case COMPOSITION_UNDO_CHANGED:
         case COMPOSITION_SAVED: {
           break;
         }
@@ -191,7 +188,8 @@ public final class OBPatternViewController implements Initializable
 
   private void renderCanvasPattern()
   {
-    final var graphics = this.patternCanvas.getGraphicsContext2D();
+    final var graphics =
+      this.patternCanvas.getGraphicsContext2D();
     graphics.setFill(Color.BLUE);
     graphics.fillRect(
       0.0,
@@ -202,7 +200,8 @@ public final class OBPatternViewController implements Initializable
 
   private void renderCanvasTimeline()
   {
-    final var graphics = this.timelineCanvas.getGraphicsContext2D();
+    final var graphics =
+      this.timelineCanvas.getGraphicsContext2D();
     graphics.setFill(Color.RED);
     graphics.fillRect(
       0.0,

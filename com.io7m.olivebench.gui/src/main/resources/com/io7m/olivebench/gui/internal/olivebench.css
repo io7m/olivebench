@@ -83,3 +83,8 @@
 {
   -fx-background-color: #ff00ff;
 }
+
+.obErrorHighlight
+{
+  -fx-background-color: #ff0000;
+}

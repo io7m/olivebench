@@ -16,7 +16,11 @@
 
 package com.io7m.olivebench.controller;
 
+import com.io7m.olivebench.composition.OBClockServiceType;
 import com.io7m.olivebench.composition.OBCompositionType;
+import com.io7m.olivebench.composition.OBDublinCoreMetadata;
+import com.io7m.olivebench.composition.OBLocaleServiceType;
+import com.io7m.olivebench.composition.OBTimeConfiguration;
 import com.io7m.olivebench.composition.OBTrackMetadata;
 import com.io7m.olivebench.composition.OBTrackType;
 import com.io7m.olivebench.controller.api.OBCommandContextType;
@@ -44,11 +48,10 @@ import io.reactivex.rxjava3.subjects.Subject;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
-import java.time.Clock;
 import java.time.OffsetDateTime;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.io7m.olivebench.controller.api.OBControllerCommandEventKind.COMMAND_ENDED;
 import static com.io7m.olivebench.controller.api.OBControllerCommandEventKind.COMMAND_STARTED;
@@ -63,7 +66,7 @@ import static com.io7m.olivebench.controller.api.OBControllerCompositionEventKin
 
 public final class OBController implements OBControllerType
 {
-  private final Clock clock;
+  private final OBClockServiceType clock;
   private final OBServiceDirectoryType services;
   private final OBCommandStrings strings;
   private final Subject<OBControllerEventType> events;
@@ -73,31 +76,28 @@ public final class OBController implements OBControllerType
   private volatile OBCompositionType composition;
   private volatile OffsetDateTime timeLastSaved;
   private volatile Optional<Path> compositionFile;
-  private final Locale locale;
 
   private OBController(
-    final Clock inClock,
-    final Locale inLocale,
     final OBServiceDirectoryType inServices,
     final OBCommandStrings inStrings)
   {
-    this.clock =
-      Objects.requireNonNull(inClock, "clock");
-    this.locale =
-      Objects.requireNonNull(inLocale, "locale");
     this.services =
       Objects.requireNonNull(inServices, "services");
+    this.clock =
+      this.services.requireService(OBClockServiceType.class);
+
     this.strings =
       Objects.requireNonNull(inStrings, "strings");
     this.events =
       PublishSubject.<OBControllerEventType>create()
         .toSerialized();
+
     this.executor =
       new OBCommandUndoableExecutor(256);
     this.context =
       new Context(this);
 
-    this.timeLastSaved = OffsetDateTime.now(this.clock);
+    this.timeLastSaved = this.clock.now();
     this.compositionSubscriptions = new CompositeDisposable();
     this.compositionFile = Optional.empty();
 
@@ -110,24 +110,21 @@ public final class OBController implements OBControllerType
   /**
    * Create a new controller.
    *
-   * @param inClock  The clock
    * @param services The service directory
-   * @param locale   The locale
    *
    * @return A new controller
    */
 
   public static OBControllerType create(
-    final Clock inClock,
-    final OBServiceDirectoryType services,
-    final Locale locale)
+    final OBServiceDirectoryType services)
   {
     try {
+      final var locale =
+        services.requireService(OBLocaleServiceType.class);
+
       return new OBController(
-        inClock,
-        locale,
         services,
-        new OBCommandStrings(locale)
+        new OBCommandStrings(locale.locale())
       );
     } catch (final IOException e) {
       throw new UncheckedIOException(e);
@@ -169,10 +166,14 @@ public final class OBController implements OBControllerType
   }
 
   @Override
-  public void compositionNew()
+  public void compositionNew(
+    final UUID id,
+    final OBTimeConfiguration timeConfiguration,
+    final OBDublinCoreMetadata dcMetadata)
   {
     this.executeCommand(
-      new OBCommandCompositionNew(this.services, this.strings));
+      new OBCommandCompositionNew(
+        this.services, this.strings, id, timeConfiguration, dcMetadata));
 
     this.compositionFile = Optional.empty();
   }
@@ -353,18 +354,6 @@ public final class OBController implements OBControllerType
         throw new IllegalStateException("No composition is open!");
       }
       return composition;
-    }
-
-    @Override
-    public Clock clock()
-    {
-      return this.controller.clock;
-    }
-
-    @Override
-    public Locale locale()
-    {
-      return this.controller.locale;
     }
   }
 }

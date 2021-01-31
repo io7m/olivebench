@@ -22,7 +22,9 @@ import com.io7m.blackthorne.api.BTParseError;
 import com.io7m.blackthorne.api.BTQualifiedName;
 import com.io7m.blackthorne.jxe.BlackthorneJXE;
 import com.io7m.jxe.core.JXESchemaResolutionMappings;
+import com.io7m.olivebench.composition.OBClockServiceType;
 import com.io7m.olivebench.composition.OBCompositionType;
+import com.io7m.olivebench.composition.OBLocaleServiceType;
 import com.io7m.olivebench.composition.parser.spi.OBCompositionSPIParsersType;
 import com.io7m.olivebench.services.api.OBServiceDirectoryType;
 import org.slf4j.Logger;
@@ -31,12 +33,10 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.time.Clock;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -66,11 +66,6 @@ public final class OBCompositionParsers implements OBCompositionParsersType
       throw new UnsupportedOperationException();
     }
 
-    final var locale =
-      Locale.getDefault();
-    final var clock =
-      Clock.systemUTC();
-
     final var rootElements =
       new HashMap<BTQualifiedName, BTElementHandlerConstructorType<?, OBCompositionType>>(
         parsers.size());
@@ -85,7 +80,11 @@ public final class OBCompositionParsers implements OBCompositionParsersType
       }
       rootElements.put(
         parser.rootName(),
-        c -> parser.createHandler(clock, locale, services));
+        c -> parser.createHandler(
+          services.requireService(OBClockServiceType.class),
+          services.requireService(OBLocaleServiceType.class),
+          services)
+      );
     }
 
     return new Parser(source, stream, rootElements, schemaMappings.build());

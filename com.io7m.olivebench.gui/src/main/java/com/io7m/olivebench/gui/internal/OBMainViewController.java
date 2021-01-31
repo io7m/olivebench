@@ -100,7 +100,7 @@ public final class OBMainViewController implements Initializable
       this.controller.compositionClose();
     }
 
-    this.controller.compositionNew();
+    OBNewCompositionViewController.create(this.mainServices);
     return true;
   }
 

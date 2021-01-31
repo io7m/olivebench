@@ -118,7 +118,8 @@ public final class OBArrangementViewController implements Initializable
           break;
         }
 
-        case COMPOSITION_UNDO_CHANGED: {
+        case COMPOSITION_UNDO_CHANGED:
+        case COMPOSITION_SAVED: {
           break;
         }
 

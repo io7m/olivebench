@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020 Mark Raynsford <code@io7m.com> http://io7m.com
+ * Copyright © 2021 Mark Raynsford <code@io7m.com> http://io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -14,19 +14,21 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.olivebench.controller.api;
+package com.io7m.olivebench.composition;
 
-import com.io7m.olivebench.composition.OBCompositionType;
+import com.io7m.olivebench.services.api.OBServiceType;
+
+import java.util.Locale;
 
 /**
- * The execution context of a command.
+ * A service that provides access to the current locale.
  */
 
-public interface OBCommandContextType
+public interface OBLocaleServiceType extends OBServiceType
 {
-  void compositionOpen(OBCompositionType composition);
+  /**
+   * @return The currently selected locale
+   */
 
-  void compositionClose();
-
-  OBCompositionType composition();
+  Locale locale();
 }

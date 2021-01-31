@@ -16,8 +16,12 @@
 
 package com.io7m.olivebench.tests.xml;
 
+import com.io7m.olivebench.composition.OBClockService;
+import com.io7m.olivebench.composition.OBClockServiceType;
 import com.io7m.olivebench.composition.OBCompositionFactoryType;
 import com.io7m.olivebench.composition.OBCompositions;
+import com.io7m.olivebench.composition.OBLocaleService;
+import com.io7m.olivebench.composition.OBLocaleServiceType;
 import com.io7m.olivebench.composition.parser.api.OBCompositionParsers;
 import com.io7m.olivebench.composition.parser.spi.OBCompositionSPIParsersType;
 import com.io7m.olivebench.services.api.OBServiceDirectory;
@@ -48,6 +52,14 @@ public final class OBCompositionParsersTest
     this.directory = OBTestDirectories.createTempDirectory();
     this.parsers = new OBCompositionParsers();
     this.services = new OBServiceDirectory();
+    this.services.register(
+      OBLocaleServiceType.class,
+      new OBLocaleService()
+    );
+    this.services.register(
+      OBClockServiceType.class,
+      new OBClockService()
+    );
     this.services.register(
       OBCompositionFactoryType.class,
       new OBCompositions()

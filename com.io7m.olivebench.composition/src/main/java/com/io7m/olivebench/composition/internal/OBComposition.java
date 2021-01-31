@@ -16,6 +16,7 @@
 
 package com.io7m.olivebench.composition.internal;
 
+import com.io7m.olivebench.composition.OBClockServiceType;
 import com.io7m.olivebench.composition.OBCompositionEventType;
 import com.io7m.olivebench.composition.OBCompositionMetadata;
 import com.io7m.olivebench.composition.OBCompositionModificationTimeChangedEvent;
@@ -27,7 +28,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import io.reactivex.rxjava3.subjects.Subject;
 
-import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.Objects;
@@ -44,7 +44,7 @@ public final class OBComposition implements OBCompositionType
 {
   private final ConcurrentSkipListMap<UUID, OBTrackType> tracks;
   private final SortedMap<UUID, OBTrackType> tracksRead;
-  private final Clock clock;
+  private final OBClockServiceType clock;
   private final OBCompositionStrings strings;
   private final OBObjectMap objects;
   private final Subject<OBCompositionEventType> eventSubject;
@@ -53,7 +53,7 @@ public final class OBComposition implements OBCompositionType
   private volatile OBCompositionMetadata metadata;
 
   public OBComposition(
-    final Clock inClock,
+    final OBClockServiceType inClock,
     final OBCompositionStrings inStrings,
     final OBCompositionMetadata inMetadata)
   {
@@ -70,7 +70,7 @@ public final class OBComposition implements OBCompositionType
     this.tracksRead =
       Collections.unmodifiableSortedMap(this.tracks);
     this.timeLastModified =
-      OffsetDateTime.now(this.clock);
+      this.clock.now();
     this.eventSubject =
       PublishSubject.<OBCompositionEventType>create()
         .toSerialized();
@@ -82,7 +82,7 @@ public final class OBComposition implements OBCompositionType
   private void onModified(
     final OBCompositionModifiedEvent event)
   {
-    this.setLastModified(OffsetDateTime.now(this.clock));
+    this.setLastModified(this.clock.now());
   }
 
   private OBTrackType trackSave(

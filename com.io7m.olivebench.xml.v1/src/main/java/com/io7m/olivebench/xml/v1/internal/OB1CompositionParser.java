@@ -20,13 +20,13 @@ import com.io7m.blackthorne.api.BTElementHandlerConstructorType;
 import com.io7m.blackthorne.api.BTElementHandlerType;
 import com.io7m.blackthorne.api.BTElementParsingContextType;
 import com.io7m.blackthorne.api.BTQualifiedName;
+import com.io7m.olivebench.composition.OBClockServiceType;
 import com.io7m.olivebench.composition.OBCompositionFactoryType;
 import com.io7m.olivebench.composition.OBCompositionMetadata;
 import com.io7m.olivebench.composition.OBCompositionType;
+import com.io7m.olivebench.composition.OBLocaleServiceType;
 import com.io7m.olivebench.services.api.OBServiceDirectoryType;
 
-import java.time.Clock;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -37,15 +37,15 @@ import static java.util.Map.ofEntries;
 public final class OB1CompositionParser
   implements BTElementHandlerType<Object, OBCompositionType>
 {
-  private final Clock clock;
-  private final Locale locale;
+  private final OBClockServiceType clock;
+  private final OBLocaleServiceType locale;
   private final OBCompositionFactoryType factory;
   private OBCompositionMetadata metadata;
   private OBCompositionType composition;
 
   public OB1CompositionParser(
-    final Clock inClock,
-    final Locale inLocale,
+    final OBClockServiceType inClock,
+    final OBLocaleServiceType inLocale,
     final OBServiceDirectoryType services)
   {
     this.clock =

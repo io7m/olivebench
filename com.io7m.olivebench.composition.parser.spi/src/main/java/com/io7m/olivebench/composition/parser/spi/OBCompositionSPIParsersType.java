@@ -19,13 +19,13 @@ package com.io7m.olivebench.composition.parser.spi;
 import com.io7m.blackthorne.api.BTElementHandlerType;
 import com.io7m.blackthorne.api.BTQualifiedName;
 import com.io7m.jxe.core.JXESchemaDefinition;
+import com.io7m.olivebench.composition.OBClockServiceType;
 import com.io7m.olivebench.composition.OBCompositionType;
+import com.io7m.olivebench.composition.OBLocaleServiceType;
 import com.io7m.olivebench.services.api.OBServiceDirectoryType;
 import com.io7m.olivebench.services.api.OBServiceType;
 
-import java.time.Clock;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * The SPI implemented by parsers.
@@ -62,7 +62,7 @@ public interface OBCompositionSPIParsersType extends OBServiceType
    */
 
   BTElementHandlerType<?, OBCompositionType> createHandler(
-    Clock clock,
-    Locale locale,
+    OBClockServiceType clock,
+    OBLocaleServiceType locale,
     OBServiceDirectoryType services);
 }

@@ -17,14 +17,19 @@
 package com.io7m.olivebench.tests.composition;
 
 import com.io7m.jregions.core.parameterized.areas.PAreaL;
+import com.io7m.olivebench.composition.OBClockService;
+import com.io7m.olivebench.composition.OBClockServiceType;
 import com.io7m.olivebench.composition.OBCompositionChange;
 import com.io7m.olivebench.composition.OBCompositionEventType;
 import com.io7m.olivebench.composition.OBCompositionMetadata;
 import com.io7m.olivebench.composition.OBCompositionModificationTimeChangedEvent;
 import com.io7m.olivebench.composition.OBCompositionModifiedEvent;
 import com.io7m.olivebench.composition.OBCompositions;
+import com.io7m.olivebench.composition.OBLocaleService;
+import com.io7m.olivebench.composition.OBLocaleServiceType;
 import com.io7m.olivebench.composition.OBTimeConfiguration;
 import com.io7m.olivebench.events.api.OBEventType;
+import com.io7m.olivebench.services.api.OBServiceDirectory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -52,10 +57,10 @@ public final class OBCompositionTest
   private static final Logger LOG =
     LoggerFactory.getLogger(OBCompositionTest.class);
 
-  private final Clock clock =
-    Clock.systemUTC();
-  private final Locale locale =
-    Locale.getDefault();
+  private final OBClockService clock =
+    new OBClockService(Clock.systemUTC());
+  private final OBLocaleService locale =
+    new OBLocaleService();
 
   private OBCompositions compositions;
   private OBTimeConfiguration timeConfiguration;
@@ -87,12 +92,13 @@ public final class OBCompositionTest
   public void setup()
   {
     this.compositions = new OBCompositions();
+
     this.timeConfiguration =
       OBTimeConfiguration.builder()
         .setTicksPerQuarterNote(1024L)
         .build();
 
-    this.eventPreviousTime = OffsetDateTime.now(this.clock);
+    this.eventPreviousTime = this.clock.now();
     this.events = new ArrayList<OBEventType>();
   }
 

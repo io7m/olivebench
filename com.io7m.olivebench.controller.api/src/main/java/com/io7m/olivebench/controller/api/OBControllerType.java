@@ -17,6 +17,8 @@
 package com.io7m.olivebench.controller.api;
 
 import com.io7m.olivebench.composition.OBCompositionType;
+import com.io7m.olivebench.composition.OBDublinCoreMetadata;
+import com.io7m.olivebench.composition.OBTimeConfiguration;
 import com.io7m.olivebench.composition.OBTrackMetadata;
 import com.io7m.olivebench.composition.OBTrackType;
 import com.io7m.olivebench.services.api.OBServiceType;
@@ -26,6 +28,7 @@ import java.io.Closeable;
 import java.nio.file.Path;
 import java.time.OffsetDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * The (synchronous) controller API.
@@ -63,9 +66,31 @@ public interface OBControllerType extends Closeable, OBServiceType
 
   /**
    * Create a new composition.
+   *
+   * @param id                The composition ID
+   * @param timeConfiguration The time configuration
+   * @param dcMetadata        The Dublin Core metadata
    */
 
-  void compositionNew();
+  void compositionNew(
+    UUID id,
+    OBTimeConfiguration timeConfiguration,
+    OBDublinCoreMetadata dcMetadata);
+
+  /**
+   * Create a new composition.
+   */
+
+  default void compositionNew()
+  {
+    this.compositionNew(
+      UUID.randomUUID(),
+      OBTimeConfiguration.builder()
+        .build(),
+      OBDublinCoreMetadata.builder()
+        .build()
+    );
+  }
 
   /**
    * Close the open composition.

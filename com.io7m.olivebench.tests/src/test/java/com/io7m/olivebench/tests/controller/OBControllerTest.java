@@ -16,8 +16,12 @@
 
 package com.io7m.olivebench.tests.controller;
 
+import com.io7m.olivebench.composition.OBClockService;
+import com.io7m.olivebench.composition.OBClockServiceType;
 import com.io7m.olivebench.composition.OBCompositionFactoryType;
 import com.io7m.olivebench.composition.OBCompositions;
+import com.io7m.olivebench.composition.OBLocaleService;
+import com.io7m.olivebench.composition.OBLocaleServiceType;
 import com.io7m.olivebench.composition.parser.api.OBCompositionParseException;
 import com.io7m.olivebench.composition.parser.api.OBCompositionParsers;
 import com.io7m.olivebench.composition.parser.api.OBCompositionParsersType;
@@ -106,6 +110,10 @@ public final class OBControllerTest
   {
     this.services = new OBServiceDirectory();
     this.services.register(
+      OBClockServiceType.class, new OBClockService());
+    this.services.register(
+      OBLocaleServiceType.class, new OBLocaleService());
+    this.services.register(
       OBCompositionFactoryType.class, new OBCompositions());
     this.services.register(
       OBCompositionSPIParsersType.class, new OBCompositionParserV1());
@@ -115,7 +123,7 @@ public final class OBControllerTest
       OBCompositionParsersType.class, new OBCompositionParsers());
 
     this.controller =
-      OBController.create(Clock.systemUTC(), this.services, Locale.ENGLISH);
+      OBController.create(this.services);
     this.directory =
       OBTestDirectories.createTempDirectory();
     this.events =

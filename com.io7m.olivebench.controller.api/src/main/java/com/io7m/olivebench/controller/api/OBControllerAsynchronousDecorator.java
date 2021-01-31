@@ -17,6 +17,8 @@
 package com.io7m.olivebench.controller.api;
 
 import com.io7m.olivebench.composition.OBCompositionType;
+import com.io7m.olivebench.composition.OBDublinCoreMetadata;
+import com.io7m.olivebench.composition.OBTimeConfiguration;
 import com.io7m.olivebench.composition.OBTrackMetadata;
 import com.io7m.olivebench.composition.OBTrackType;
 import io.reactivex.rxjava3.core.Observable;
@@ -28,6 +30,7 @@ import java.nio.file.Path;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -105,9 +108,14 @@ public final class OBControllerAsynchronousDecorator
   }
 
   @Override
-  public void compositionNew()
+  public void compositionNew(
+    final UUID id,
+    final OBTimeConfiguration timeConfiguration,
+    final OBDublinCoreMetadata dcMetadata)
   {
-    this.executor.execute(this.delegate::compositionNew);
+    this.executor.execute(
+      () -> this.delegate.compositionNew(
+        id, timeConfiguration, dcMetadata));
   }
 
   @Override
@@ -181,7 +189,9 @@ public final class OBControllerAsynchronousDecorator
     final OBTrackType track,
     final OBTrackMetadata newMetadata)
   {
-    this.executor.execute(() -> this.delegate.trackSetMetadata(track, newMetadata));
+    this.executor.execute(() -> this.delegate.trackSetMetadata(
+      track,
+      newMetadata));
   }
 
   @Override

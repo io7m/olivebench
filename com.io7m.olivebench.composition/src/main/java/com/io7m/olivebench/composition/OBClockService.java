@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020 Mark Raynsford <code@io7m.com> http://io7m.com
+ * Copyright © 2021 Mark Raynsford <code@io7m.com> http://io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -16,26 +16,50 @@
 
 package com.io7m.olivebench.composition;
 
-import com.io7m.olivebench.services.api.OBServiceType;
+import java.time.Clock;
+import java.util.Objects;
 
 /**
- * The type of composition factories.
+ * The default clock service.
  */
 
-public interface OBCompositionFactoryType extends OBServiceType
+public final class OBClockService implements OBClockServiceType
 {
+  private final Clock clock;
+
   /**
-   * Create a new empty composition.
+   * Construct a clock service.
    *
-   * @param clock    The clock
-   * @param locale   The locale
-   * @param metadata The composition metadata
-   *
-   * @return A new empty composition
+   * @param inClock The clock
    */
 
-  OBCompositionType createComposition(
-    OBClockServiceType clock,
-    OBLocaleServiceType locale,
-    OBCompositionMetadata metadata);
+  public OBClockService(
+    final Clock inClock)
+  {
+    this.clock = Objects.requireNonNull(inClock, "clock");
+  }
+
+  /**
+   * Construct a clock service.
+   */
+
+  public OBClockService()
+  {
+    this(Clock.systemUTC());
+  }
+
+  @Override
+  public Clock clock()
+  {
+    return this.clock;
+  }
+
+  @Override
+  public String toString()
+  {
+    return String.format(
+      "[OBClockService 0x%08x]",
+      Integer.valueOf(this.hashCode())
+    );
+  }
 }

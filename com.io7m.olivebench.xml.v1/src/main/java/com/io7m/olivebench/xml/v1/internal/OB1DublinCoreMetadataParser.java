@@ -23,6 +23,7 @@ import com.io7m.blackthorne.api.BTQualifiedName;
 import com.io7m.olivebench.composition.OBDublinCoreMetadata;
 
 import java.util.Map;
+import java.util.Objects;
 
 import static com.io7m.olivebench.xml.v1.internal.DCElementHandlers.constructor;
 import static com.io7m.olivebench.xml.v1.internal.OB1Names.dcElement;
@@ -67,6 +68,8 @@ public final class OB1DublinCoreMetadataParser
     final BTElementParsingContextType context,
     final Object result)
   {
+    Objects.requireNonNull(result, "result");
+
     if (result instanceof DCElement) {
       final var dcElement = (DCElement) result;
       this.onDCElement(dcElement);

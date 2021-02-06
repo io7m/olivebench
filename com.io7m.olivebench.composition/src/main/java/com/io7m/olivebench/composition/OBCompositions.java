@@ -38,6 +38,15 @@ public final class OBCompositions implements OBCompositionFactoryType
   }
 
   @Override
+  public String toString()
+  {
+    return String.format(
+      "[OBCompositions 0x%08x]",
+      Integer.valueOf(this.hashCode())
+    );
+  }
+
+  @Override
   public OBCompositionType createComposition(
     final OBClockServiceType clock,
     final OBLocaleServiceType locale,

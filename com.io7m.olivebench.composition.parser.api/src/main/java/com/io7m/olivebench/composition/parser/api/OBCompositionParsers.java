@@ -53,6 +53,15 @@ public final class OBCompositionParsers implements OBCompositionParsersType
   }
 
   @Override
+  public String toString()
+  {
+    return String.format(
+      "[OBCompositionParsers 0x%08x]",
+      Integer.valueOf(this.hashCode())
+    );
+  }
+
+  @Override
   public OBCompositionParserType createParser(
     final OBServiceDirectoryType services,
     final URI source,

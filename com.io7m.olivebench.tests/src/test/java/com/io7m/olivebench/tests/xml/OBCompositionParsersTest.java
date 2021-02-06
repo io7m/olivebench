@@ -144,6 +144,16 @@ public final class OBCompositionParsersTest
     assertEquals(0.3, track0Meta.color().z());
   }
 
+  @Test
+  public void testParseEmptyDC()
+    throws Exception
+  {
+    final var stream =
+      this.resource("empty-dc.ocx");
+    final var composition =
+      this.parsers.parse(this.services, URI.create("urn:stdin"), stream);
+  }
+
   private InputStream resource(
     final String name)
     throws IOException

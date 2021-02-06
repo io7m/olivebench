@@ -42,7 +42,7 @@
   </modules>
 
   <properties>
-    <com.io7m.blackthorne.version>1.2.0</com.io7m.blackthorne.version>
+    <com.io7m.blackthorne.version>1.2.1</com.io7m.blackthorne.version>
     <com.io7m.immutables.version>2.8.8</com.io7m.immutables.version>
     <com.io7m.jade.version>1.0.1</com.io7m.jade.version>
     <com.io7m.jspatial.version>3.0.0-beta0003</com.io7m.jspatial.version>

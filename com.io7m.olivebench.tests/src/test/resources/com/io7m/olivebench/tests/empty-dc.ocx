@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ob:Composition xmlns:ob="urn:com.io7m.olivebench:xml:1" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <ob:Metadata id="d62793f3-936c-4ed9-8918-3b3788a3a6e3">
+    <ob:DCMetadata>
+      <dc:contributor/>
+      <dc:coverage/>
+      <dc:creator/>
+      <dc:date/>
+      <dc:description/>
+      <dc:format/>
+      <dc:identifier/>
+      <dc:language/>
+      <dc:publisher/>
+      <dc:relation/>
+      <dc:rights/>
+      <dc:source/>
+      <dc:subject/>
+      <dc:title/>
+      <dc:type/>
+    </ob:DCMetadata>
+    <ob:TimeConfiguration ticksPerQuarterNote="1024"/>
+  </ob:Metadata>
+  <ob:Tracks>
+    <ob:Track id="2b4fec1b-19d2-4380-90ac-63c86fdcd118">
+      <ob:TrackMetadata name="asasdasdasd">
+        <ob:Color3F red="1.0" green="1.0" blue="1.0"/>
+      </ob:TrackMetadata>
+    </ob:Track>
+    <ob:Track id="7ac682ec-5798-40c7-969a-839d0cf7a050">
+      <ob:TrackMetadata name="asdasd">
+        <ob:Color3F red="1.0" green="1.0" blue="1.0"/>
+      </ob:TrackMetadata>
+    </ob:Track>
+    <ob:Track id="d5efdc4b-5e91-40da-90f0-9c406b4fec2e">
+      <ob:TrackMetadata name="asd">
+        <ob:Color3F red="1.0" green="1.0" blue="1.0"/>
+      </ob:TrackMetadata>
+    </ob:Track>
+    <ob:Track id="e60fb54d-5abc-419b-8772-0db1ad763e52">
+      <ob:TrackMetadata name="asdasd">
+        <ob:Color3F red="1.0" green="1.0" blue="1.0"/>
+      </ob:TrackMetadata>
+    </ob:Track>
+    <ob:Track id="fa10eea5-68a9-4723-b282-7a45efb162d0">
+      <ob:TrackMetadata name="asdasd">
+        <ob:Color3F red="1.0" green="1.0" blue="1.0"/>
+      </ob:TrackMetadata>
+    </ob:Track>
+  </ob:Tracks>
+</ob:Composition>

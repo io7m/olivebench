@@ -41,6 +41,15 @@ public final class OBCompositionSerializers
   }
 
   @Override
+  public String toString()
+  {
+    return String.format(
+      "[OBCompositionSerializers 0x%08x]",
+      Integer.valueOf(this.hashCode())
+    );
+  }
+
+  @Override
   public OBCompositionSerializerType createSerializer(
     final OBServiceDirectoryType services,
     final URI target,

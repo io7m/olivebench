@@ -11,7 +11,7 @@
   <children>
       <AnchorPane layoutX="8.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Rectangle fill="#ffffff99" height="64.0" stroke="TRANSPARENT" strokeType="INSIDE" width="128.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+            <Rectangle fx:id="shade" fill="#ffffff99" height="64.0" stroke="TRANSPARENT" strokeType="INSIDE" width="128.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
           <TextField fx:id="trackNameField" layoutY="8.0" maxWidth="-Infinity" minWidth="-Infinity" onAction="#onTextEdited" prefWidth="80.0" text="Track 0" AnchorPane.leftAnchor="8.0" AnchorPane.rightAnchor="16.0" AnchorPane.topAnchor="8.0">
             <font>
               <Font name="Monospaced Regular" size="9.0" />

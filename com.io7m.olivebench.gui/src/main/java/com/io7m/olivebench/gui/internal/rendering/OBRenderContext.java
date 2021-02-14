@@ -30,7 +30,6 @@ import com.io7m.olivebench.composition.spaces.OBWorldSpaceType;
 import com.io7m.olivebench.controller.api.OBControllerReadableType;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
 import java.util.Objects;
@@ -68,21 +67,11 @@ public final class OBRenderContext implements OBRenderContextType
       final var y0 = 0.5 + (double) Math.round(area.minimumY());
 
       fill.ifPresent(fillColor -> {
-        this.graphics.setFill(Color.color(
-          fillColor.x(),
-          fillColor.y(),
-          fillColor.z(),
-          fillColor.w()
-        ));
+        this.graphics.setFill(OBColors.paintOf(fillColor));
         this.graphics.fillRect(x0, y0, w, h);
       });
       stroke.ifPresent(strokeColor -> {
-        this.graphics.setStroke(Color.color(
-          strokeColor.x(),
-          strokeColor.y(),
-          strokeColor.z(),
-          strokeColor.w()
-        ));
+        this.graphics.setStroke(OBColors.paintOf(strokeColor));
         this.graphics.strokeRect(x0, y0, w, h);
       });
     } finally {
@@ -106,21 +95,11 @@ public final class OBRenderContext implements OBRenderContextType
       final var y0 = 0.5 + (double) Math.round(area.minimumY());
 
       fill.ifPresent(fillColor -> {
-        this.graphics.setFill(Color.color(
-          fillColor.x(),
-          fillColor.y(),
-          fillColor.z(),
-          fillColor.w()
-        ));
+        this.graphics.setFill(OBColors.paintOf(fillColor));
         this.graphics.fillRoundRect(x0, y0, w, h, arc, arc);
       });
       stroke.ifPresent(strokeColor -> {
-        this.graphics.setStroke(Color.color(
-          strokeColor.x(),
-          strokeColor.y(),
-          strokeColor.z(),
-          strokeColor.w()
-        ));
+        this.graphics.setStroke(OBColors.paintOf(strokeColor));
         this.graphics.strokeRoundRect(x0, y0, w, h, arc, arc);
       });
     } finally {
@@ -174,12 +153,7 @@ public final class OBRenderContext implements OBRenderContextType
   {
     this.graphics.save();
     try {
-      this.graphics.setStroke(Color.color(
-        color.x(),
-        color.y(),
-        color.z(),
-        color.w()
-      ));
+      this.graphics.setStroke(OBColors.paintOf(color));
 
       final var x0 = 0.5 + (double) Math.round(p0.x());
       final var y0 = 0.5 + (double) Math.round(p0.y());
@@ -201,12 +175,7 @@ public final class OBRenderContext implements OBRenderContextType
   {
     this.graphics.save();
     try {
-      this.graphics.setFill(Color.color(
-        color.x(),
-        color.y(),
-        color.z(),
-        color.w()
-      ));
+      this.graphics.setFill(OBColors.paintOf(color));
       this.graphics.setFont(Font.font("Monospaced", size));
       this.graphics.fillText(text, position.x(), position.y(), maxWidth);
     } finally {

@@ -22,6 +22,7 @@ import com.io7m.olivebench.composition.spaces.OBRGBASpaceType;
 import java.util.Map;
 import java.util.UUID;
 
+import static com.io7m.olivebench.theme.api.OBThemeType.ARRANGEMENT_TRACK_SHADE;
 import static com.io7m.olivebench.theme.api.OBThemeType.PATTERN_BACKGROUND;
 import static com.io7m.olivebench.theme.api.OBThemeType.PATTERN_BORDER;
 import static com.io7m.olivebench.theme.api.OBThemeType.PATTERN_NOTE_LINE;
@@ -69,17 +70,42 @@ public final class OBThemeSilver
   {
     final var colors =
       Map.ofEntries(
-        Map.entry(TIMELINE_BACKGROUND, grey(0.8)),
-        Map.entry(TIMELINE_TICK_BAR, greyTranslucent(0.0, 0.4)),
-        Map.entry(TIMELINE_TICK_BEAT, greyTranslucent(0.0, 0.1)),
-        Map.entry(TIMELINE_TEXT, grey(0.1)),
+        Map.entry(
+          ARRANGEMENT_TRACK_SHADE,
+          greyTranslucent(1.0, 0.9)
+        ),
 
-        Map.entry(PATTERN_REGION_BACKGROUND, greyTranslucent(1.0, 0.25)),
-        Map.entry(PATTERN_REGION_BORDER, greyTranslucent(0.0, 0.2)),
-        Map.entry(PATTERN_REGION_TICK_BAR, greyTranslucent(0.0, 0.4)),
-        Map.entry(PATTERN_REGION_TICK_BEAT, greyTranslucent(0.0, 0.1)),
-        Map.entry(PATTERN_REGION_TEXT, grey(0.1)),
-        Map.entry(PATTERN_REGION_NOTE_LINE, greyTranslucent(0.0, 0.05)),
+        Map.entry(
+          TIMELINE_BACKGROUND,
+          grey(0.8)),
+        Map.entry(
+          TIMELINE_TICK_BAR,
+          greyTranslucent(0.0, 0.4)),
+        Map.entry(
+          TIMELINE_TICK_BEAT,
+          greyTranslucent(0.0, 0.1)),
+        Map.entry(
+          TIMELINE_TEXT,
+          grey(0.1)),
+
+        Map.entry(
+          PATTERN_REGION_BACKGROUND,
+          greyTranslucent(1.0, 0.25)),
+        Map.entry(
+          PATTERN_REGION_BORDER,
+          greyTranslucent(0.0, 0.2)),
+        Map.entry(
+          PATTERN_REGION_TICK_BAR,
+          greyTranslucent(0.0, 0.4)),
+        Map.entry(
+          PATTERN_REGION_TICK_BEAT,
+          greyTranslucent(0.0, 0.1)),
+        Map.entry(
+          PATTERN_REGION_TEXT,
+          grey(0.1)),
+        Map.entry(
+          PATTERN_REGION_NOTE_LINE,
+          greyTranslucent(0.0, 0.05)),
         Map.entry(
           PATTERN_REGION_NOTE_HIGHLIGHT_ROOT,
           greyTranslucent(0.0, 0.12)),
@@ -89,15 +115,31 @@ public final class OBThemeSilver
         Map.entry(
           PATTERN_REGION_NOTE_HIGHLIGHT_LESSER,
           greyTranslucent(0.0, 0.04)),
-        Map.entry(PATTERN_REGION_NOTE_BORDER, grey(0.3)),
-        Map.entry(PATTERN_REGION_NOTE_FILL, grey(0.8)),
+        Map.entry(
+          PATTERN_REGION_NOTE_BORDER,
+          grey(0.3)),
+        Map.entry(
+          PATTERN_REGION_NOTE_FILL,
+          grey(0.8)),
 
-        Map.entry(PATTERN_BACKGROUND, grey(0.8)),
-        Map.entry(PATTERN_BORDER, grey(0.1)),
-        Map.entry(PATTERN_TICK_BAR, greyTranslucent(0.0, 0.4)),
-        Map.entry(PATTERN_TICK_BEAT, greyTranslucent(0.0, 0.1)),
-        Map.entry(PATTERN_TEXT, grey(0.1)),
-        Map.entry(PATTERN_NOTE_LINE, greyTranslucent(0.0, 0.05))
+        Map.entry(
+          PATTERN_BACKGROUND,
+          grey(0.8)),
+        Map.entry(
+          PATTERN_BORDER,
+          grey(0.1)),
+        Map.entry(
+          PATTERN_TICK_BAR,
+          greyTranslucent(0.0, 0.4)),
+        Map.entry(
+          PATTERN_TICK_BEAT,
+          greyTranslucent(0.0, 0.1)),
+        Map.entry(
+          PATTERN_TEXT,
+          grey(0.1)),
+        Map.entry(
+          PATTERN_NOTE_LINE,
+          greyTranslucent(0.0, 0.05))
       );
 
     return OBTheme.builder()

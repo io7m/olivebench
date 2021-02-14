@@ -40,6 +40,13 @@ import static java.lang.reflect.Modifier.STATIC;
 public interface OBThemeType
 {
   /**
+   * The ARRANGEMENT_TRACK_SHADE property name.
+   */
+
+  String ARRANGEMENT_TRACK_SHADE =
+    "arrangement.track.shade";
+
+  /**
    * The PATTERN_REGION_BACKGROUND property name.
    */
 
@@ -234,6 +241,13 @@ public interface OBThemeType
         String.format("Color is not defined in the theme: %s", name)
       ));
   }
+
+
+  default PVector4D<OBRGBASpaceType> arrangementTrackShade()
+  {
+    return this.color(ARRANGEMENT_TRACK_SHADE);
+  }
+
 
   default PVector4D<OBRGBASpaceType> patternRegionBorder()
   {

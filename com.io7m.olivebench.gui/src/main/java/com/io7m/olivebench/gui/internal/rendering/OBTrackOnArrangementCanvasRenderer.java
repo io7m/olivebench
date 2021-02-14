@@ -18,6 +18,7 @@ package com.io7m.olivebench.gui.internal.rendering;
 
 import com.io7m.olivebench.composition.OBTrackType;
 import com.io7m.olivebench.composition.regions.OBRegionType;
+import com.io7m.olivebench.controller.api.OBControllerReadableType;
 
 import java.util.Objects;
 
@@ -33,9 +34,10 @@ public final class OBTrackOnArrangementCanvasRenderer
       Objects.requireNonNull(inRegionRenderer, "regionRenderer");
   }
 
-  public OBTrackOnArrangementCanvasRenderer()
+  public OBTrackOnArrangementCanvasRenderer(
+    final OBControllerReadableType controller)
   {
-    this(new OBRegionOnArrangementCanvasRenderer());
+    this(new OBRegionOnArrangementCanvasRenderer(controller));
   }
 
   @Override

@@ -18,6 +18,7 @@ package com.io7m.olivebench.gui.internal;
 
 import com.io7m.olivebench.composition.OBTrackType;
 import com.io7m.olivebench.controller.api.OBControllerAsynchronousType;
+import com.io7m.olivebench.gui.internal.rendering.OBColors;
 import com.io7m.olivebench.gui.internal.rendering.OBRenderContext;
 import com.io7m.olivebench.gui.internal.rendering.OBTrackOnArrangementCanvasRenderer;
 import com.io7m.olivebench.services.api.OBServiceDirectoryType;
@@ -29,6 +30,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.shape.Rectangle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +59,8 @@ public final class OBArrangementTrackViewController
   private ToggleButton muteButton;
   @FXML
   private ToggleButton soloButton;
+  @FXML
+  private Rectangle shade;
 
   private OBCanvasPane trackCanvas;
   private OBTrackType track;
@@ -72,7 +76,7 @@ public final class OBArrangementTrackViewController
     this.compositionSubscriptions =
       new CompositeDisposable();
     this.trackRenderer =
-      new OBTrackOnArrangementCanvasRenderer();
+      new OBTrackOnArrangementCanvasRenderer(this.controller);
   }
 
   public static OBArrangementTrackViewController create(
@@ -115,6 +119,12 @@ public final class OBArrangementTrackViewController
     this.setStyle("-fx-padding: 0px");
     this.setGraphic(this.rootPane);
     this.setText(null);
+
+    final var shadeColor =
+      this.controller.theme()
+        .arrangementTrackShade();
+
+    this.shade.setFill(OBColors.paintOf(shadeColor));
 
     this.trackCanvas =
       new OBCanvasPane(this::renderCanvas);

@@ -17,23 +17,42 @@
 package com.io7m.olivebench.gui.internal.rendering;
 
 import com.io7m.olivebench.composition.regions.OBRegionType;
+import com.io7m.olivebench.controller.api.OBControllerReadableType;
 
 import java.util.Objects;
+import java.util.Optional;
 
 public final class OBRegionOnArrangementCanvasRenderer
   implements OBRendererType<OBRegionType>
 {
-  public OBRegionOnArrangementCanvasRenderer()
-  {
+  private final OBControllerReadableType controller;
 
+  public OBRegionOnArrangementCanvasRenderer(
+    final OBControllerReadableType inController)
+  {
+    this.controller =
+      Objects.requireNonNull(inController, "controller");
   }
 
   @Override
   public void render(
     final OBRenderContextType context,
-    final OBRegionType item)
+    final OBRegionType region)
   {
     Objects.requireNonNull(context, "context");
-    Objects.requireNonNull(item, "item");
+    Objects.requireNonNull(region, "item");
+
+    final var trackSpaceBounds =
+      region.bounds();
+    final var screenBoundsOfRegion =
+      context.trackToScreen(trackSpaceBounds);
+    final var theme =
+      this.controller.theme();
+
+    context.drawRectScreen(
+      screenBoundsOfRegion,
+      Optional.of(theme.patternRegionBorder()),
+      Optional.empty()
+    );
   }
 }

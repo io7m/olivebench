@@ -22,6 +22,7 @@ import com.io7m.olivebench.composition.spaces.OBRGBASpaceType;
 import java.util.Map;
 import java.util.UUID;
 
+import static com.io7m.olivebench.theme.api.OBThemeType.ARRANGEMENT_TRACK_SHADE;
 import static com.io7m.olivebench.theme.api.OBThemeType.PATTERN_BACKGROUND;
 import static com.io7m.olivebench.theme.api.OBThemeType.PATTERN_BORDER;
 import static com.io7m.olivebench.theme.api.OBThemeType.PATTERN_NOTE_LINE;
@@ -67,17 +68,42 @@ public final class OBThemeRandom
   {
     final var colors =
       Map.ofEntries(
-        Map.entry(TIMELINE_BACKGROUND, random()),
-        Map.entry(TIMELINE_TICK_BAR, randomTranslucent(0.4)),
-        Map.entry(TIMELINE_TICK_BEAT, randomTranslucent(0.1)),
-        Map.entry(TIMELINE_TEXT, random()),
+        Map.entry(
+          ARRANGEMENT_TRACK_SHADE,
+          randomTranslucent(0.9)
+        ),
 
-        Map.entry(PATTERN_REGION_BACKGROUND, randomTranslucent(0.25)),
-        Map.entry(PATTERN_REGION_BORDER, randomTranslucent(0.2)),
-        Map.entry(PATTERN_REGION_TICK_BAR, randomTranslucent(0.4)),
-        Map.entry(PATTERN_REGION_TICK_BEAT, randomTranslucent(0.1)),
-        Map.entry(PATTERN_REGION_TEXT, random()),
-        Map.entry(PATTERN_REGION_NOTE_LINE, randomTranslucent(0.05)),
+        Map.entry(
+          TIMELINE_BACKGROUND,
+          random()),
+        Map.entry(
+          TIMELINE_TICK_BAR,
+          randomTranslucent(0.4)),
+        Map.entry(
+          TIMELINE_TICK_BEAT,
+          randomTranslucent(0.1)),
+        Map.entry(
+          TIMELINE_TEXT,
+          random()),
+
+        Map.entry(
+          PATTERN_REGION_BACKGROUND,
+          randomTranslucent(0.25)),
+        Map.entry(
+          PATTERN_REGION_BORDER,
+          randomTranslucent(0.2)),
+        Map.entry(
+          PATTERN_REGION_TICK_BAR,
+          randomTranslucent(0.4)),
+        Map.entry(
+          PATTERN_REGION_TICK_BEAT,
+          randomTranslucent(0.1)),
+        Map.entry(
+          PATTERN_REGION_TEXT,
+          random()),
+        Map.entry(
+          PATTERN_REGION_NOTE_LINE,
+          randomTranslucent(0.05)),
         Map.entry(
           PATTERN_REGION_NOTE_HIGHLIGHT_ROOT,
           randomTranslucent(0.12)),
@@ -87,15 +113,31 @@ public final class OBThemeRandom
         Map.entry(
           PATTERN_REGION_NOTE_HIGHLIGHT_LESSER,
           randomTranslucent(0.04)),
-        Map.entry(PATTERN_REGION_NOTE_BORDER, random()),
-        Map.entry(PATTERN_REGION_NOTE_FILL, random()),
+        Map.entry(
+          PATTERN_REGION_NOTE_BORDER,
+          random()),
+        Map.entry(
+          PATTERN_REGION_NOTE_FILL,
+          random()),
 
-        Map.entry(PATTERN_BACKGROUND, random()),
-        Map.entry(PATTERN_BORDER, random()),
-        Map.entry(PATTERN_TICK_BAR, randomTranslucent(0.4)),
-        Map.entry(PATTERN_TICK_BEAT, randomTranslucent(0.1)),
-        Map.entry(PATTERN_TEXT, random()),
-        Map.entry(PATTERN_NOTE_LINE, randomTranslucent(0.05))
+        Map.entry(
+          PATTERN_BACKGROUND,
+          random()),
+        Map.entry(
+          PATTERN_BORDER,
+          random()),
+        Map.entry(
+          PATTERN_TICK_BAR,
+          randomTranslucent(0.4)),
+        Map.entry(
+          PATTERN_TICK_BEAT,
+          randomTranslucent(0.1)),
+        Map.entry(
+          PATTERN_TEXT,
+          random()),
+        Map.entry(
+          PATTERN_NOTE_LINE,
+          randomTranslucent(0.05))
       );
 
     return OBTheme.builder()

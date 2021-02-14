@@ -16,12 +16,21 @@
 
 package com.io7m.olivebench.gui.main;
 
-import com.io7m.olivebench.gui.OBMainApplication;
-import javafx.application.Platform;
-import javafx.stage.Stage;
+import com.io7m.claypot.core.CLPApplicationConfiguration;
+import com.io7m.claypot.core.Claypot;
+import com.io7m.olivebench.gui.main.internal.OBCommandOpen;
+import com.io7m.olivebench.gui.main.internal.OBMain;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.net.URI;
+import java.util.Optional;
 
 public final class OBGUIMain
 {
+  private static final Logger LOG =
+    LoggerFactory.getLogger(OBGUIMain.class);
+
   private OBGUIMain()
   {
 
@@ -30,14 +39,21 @@ public final class OBGUIMain
   public static void main(
     final String[] args)
   {
-    Platform.startup(() -> {
-      try {
-        final var stage = new Stage();
-        final var mainApplication = new OBMainApplication();
-        mainApplication.start(stage);
-      } catch (final Exception e) {
-        throw new IllegalStateException(e);
-      }
-    });
+    if (args.length == 0) {
+      OBMain.startApplication(Optional.empty());
+      return;
+    }
+
+    final var applicationConfiguration =
+      CLPApplicationConfiguration.builder()
+        .setLogger(LOG)
+        .setDocumentationURI(URI.create(
+          "https://www.io7m.com/software/olivebench"))
+        .setProgramName("olivebench")
+        .addCommands(OBCommandOpen::new)
+        .build();
+
+    final var claypot = Claypot.create(applicationConfiguration);
+    claypot.execute(args);
   }
 }

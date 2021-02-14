@@ -16,37 +16,33 @@
 
 package com.io7m.olivebench.controller.api;
 
-import com.io7m.olivebench.composition.OBCompositionType;
+import com.io7m.jregions.core.parameterized.areas.PAreaD;
 import com.io7m.olivebench.composition.OBDublinCoreMetadata;
 import com.io7m.olivebench.composition.OBTimeConfiguration;
 import com.io7m.olivebench.composition.OBTrackMetadata;
 import com.io7m.olivebench.composition.OBTrackType;
+import com.io7m.olivebench.composition.spaces.OBWorldSpaceType;
 import com.io7m.olivebench.services.api.OBServiceType;
-import io.reactivex.rxjava3.core.Observable;
 
 import java.io.Closeable;
 import java.nio.file.Path;
-import java.time.OffsetDateTime;
-import java.util.Optional;
 import java.util.UUID;
 
 /**
  * The (synchronous) controller API.
  */
 
-public interface OBControllerType extends Closeable, OBServiceType
+public interface OBControllerType extends Closeable, OBServiceType,
+  OBControllerReadableType
 {
   /**
-   * @return A stream of controller events
+   * Set the composition viewport.
+   *
+   * @param newViewport The new viewport
    */
 
-  Observable<OBControllerEventType> events();
-
-  /**
-   * @return The file currently being used for the composition
-   */
-
-  Optional<Path> compositionFile();
+  void compositionSetViewport(
+    PAreaD<OBWorldSpaceType> newViewport);
 
   /**
    * Open a composition.
@@ -105,24 +101,6 @@ public interface OBControllerType extends Closeable, OBServiceType
   void compositionTouch();
 
   /**
-   * @return The open composition, if any
-   */
-
-  Optional<OBCompositionType> composition();
-
-  /**
-   * @return {@code true} if the undo stack is not empty
-   */
-
-  boolean canUndo();
-
-  /**
-   * @return {@code true} if the redo stack is not empty
-   */
-
-  boolean canRedo();
-
-  /**
    * Undo the last command.
    */
 
@@ -133,24 +111,6 @@ public interface OBControllerType extends Closeable, OBServiceType
    */
 
   void redo();
-
-  /**
-   * @return The time that the composition was last saved to persistent storage
-   */
-
-  OffsetDateTime timeLastSaved();
-
-  /**
-   * @return The time that the composition was last modified
-   */
-
-  OffsetDateTime timeLastModified();
-
-  /**
-   * @return {@code true} if the last modification time implies that there is unsaved data
-   */
-
-  boolean isUnsaved();
 
   /**
    * Create a new track in the composition.
@@ -168,4 +128,5 @@ public interface OBControllerType extends Closeable, OBServiceType
   void trackSetMetadata(
     OBTrackType track,
     OBTrackMetadata newMetadata);
+
 }

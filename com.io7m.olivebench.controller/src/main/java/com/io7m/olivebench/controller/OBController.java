@@ -16,6 +16,7 @@
 
 package com.io7m.olivebench.controller;
 
+import com.io7m.jregions.core.parameterized.areas.PAreaD;
 import com.io7m.olivebench.composition.OBClockServiceType;
 import com.io7m.olivebench.composition.OBCompositionType;
 import com.io7m.olivebench.composition.OBDublinCoreMetadata;
@@ -23,6 +24,7 @@ import com.io7m.olivebench.composition.OBLocaleServiceType;
 import com.io7m.olivebench.composition.OBTimeConfiguration;
 import com.io7m.olivebench.composition.OBTrackMetadata;
 import com.io7m.olivebench.composition.OBTrackType;
+import com.io7m.olivebench.composition.spaces.OBWorldSpaceType;
 import com.io7m.olivebench.controller.api.OBCommandContextType;
 import com.io7m.olivebench.controller.api.OBCommandType;
 import com.io7m.olivebench.controller.api.OBCommandUndoableExecutor;
@@ -39,11 +41,16 @@ import com.io7m.olivebench.controller.internal.OBCommandCompositionTouch;
 import com.io7m.olivebench.controller.internal.OBCommandStrings;
 import com.io7m.olivebench.controller.internal.OBCommandTrackAdd;
 import com.io7m.olivebench.controller.internal.OBCommandTrackSetMetadata;
+import com.io7m.olivebench.preferences.api.OBPreferencesServiceType;
+import com.io7m.olivebench.preferences.api.OBRecentFilesUpdates;
 import com.io7m.olivebench.services.api.OBServiceDirectoryType;
+import com.io7m.olivebench.theme.api.OBTheme;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import io.reactivex.rxjava3.subjects.Subject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -59,6 +66,7 @@ import static com.io7m.olivebench.controller.api.OBControllerCompositionEventKin
 import static com.io7m.olivebench.controller.api.OBControllerCompositionEventKind.COMPOSITION_OPENED;
 import static com.io7m.olivebench.controller.api.OBControllerCompositionEventKind.COMPOSITION_SAVED;
 import static com.io7m.olivebench.controller.api.OBControllerCompositionEventKind.COMPOSITION_UNDO_CHANGED;
+import static com.io7m.olivebench.controller.api.OBControllerCompositionEventKind.COMPOSITION_VIEWPORT_CHANGED;
 
 /**
  * The default controller implementation.
@@ -66,16 +74,21 @@ import static com.io7m.olivebench.controller.api.OBControllerCompositionEventKin
 
 public final class OBController implements OBControllerType
 {
-  private final OBClockServiceType clock;
-  private final OBServiceDirectoryType services;
-  private final OBCommandStrings strings;
-  private final Subject<OBControllerEventType> events;
-  private final OBCommandUndoableExecutor executor;
-  private final Context context;
+  private static final Logger LOG =
+    LoggerFactory.getLogger(OBController.class);
+
   private final CompositeDisposable compositionSubscriptions;
+  private final Context context;
+  private final OBClockServiceType clock;
+  private final OBCommandStrings strings;
+  private final OBCommandUndoableExecutor executor;
+  private final OBPreferencesServiceType preferences;
+  private final OBServiceDirectoryType services;
+  private final Subject<OBControllerEventType> events;
   private volatile OBCompositionType composition;
   private volatile OffsetDateTime timeLastSaved;
   private volatile Optional<Path> compositionFile;
+  private volatile PAreaD<OBWorldSpaceType> viewport;
 
   private OBController(
     final OBServiceDirectoryType inServices,
@@ -85,6 +98,8 @@ public final class OBController implements OBControllerType
       Objects.requireNonNull(inServices, "services");
     this.clock =
       this.services.requireService(OBClockServiceType.class);
+    this.preferences =
+      this.services.requireService(OBPreferencesServiceType.class);
 
     this.strings =
       Objects.requireNonNull(inStrings, "strings");
@@ -100,6 +115,8 @@ public final class OBController implements OBControllerType
     this.timeLastSaved = this.clock.now();
     this.compositionSubscriptions = new CompositeDisposable();
     this.compositionFile = Optional.empty();
+    this.viewport =
+      PAreaD.of(0.0, 1.0, 0.0, 1.0);
 
     this.executor.events()
       .subscribe(e -> this.events.onNext(
@@ -132,6 +149,28 @@ public final class OBController implements OBControllerType
   }
 
   @Override
+  public void compositionSetViewport(
+    final PAreaD<OBWorldSpaceType> newViewport)
+  {
+    this.viewport =
+      Objects.requireNonNull(newViewport, "newViewport");
+    this.events.onNext(
+      OBControllerCompositionEvent.of(COMPOSITION_VIEWPORT_CHANGED));
+  }
+
+  @Override
+  public PAreaD<OBWorldSpaceType> compositionGetViewport()
+  {
+    return this.viewport;
+  }
+
+  @Override
+  public OBTheme theme()
+  {
+    return this.preferences.preferences().theme();
+  }
+
+  @Override
   public Observable<OBControllerEventType> events()
   {
     return this.events;
@@ -151,6 +190,21 @@ public final class OBController implements OBControllerType
       new OBCommandCompositionLoad(this.services, this.strings, file));
 
     this.compositionFile = Optional.of(file);
+    this.addRecentFile(file);
+  }
+
+  private void addRecentFile(
+    final Path file)
+  {
+    try {
+      this.preferences.update(p -> {
+        return p.withRecentFiles(
+          OBRecentFilesUpdates.addRecentFile(p.recentFiles(), file)
+        );
+      });
+    } catch (final IOException e) {
+      LOG.error("unable to update recent files preferences: ", e);
+    }
   }
 
   @Override
@@ -163,6 +217,7 @@ public final class OBController implements OBControllerType
     this.timeLastSaved = this.composition.lastModified();
     this.compositionFile = Optional.of(file);
     this.events.onNext(OBControllerCompositionEvent.of(COMPOSITION_SAVED));
+    this.addRecentFile(file);
   }
 
   @Override
@@ -275,6 +330,17 @@ public final class OBController implements OBControllerType
       new OBCommandTrackSetMetadata(this.strings, track, newMetadata));
   }
 
+  @Override
+  public boolean trackIsActive(
+    final OBTrackType track)
+  {
+    final var comp = this.composition;
+    if (comp != null) {
+      return Objects.equals(comp.tracks().firstKey(), track.id());
+    }
+    return false;
+  }
+
   private void executeCommand(
     final OBCommandType command)
   {
@@ -354,6 +420,13 @@ public final class OBController implements OBControllerType
         throw new IllegalStateException("No composition is open!");
       }
       return composition;
+    }
+
+    @Override
+    public void compositionSetViewport(
+      final PAreaD<OBWorldSpaceType> viewport)
+    {
+      this.controller.compositionSetViewport(viewport);
     }
   }
 }

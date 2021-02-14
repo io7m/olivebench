@@ -32,7 +32,7 @@ import com.io7m.olivebench.composition.regions.OBRegionMusicType;
 import com.io7m.olivebench.composition.regions.OBRegionTextType;
 import com.io7m.olivebench.composition.regions.OBRegionType;
 import com.io7m.olivebench.composition.serializer.spi.OBCompositionSPISerializerType;
-import com.io7m.olivebench.composition.spaces.OBSpaceRGBAType;
+import com.io7m.olivebench.composition.spaces.OBRGBASpaceType;
 import com.io7m.olivebench.xml.v1.OBSchemas1;
 
 import javax.xml.stream.XMLOutputFactory;
@@ -327,7 +327,7 @@ public final class OB1CompositionSerializer
 
   private void writeColor3F(
     final XMLStreamWriter writer,
-    final PVector3D<OBSpaceRGBAType> color)
+    final PVector3D<OBRGBASpaceType> color)
     throws XMLStreamException
   {
     writer.writeStartElement(this.namespace, "Color3F");

@@ -16,12 +16,14 @@
 
 package com.io7m.olivebench.controller.internal;
 
+import com.io7m.jregions.core.parameterized.areas.PAreaD;
 import com.io7m.olivebench.composition.OBClockServiceType;
 import com.io7m.olivebench.composition.OBCompositionMetadata;
 import com.io7m.olivebench.composition.OBCompositions;
 import com.io7m.olivebench.composition.OBDublinCoreMetadata;
 import com.io7m.olivebench.composition.OBLocaleServiceType;
 import com.io7m.olivebench.composition.OBTimeConfiguration;
+import com.io7m.olivebench.composition.spaces.OBWorldSpaceType;
 import com.io7m.olivebench.controller.api.OBCommandContextType;
 import com.io7m.olivebench.controller.api.OBCommandDescription;
 import com.io7m.olivebench.controller.api.OBCommandUndoStyle;
@@ -81,6 +83,15 @@ public final class OBCommandCompositionNew extends OBCommand
           meta
         );
 
+    final var viewport =
+      PAreaD.<OBWorldSpaceType>of(
+        (-4L * this.timeConfiguration.ticksPerQuarterNote()),
+        (32L * this.timeConfiguration.ticksPerQuarterNote()),
+        0L,
+        128L
+      );
+
     context.compositionOpen(composition);
+    context.compositionSetViewport(viewport);
   }
 }

@@ -16,6 +16,7 @@
 
 package com.io7m.olivebench.composition;
 
+import com.io7m.jranges.RangeInclusiveL;
 import io.reactivex.rxjava3.core.Observable;
 
 import java.time.OffsetDateTime;
@@ -95,4 +96,10 @@ public interface OBCompositionType
    */
 
   void setLastModified(OffsetDateTime time);
+
+  /**
+   * @return The composition's note range
+   */
+
+  RangeInclusiveL noteRange();
 }

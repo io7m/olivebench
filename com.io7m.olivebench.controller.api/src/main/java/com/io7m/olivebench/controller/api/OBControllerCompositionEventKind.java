@@ -17,7 +17,7 @@
 package com.io7m.olivebench.controller.api;
 
 /**
- * The kind of controller events.
+ * The kind of controller events relating to the composition.
  */
 
 public enum OBControllerCompositionEventKind
@@ -33,6 +33,12 @@ public enum OBControllerCompositionEventKind
    */
 
   COMPOSITION_UNDO_CHANGED,
+
+  /**
+   * The composition viewport changed.
+   */
+
+  COMPOSITION_VIEWPORT_CHANGED,
 
   /**
    * A composition was saved.

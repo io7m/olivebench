@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020 Mark Raynsford <code@io7m.com> http://io7m.com
+ * Copyright © 2021 Mark Raynsford <code@io7m.com> http://io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -14,13 +14,26 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.olivebench.composition.spaces;
+package com.io7m.olivebench.gui.internal.rendering;
 
-/**
- * Track space.
- */
+import com.io7m.olivebench.composition.regions.OBRegionTextType;
 
-public interface OBSpacePatternTrackType extends OBSpaceType
+import java.util.Objects;
+
+public final class OBRegionTextOnPatternTimelineRenderer
+  implements OBRendererType<OBRegionTextType>
 {
+  public OBRegionTextOnPatternTimelineRenderer()
+  {
 
+  }
+
+  @Override
+  public void render(
+    final OBRenderContextType context,
+    final OBRegionTextType item)
+  {
+    Objects.requireNonNull(context, "context");
+    Objects.requireNonNull(item, "item");
+  }
 }

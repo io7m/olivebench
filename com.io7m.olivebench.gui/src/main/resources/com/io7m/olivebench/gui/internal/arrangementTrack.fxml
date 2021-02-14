@@ -1,27 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.canvas.Canvas?>
-<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="rootPane" minHeight="64.0" minWidth="128.0" prefHeight="64.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.io7m.olivebench.gui.internal.OBArrangementTrackViewController">
+<AnchorPane fx:id="rootPane" minHeight="64.0" prefHeight="64.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.io7m.olivebench.gui.internal.OBArrangementTrackViewController">
   <children>
-    <TextField fx:id="trackNameField" layoutX="14.0" layoutY="14.0" maxWidth="-Infinity" minWidth="-Infinity" onAction="#onTextEdited" prefWidth="80.0" text="Track 0" AnchorPane.leftAnchor="8.0" AnchorPane.topAnchor="8.0">
-      <font>
-        <Font name="Monospaced Regular" size="9.0" />
-      </font>
-    </TextField>
-    <Separator orientation="VERTICAL" prefHeight="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="96.0" AnchorPane.topAnchor="0.0" />
-    <HBox maxHeight="-Infinity" maxWidth="80.0" minHeight="-Infinity" prefHeight="16.0" AnchorPane.leftAnchor="8.0" AnchorPane.topAnchor="32.0">
-      <children>
-        <ToggleButton fx:id="muteButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onRequestMute" prefHeight="16.0" prefWidth="16.0" />
-        <ToggleButton fx:id="soloButton" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onRequestSolo" prefHeight="16.0" prefWidth="16.0" />
-      </children>
-    </HBox>
-      <Canvas height="64.0" layoutX="98.0" width="502.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="96.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+      <AnchorPane layoutX="8.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Rectangle fill="#ffffff99" height="64.0" stroke="TRANSPARENT" strokeType="INSIDE" width="128.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+          <TextField fx:id="trackNameField" layoutY="8.0" maxWidth="-Infinity" minWidth="-Infinity" onAction="#onTextEdited" prefWidth="80.0" text="Track 0" AnchorPane.leftAnchor="8.0" AnchorPane.rightAnchor="16.0" AnchorPane.topAnchor="8.0">
+            <font>
+              <Font name="Monospaced Regular" size="9.0" />
+            </font>
+          </TextField>
+          <HBox layoutY="32.0" maxHeight="-Infinity" maxWidth="80.0" minHeight="-Infinity" prefHeight="16.0" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="8.0">
+            <children>
+              <ToggleButton fx:id="muteButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onRequestMute" prefHeight="16.0" prefWidth="16.0" />
+              <ToggleButton fx:id="soloButton" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onRequestSolo" prefHeight="16.0" prefWidth="16.0" />
+            </children>
+          </HBox>
+         </children>
+      </AnchorPane>
   </children>
 </AnchorPane>

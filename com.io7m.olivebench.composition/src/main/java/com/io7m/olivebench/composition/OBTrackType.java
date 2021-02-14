@@ -20,7 +20,7 @@ import com.io7m.jregions.core.parameterized.areas.PAreaL;
 import com.io7m.olivebench.composition.regions.OBRegionMusicType;
 import com.io7m.olivebench.composition.regions.OBRegionTextType;
 import com.io7m.olivebench.composition.regions.OBRegionType;
-import com.io7m.olivebench.composition.spaces.OBSpacePatternTrackType;
+import com.io7m.olivebench.composition.spaces.OBTrackSpaceType;
 import net.jcip.annotations.ThreadSafe;
 
 import java.util.Map;
@@ -77,7 +77,7 @@ public interface OBTrackType extends OBDeleteableType<OBTrackType>
    */
 
   OBRegionMusicType createMusicRegion(
-    PAreaL<OBSpacePatternTrackType> bounds,
+    PAreaL<OBTrackSpaceType> bounds,
     OBTimeSignature timeSignature,
     OBKeySignature keySignature
   );
@@ -95,7 +95,7 @@ public interface OBTrackType extends OBDeleteableType<OBTrackType>
 
   OBRegionMusicType createMusicRegion(
     UUID regionId,
-    PAreaL<OBSpacePatternTrackType> bounds,
+    PAreaL<OBTrackSpaceType> bounds,
     OBTimeSignature timeSignature,
     OBKeySignature keySignature
   );
@@ -109,7 +109,7 @@ public interface OBTrackType extends OBDeleteableType<OBTrackType>
    */
 
   OBRegionTextType createTextRegion(
-    PAreaL<OBSpacePatternTrackType> bounds
+    PAreaL<OBTrackSpaceType> bounds
   );
 
   /**
@@ -123,6 +123,6 @@ public interface OBTrackType extends OBDeleteableType<OBTrackType>
 
   OBRegionTextType createTextRegion(
     UUID regionId,
-    PAreaL<OBSpacePatternTrackType> bounds
+    PAreaL<OBTrackSpaceType> bounds
   );
 }

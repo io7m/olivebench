@@ -24,7 +24,7 @@ import com.io7m.blackthorne.api.Blackthorne;
 import com.io7m.jregions.core.parameterized.areas.PAreaL;
 import com.io7m.olivebench.composition.OBTrackType;
 import com.io7m.olivebench.composition.regions.OBRegionTextType;
-import com.io7m.olivebench.composition.spaces.OBSpacePatternTrackType;
+import com.io7m.olivebench.composition.spaces.OBTrackSpaceType;
 import org.xml.sax.Attributes;
 
 import java.util.Map;
@@ -64,7 +64,7 @@ public final class OB1RegionTextParser
     final Object result)
   {
     if (result instanceof PAreaL) {
-      this.region.setBounds((PAreaL<OBSpacePatternTrackType>) result);
+      this.region.setBounds((PAreaL<OBTrackSpaceType>) result);
       return;
     }
     if (result instanceof String) {

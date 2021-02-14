@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020 Mark Raynsford <code@io7m.com> http://io7m.com
+ * Copyright © 2021 Mark Raynsford <code@io7m.com> http://io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -14,13 +14,20 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.olivebench.composition.spaces;
-
 /**
- * The RGBA color space.
+ * Olivebench (Theme API)
  */
 
-public interface OBSpaceRGBAType extends OBSpaceType
+module com.io7m.olivebench.theme.api
 {
+  requires static com.io7m.immutables.style;
+  requires static org.immutables.value;
+  requires static org.osgi.annotation.bundle;
+  requires static org.osgi.annotation.versioning;
 
+  requires transitive com.io7m.olivebench.composition;
+
+  requires org.slf4j;
+
+  exports com.io7m.olivebench.theme.api;
 }

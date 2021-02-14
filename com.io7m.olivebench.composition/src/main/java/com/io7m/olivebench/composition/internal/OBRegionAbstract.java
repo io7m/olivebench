@@ -21,7 +21,7 @@ import com.io7m.olivebench.composition.OBCompositionEventType;
 import com.io7m.olivebench.composition.OBCompositionModifiedEvent;
 import com.io7m.olivebench.composition.OBTrackType;
 import com.io7m.olivebench.composition.regions.OBRegionType;
-import com.io7m.olivebench.composition.spaces.OBSpacePatternTrackType;
+import com.io7m.olivebench.composition.spaces.OBTrackSpaceType;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -32,12 +32,12 @@ public abstract class OBRegionAbstract implements OBRegionType
 {
   private final UUID id;
   private final OBTrack track;
-  private volatile PAreaL<OBSpacePatternTrackType> bounds;
+  private volatile PAreaL<OBTrackSpaceType> bounds;
 
   protected OBRegionAbstract(
     final OBTrack inTrack,
     final UUID inRegionId,
-    final PAreaL<OBSpacePatternTrackType> inBounds)
+    final PAreaL<OBTrackSpaceType> inBounds)
   {
     this.bounds =
       Objects.requireNonNull(inBounds, "bounds");
@@ -80,14 +80,14 @@ public abstract class OBRegionAbstract implements OBRegionType
   }
 
   @Override
-  public final PAreaL<OBSpacePatternTrackType> bounds()
+  public final PAreaL<OBTrackSpaceType> bounds()
   {
     return this.bounds;
   }
 
   @Override
   public final void setBounds(
-    final PAreaL<OBSpacePatternTrackType> newBounds)
+    final PAreaL<OBTrackSpaceType> newBounds)
   {
     this.bounds = Objects.requireNonNull(newBounds, "newBounds");
     this.publish(OBCompositionModifiedEvent.of(REGION_MODIFIED, this.id));

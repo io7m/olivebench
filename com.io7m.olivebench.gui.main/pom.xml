@@ -31,6 +31,23 @@
     </dependency>
 
     <dependency>
+      <groupId>com.io7m.claypot</groupId>
+      <artifactId>com.io7m.claypot.core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.io7m.jade</groupId>
+      <artifactId>com.io7m.jade.vanilla</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.beust</groupId>
+      <artifactId>jcommander</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
       <exclusions>
@@ -69,6 +86,7 @@
             <ignoredUnusedDeclaredDependency>org.openjfx:*:*</ignoredUnusedDeclaredDependency>
             <ignoredUnusedDeclaredDependency>ch.qos.logback:logback-classic:*</ignoredUnusedDeclaredDependency>
             <ignoredUnusedDeclaredDependency>com.io7m.olivebench:*</ignoredUnusedDeclaredDependency>
+            <ignoredUnusedDeclaredDependency>com.io7m.jade:*</ignoredUnusedDeclaredDependency>
           </ignoredUnusedDeclaredDependencies>
           <ignoredUsedUndeclaredDependencies>
             <ignoredUsedUndeclaredDependency>org.openjfx:*:*</ignoredUsedUndeclaredDependency>

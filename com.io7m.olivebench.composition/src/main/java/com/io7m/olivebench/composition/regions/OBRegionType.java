@@ -19,7 +19,7 @@ package com.io7m.olivebench.composition.regions;
 import com.io7m.jregions.core.parameterized.areas.PAreaL;
 import com.io7m.olivebench.composition.OBDeleteableType;
 import com.io7m.olivebench.composition.OBTrackType;
-import com.io7m.olivebench.composition.spaces.OBSpacePatternTrackType;
+import com.io7m.olivebench.composition.spaces.OBTrackSpaceType;
 
 import java.util.UUID;
 
@@ -45,7 +45,7 @@ public interface OBRegionType extends OBDeleteableType<OBRegionType>
    * @return The bounds of the region
    */
 
-  PAreaL<OBSpacePatternTrackType> bounds();
+  PAreaL<OBTrackSpaceType> bounds();
 
   /**
    * Set the bounds of the region.
@@ -54,5 +54,5 @@ public interface OBRegionType extends OBDeleteableType<OBRegionType>
    */
 
   void setBounds(
-    PAreaL<OBSpacePatternTrackType> newBounds);
+    PAreaL<OBTrackSpaceType> newBounds);
 }

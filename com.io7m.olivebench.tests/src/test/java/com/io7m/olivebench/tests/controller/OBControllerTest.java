@@ -35,6 +35,8 @@ import com.io7m.olivebench.controller.api.OBControllerCompositionEvent;
 import com.io7m.olivebench.controller.api.OBControllerCompositionEventKind;
 import com.io7m.olivebench.controller.api.OBControllerType;
 import com.io7m.olivebench.events.api.OBEventType;
+import com.io7m.olivebench.preferences.api.OBPreferencesService;
+import com.io7m.olivebench.preferences.api.OBPreferencesServiceType;
 import com.io7m.olivebench.services.api.OBServiceDirectory;
 import com.io7m.olivebench.tests.OBFileAndStream;
 import com.io7m.olivebench.tests.OBTestDirectories;
@@ -55,6 +57,7 @@ import static com.io7m.olivebench.controller.api.OBControllerCommandEventKind.*;
 import static com.io7m.olivebench.controller.api.OBControllerCompositionEventKind.COMPOSITION_CLOSED;
 import static com.io7m.olivebench.controller.api.OBControllerCompositionEventKind.COMPOSITION_OPENED;
 import static com.io7m.olivebench.controller.api.OBControllerCompositionEventKind.COMPOSITION_UNDO_CHANGED;
+import static com.io7m.olivebench.controller.api.OBControllerCompositionEventKind.COMPOSITION_VIEWPORT_CHANGED;
 import static com.io7m.olivebench.tests.OBTestDirectories.resourceStreamOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -108,6 +111,9 @@ public final class OBControllerTest
   public void setup()
     throws IOException
   {
+    this.directory =
+      OBTestDirectories.createTempDirectory();
+
     this.services = new OBServiceDirectory();
     this.services.register(
       OBClockServiceType.class, new OBClockService());
@@ -121,11 +127,13 @@ public final class OBControllerTest
       OBCompositionSPISerializersType.class, new OBCompositionSerializerV1());
     this.services.register(
       OBCompositionParsersType.class, new OBCompositionParsers());
+    this.services.register(
+      OBPreferencesServiceType.class,
+      OBPreferencesService.openOrDefault(this.directory.resolve("preferences.xml"))
+    );
 
     this.controller =
       OBController.create(this.services);
-    this.directory =
-      OBTestDirectories.createTempDirectory();
     this.events =
       new ArrayList<OBEventType>();
     this.controller.events()
@@ -148,6 +156,7 @@ public final class OBControllerTest
 
     this.eventIs(COMMAND_STARTED);
     this.eventIs(COMPOSITION_OPENED);
+    this.eventIs(COMPOSITION_VIEWPORT_CHANGED);
     this.eventIs(COMPOSITION_UNDO_CHANGED);
     this.eventIs(COMMAND_ENDED);
     this.eventIs(COMMAND_STARTED);
@@ -193,6 +202,7 @@ public final class OBControllerTest
 
     this.eventIs(COMMAND_STARTED);
     this.eventIs(COMPOSITION_OPENED);
+    this.eventIs(COMPOSITION_VIEWPORT_CHANGED);
     this.eventIs(COMPOSITION_UNDO_CHANGED);
     this.eventIs(COMMAND_ENDED);
     this.eventIs(COMMAND_STARTED);

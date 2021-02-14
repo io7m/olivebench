@@ -22,7 +22,7 @@ import com.io7m.olivebench.composition.OBKeySignature;
 import com.io7m.olivebench.composition.OBTimeSignature;
 import com.io7m.olivebench.composition.regions.OBNote;
 import com.io7m.olivebench.composition.regions.OBRegionMusicType;
-import com.io7m.olivebench.composition.spaces.OBSpacePatternTrackType;
+import com.io7m.olivebench.composition.spaces.OBTrackSpaceType;
 
 import java.util.Collections;
 import java.util.Objects;
@@ -43,7 +43,7 @@ public final class OBRegionMusic
   public OBRegionMusic(
     final OBTrack inTrack,
     final UUID inRegionId,
-    final PAreaL<OBSpacePatternTrackType> inBounds,
+    final PAreaL<OBTrackSpaceType> inBounds,
     final OBKeySignature inKeySignature,
     final OBTimeSignature inTimeSignature)
   {

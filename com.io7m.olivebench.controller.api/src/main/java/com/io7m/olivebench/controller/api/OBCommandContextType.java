@@ -16,7 +16,9 @@
 
 package com.io7m.olivebench.controller.api;
 
+import com.io7m.jregions.core.parameterized.areas.PAreaD;
 import com.io7m.olivebench.composition.OBCompositionType;
+import com.io7m.olivebench.composition.spaces.OBWorldSpaceType;
 
 /**
  * The execution context of a command.
@@ -29,4 +31,6 @@ public interface OBCommandContextType
   void compositionClose();
 
   OBCompositionType composition();
+
+  void compositionSetViewport(PAreaD<OBWorldSpaceType> viewport);
 }

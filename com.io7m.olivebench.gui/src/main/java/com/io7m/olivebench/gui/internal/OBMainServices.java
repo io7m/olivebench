@@ -16,6 +16,8 @@
 
 package com.io7m.olivebench.gui.internal;
 
+import com.io7m.jade.api.ApplicationDirectories;
+import com.io7m.jade.api.ApplicationDirectoryConfiguration;
 import com.io7m.olivebench.composition.OBClockService;
 import com.io7m.olivebench.composition.OBClockServiceType;
 import com.io7m.olivebench.composition.OBCompositionFactoryType;
@@ -34,6 +36,8 @@ import com.io7m.olivebench.controller.api.OBControllerAsynchronousType;
 import com.io7m.olivebench.controller.server.OBControllerClientInterpreters;
 import com.io7m.olivebench.controller.server.OBControllerServerType;
 import com.io7m.olivebench.controller.server.OBControllerServers;
+import com.io7m.olivebench.preferences.api.OBPreferencesService;
+import com.io7m.olivebench.preferences.api.OBPreferencesServiceType;
 import com.io7m.olivebench.services.api.OBServiceDirectory;
 import com.io7m.olivebench.services.api.OBServiceDirectoryType;
 import com.io7m.olivebench.services.api.OBServiceType;
@@ -56,6 +60,26 @@ public final class OBMainServices
 
   }
 
+  private static OBPreferencesServiceType startPreferencesController()
+    throws IOException
+  {
+    final var configuration =
+      ApplicationDirectoryConfiguration.builder()
+        .setApplicationName("com.io7m.olivebench")
+        .setPortablePropertyName("com.io7m.olivebench.portable")
+        .build();
+
+    final var directories =
+      ApplicationDirectories.get(configuration);
+    final var configurationDirectory =
+      directories.configurationDirectory();
+    final var configurationFile =
+      configurationDirectory.resolve("preferences.xml");
+
+    LOG.info("preferences: {}", configurationFile);
+    return OBPreferencesService.openOrDefault(configurationFile);
+  }
+
   public static OBServiceDirectoryType create()
     throws Exception
   {
@@ -71,13 +95,21 @@ public final class OBMainServices
       new OBClockService(Clock.systemUTC());
     final var localeService =
       new OBLocaleService();
+    final var prefsService =
+      startPreferencesController();
 
     services.register(
+      OBPreferencesServiceType.class,
+      prefsService
+    );
+    services.register(
       OBLocaleServiceType.class,
-      localeService);
+      localeService
+    );
     services.register(
       OBClockServiceType.class,
-      clockService);
+      clockService
+    );
 
     final var controller =
       OBController.create(services);
@@ -89,22 +121,28 @@ public final class OBMainServices
 
     services.register(
       OBCompositionFactoryType.class,
-      new OBCompositions());
+      new OBCompositions()
+    );
     services.register(
       OBCompositionParsersType.class,
-      new OBCompositionParsers());
+      new OBCompositionParsers()
+    );
     services.register(
       OBCompositionSerializersType.class,
-      new OBCompositionSerializers());
+      new OBCompositionSerializers()
+    );
     services.register(
       OBControllerAsynchronousType.class,
-      controllerAsync);
+      controllerAsync
+    );
     services.register(
       OBMainStrings.class,
-      strings);
+      strings
+    );
     services.register(
       OBLicenseStrings.class,
-      licenseStrings);
+      licenseStrings
+    );
 
     createServer(services, controllerAsync);
     return services;

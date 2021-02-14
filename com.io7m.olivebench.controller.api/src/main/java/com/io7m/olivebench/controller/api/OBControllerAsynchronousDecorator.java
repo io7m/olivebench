@@ -16,11 +16,14 @@
 
 package com.io7m.olivebench.controller.api;
 
+import com.io7m.jregions.core.parameterized.areas.PAreaD;
 import com.io7m.olivebench.composition.OBCompositionType;
 import com.io7m.olivebench.composition.OBDublinCoreMetadata;
 import com.io7m.olivebench.composition.OBTimeConfiguration;
 import com.io7m.olivebench.composition.OBTrackMetadata;
 import com.io7m.olivebench.composition.OBTrackType;
+import com.io7m.olivebench.composition.spaces.OBWorldSpaceType;
+import com.io7m.olivebench.theme.api.OBTheme;
 import io.reactivex.rxjava3.core.Observable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,6 +82,25 @@ public final class OBControllerAsynchronousDecorator
       }),
       delegate
     );
+  }
+
+  @Override
+  public void compositionSetViewport(
+    final PAreaD<OBWorldSpaceType> newViewport)
+  {
+    this.executor.execute(() -> this.delegate.compositionSetViewport(newViewport));
+  }
+
+  @Override
+  public PAreaD<OBWorldSpaceType> compositionGetViewport()
+  {
+    return this.delegate.compositionGetViewport();
+  }
+
+  @Override
+  public OBTheme theme()
+  {
+    return this.delegate.theme();
   }
 
   @Override
@@ -192,6 +214,13 @@ public final class OBControllerAsynchronousDecorator
     this.executor.execute(() -> this.delegate.trackSetMetadata(
       track,
       newMetadata));
+  }
+
+  @Override
+  public boolean trackIsActive(
+    final OBTrackType track)
+  {
+    return this.delegate.trackIsActive(track);
   }
 
   @Override

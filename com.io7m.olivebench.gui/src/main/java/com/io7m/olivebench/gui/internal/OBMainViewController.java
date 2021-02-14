@@ -28,6 +28,7 @@ import com.io7m.olivebench.controller.api.OBControllerCommandEvent;
 import com.io7m.olivebench.controller.api.OBControllerCommandFailedEvent;
 import com.io7m.olivebench.controller.api.OBControllerCompositionEvent;
 import com.io7m.olivebench.controller.api.OBControllerEventType;
+import com.io7m.olivebench.preferences.api.OBPreferencesServiceType;
 import com.io7m.olivebench.services.api.OBServiceDirectoryType;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.application.Platform;
@@ -58,6 +59,7 @@ public final class OBMainViewController implements Initializable
 
   private final JWFileChoosersType fileChoosers;
   private final CompositeDisposable compositionSubscriptions;
+  private final OBPreferencesServiceType preferences;
   private OBServiceDirectoryType mainServices;
   private OBControllerAsynchronousType controller;
   private Stage stage;
@@ -82,12 +84,28 @@ public final class OBMainViewController implements Initializable
   @FXML
   private MenuItem fileQuit;
 
-  public OBMainViewController()
+  public OBMainViewController(
+    final OBServiceDirectoryType inMainServices,
+    final Stage inStage)
   {
     this.fileChoosers =
       JWFileChoosers.create();
     this.compositionSubscriptions =
       new CompositeDisposable();
+
+    this.stage =
+      Objects.requireNonNull(inStage, "stage");
+    this.mainServices =
+      Objects.requireNonNull(inMainServices, "mainServices");
+    this.strings =
+      this.mainServices.requireService(OBMainStrings.class);
+    this.controller =
+      this.mainServices.requireService(OBControllerAsynchronousType.class);
+    this.preferences =
+      this.mainServices.requireService(OBPreferencesServiceType.class);
+
+    this.controller.events()
+      .subscribe(this::onControllerEvent);
   }
 
   @FXML
@@ -115,6 +133,7 @@ public final class OBMainViewController implements Initializable
           .setAllowDirectoryCreation(false)
           .setFileSystem(FileSystems.getDefault())
           .addFileFilters(new OBFileFilter(this.strings))
+          .setRecentFiles(this.preferences.preferences().recentFiles().files())
           .build()
       );
 
@@ -135,6 +154,7 @@ public final class OBMainViewController implements Initializable
           .setAllowDirectoryCreation(true)
           .setFileSystem(FileSystems.getDefault())
           .addFileFilters(new OBFileFilter(this.strings))
+          .setRecentFiles(this.preferences.preferences().recentFiles().files())
           .build()
       );
 
@@ -217,20 +237,6 @@ public final class OBMainViewController implements Initializable
   private void onEditRequestRedo()
   {
     this.controller.redo();
-  }
-
-  public void setServices(
-    final OBServiceDirectoryType inMainServices)
-  {
-    this.mainServices =
-      Objects.requireNonNull(inMainServices, "mainServices");
-    this.strings =
-      this.mainServices.requireService(OBMainStrings.class);
-    this.controller =
-      this.mainServices.requireService(OBControllerAsynchronousType.class);
-
-    this.controller.events()
-      .subscribe(this::onControllerEvent);
   }
 
   private void onControllerEvent(
@@ -401,13 +407,6 @@ public final class OBMainViewController implements Initializable
         LOG.error("unable to show error dialog: ", e);
       }
     });
-  }
-
-  public void setStage(
-    final Stage inStage)
-  {
-    this.stage =
-      Objects.requireNonNull(inStage, "stage");
   }
 
   @Override

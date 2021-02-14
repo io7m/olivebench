@@ -16,6 +16,7 @@
 
 package com.io7m.olivebench.composition.internal;
 
+import com.io7m.jranges.RangeInclusiveL;
 import com.io7m.olivebench.composition.OBClockServiceType;
 import com.io7m.olivebench.composition.OBCompositionEventType;
 import com.io7m.olivebench.composition.OBCompositionMetadata;
@@ -201,6 +202,12 @@ public final class OBComposition implements OBCompositionType
     this.eventSubject.onNext(
       OBCompositionModificationTimeChangedEvent.of(this.timeLastModified)
     );
+  }
+
+  @Override
+  public RangeInclusiveL noteRange()
+  {
+    return RangeInclusiveL.of(0L, 127L);
   }
 
   public void publish(

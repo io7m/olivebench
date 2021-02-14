@@ -26,7 +26,7 @@ import com.io7m.olivebench.composition.OBTimeSignature;
 import com.io7m.olivebench.composition.OBTrackType;
 import com.io7m.olivebench.composition.regions.OBNote;
 import com.io7m.olivebench.composition.regions.OBRegionMusicType;
-import com.io7m.olivebench.composition.spaces.OBSpacePatternTrackType;
+import com.io7m.olivebench.composition.spaces.OBTrackSpaceType;
 import org.xml.sax.Attributes;
 
 import java.util.Map;
@@ -80,7 +80,7 @@ public final class OB1RegionMusicParser
       return;
     }
     if (result instanceof PAreaL) {
-      this.region.setBounds((PAreaL<OBSpacePatternTrackType>) result);
+      this.region.setBounds((PAreaL<OBTrackSpaceType>) result);
       return;
     }
     if (result instanceof OBKeySignature) {

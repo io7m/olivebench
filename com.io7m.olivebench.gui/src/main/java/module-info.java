@@ -23,6 +23,7 @@ module com.io7m.olivebench.gui
   requires static org.osgi.annotation.versioning;
   requires static org.osgi.annotation.bundle;
 
+  requires com.io7m.jade.api;
   requires com.io7m.jaffirm.core;
   requires com.io7m.jwheatsheaf.api;
   requires com.io7m.jwheatsheaf.ui;
@@ -32,12 +33,14 @@ module com.io7m.olivebench.gui
   requires javafx.graphics;
   requires org.slf4j;
 
-  requires transitive com.io7m.olivebench.controller.server;
   requires transitive com.io7m.olivebench.composition.parser.api;
   requires transitive com.io7m.olivebench.composition.serializer.api;
   requires transitive com.io7m.olivebench.controller.api;
+  requires transitive com.io7m.olivebench.controller.server;
   requires transitive com.io7m.olivebench.controller;
+  requires transitive com.io7m.olivebench.preferences.api;
   requires transitive com.io7m.olivebench.services.api;
+  requires transitive com.io7m.olivebench.theme.api;
 
   uses com.io7m.olivebench.composition.parser.spi.OBCompositionSPIParsersType;
   uses com.io7m.olivebench.composition.serializer.spi.OBCompositionSPISerializersType;

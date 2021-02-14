@@ -29,7 +29,10 @@ module com.io7m.olivebench.controller
   requires com.io7m.olivebench.composition.parser.api;
   requires com.io7m.olivebench.composition.serializer.api;
   requires com.io7m.olivebench.controller.api;
+  requires com.io7m.olivebench.preferences.api;
   requires com.io7m.olivebench.services.api;
+
+  requires org.slf4j;
 
   uses OBCompositionParsersType;
 

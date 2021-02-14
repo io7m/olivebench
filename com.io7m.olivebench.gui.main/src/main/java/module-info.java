@@ -23,8 +23,13 @@ module com.io7m.olivebench.gui.main
   requires static org.osgi.annotation.versioning;
   requires static org.osgi.annotation.bundle;
 
-  requires javafx.graphics;
+  requires com.io7m.claypot.core;
   requires com.io7m.olivebench.gui;
+  requires javafx.graphics;
+  requires jcommander;
+  requires org.slf4j;
+
+  opens com.io7m.olivebench.gui.main.internal to jcommander;
 
   exports com.io7m.olivebench.gui.main;
 }

@@ -16,6 +16,7 @@
 
 package com.io7m.olivebench.gui;
 
+import com.io7m.olivebench.controller.api.OBControllerAsynchronousType;
 import com.io7m.olivebench.gui.internal.OBArrangementViewController;
 import com.io7m.olivebench.gui.internal.OBMainServices;
 import com.io7m.olivebench.gui.internal.OBMainStrings;
@@ -30,16 +31,22 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.file.Path;
 import java.util.Objects;
+import java.util.Optional;
 
 public final class OBMainApplication extends Application
 {
   private static final Logger LOG =
     LoggerFactory.getLogger(OBMainApplication.class);
 
-  public OBMainApplication()
-  {
+  private final Optional<Path> initialFile;
 
+  public OBMainApplication(
+    final Optional<Path> inInitialFile)
+  {
+    this.initialFile =
+      Objects.requireNonNull(inInitialFile, "initialFile");
   }
 
   @Override
@@ -58,29 +65,34 @@ public final class OBMainApplication extends Application
     final var loader =
       new FXMLLoader(mainXML, strings.resources());
 
-    loader.setControllerFactory(clazz -> createController(clazz, mainServices));
+    loader.setControllerFactory(
+      clazz -> createController(clazz, stage, mainServices)
+    );
 
     final AnchorPane pane = loader.load();
     final var controller = (OBMainViewController) loader.getController();
-
-    controller.setStage(stage);
-    controller.setServices(mainServices);
 
     stage.setMinWidth(320.0);
     stage.setMinHeight(240.0);
     stage.setScene(new Scene(pane));
     stage.setTitle(strings.format("programTitle"));
     stage.show();
+
+    this.initialFile.ifPresent(path -> {
+      mainServices.requireService(OBControllerAsynchronousType.class)
+        .compositionOpen(path);
+    });
   }
 
   private static Object createController(
     final Class<?> clazz,
+    final Stage stage,
     final OBServiceDirectoryType mainServices)
   {
     LOG.debug("createController: {}", clazz);
 
     if (Objects.equals(clazz, OBMainViewController.class)) {
-      return new OBMainViewController();
+      return new OBMainViewController(mainServices, stage);
     }
     if (Objects.equals(clazz, OBPatternViewController.class)) {
       return new OBPatternViewController(mainServices);

@@ -19,7 +19,7 @@ package com.io7m.olivebench.composition.internal;
 import com.io7m.jregions.core.parameterized.areas.PAreaL;
 import com.io7m.olivebench.composition.OBCompositionModifiedEvent;
 import com.io7m.olivebench.composition.regions.OBRegionTextType;
-import com.io7m.olivebench.composition.spaces.OBSpacePatternTrackType;
+import com.io7m.olivebench.composition.spaces.OBTrackSpaceType;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -34,7 +34,7 @@ public final class OBRegionText
   public OBRegionText(
     final OBTrack inTrack,
     final UUID inId,
-    final PAreaL<OBSpacePatternTrackType> inBounds)
+    final PAreaL<OBTrackSpaceType> inBounds)
   {
     super(inTrack, inId, inBounds);
     this.text = "";

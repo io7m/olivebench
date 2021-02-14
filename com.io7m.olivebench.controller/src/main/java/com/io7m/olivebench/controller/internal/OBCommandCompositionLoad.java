@@ -16,8 +16,10 @@
 
 package com.io7m.olivebench.controller.internal;
 
+import com.io7m.jregions.core.parameterized.areas.PAreaD;
 import com.io7m.olivebench.composition.parser.api.OBCompositionParseException;
 import com.io7m.olivebench.composition.parser.api.OBCompositionParsersType;
+import com.io7m.olivebench.composition.spaces.OBWorldSpaceType;
 import com.io7m.olivebench.controller.api.OBCommandContextType;
 import com.io7m.olivebench.controller.api.OBCommandDescription;
 import com.io7m.olivebench.controller.api.OBCommandUndoStyle;
@@ -62,6 +64,18 @@ public final class OBCommandCompositionLoad extends OBCommand
     final var composition =
       parsers.parse(services, this.file);
 
+    final var timeConfiguration =
+      composition.metadata().timeConfiguration();
+
+    final var viewport =
+      PAreaD.<OBWorldSpaceType>of(
+        (-4L * timeConfiguration.ticksPerQuarterNote()),
+        (32L * timeConfiguration.ticksPerQuarterNote()),
+        0L,
+        128L
+      );
+
     context.compositionOpen(composition);
+    context.compositionSetViewport(viewport);
   }
 }

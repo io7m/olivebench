@@ -39,12 +39,15 @@
     <module>com.io7m.olivebench.tests</module>
     <module>com.io7m.olivebench.xml.v1</module>
     <module>com.io7m.olivebench.controller.server</module>
+    <module>com.io7m.olivebench.theme.api</module>
+    <module>com.io7m.olivebench.preferences.api</module>
   </modules>
 
   <properties>
     <com.io7m.blackthorne.version>1.2.1</com.io7m.blackthorne.version>
     <com.io7m.immutables.version>2.8.8</com.io7m.immutables.version>
     <com.io7m.jade.version>1.0.1</com.io7m.jade.version>
+    <com.io7m.jproperties.version>2.0.0</com.io7m.jproperties.version>
     <com.io7m.jspatial.version>3.0.0-beta0003</com.io7m.jspatial.version>
     <com.io7m.jwheatsheaf.version>2.0.1</com.io7m.jwheatsheaf.version>
     <com.io7m.jxtrand.version>1.0.0</com.io7m.jxtrand.version>
@@ -142,6 +145,11 @@
         <groupId>com.io7m.jranges</groupId>
         <artifactId>com.io7m.jranges.core</artifactId>
         <version>4.0.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.io7m.jproperties</groupId>
+        <artifactId>com.io7m.jproperties.core</artifactId>
+        <version>${com.io7m.jproperties.version}</version>
       </dependency>
       <dependency>
         <groupId>com.io7m.jregions</groupId>
@@ -292,6 +300,16 @@
         <groupId>org.graalvm.sdk</groupId>
         <artifactId>graal-sdk</artifactId>
         <version>21.0.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.io7m.claypot</groupId>
+        <artifactId>com.io7m.claypot.core</artifactId>
+        <version>0.0.5</version>
+      </dependency>
+      <dependency>
+        <groupId>com.beust</groupId>
+        <artifactId>jcommander</artifactId>
+        <version>1.78</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

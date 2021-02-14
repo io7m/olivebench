@@ -24,18 +24,21 @@ import com.io7m.olivebench.controller.api.OBControllerCommandEvent;
 import com.io7m.olivebench.controller.api.OBControllerCommandFailedEvent;
 import com.io7m.olivebench.controller.api.OBControllerCompositionEvent;
 import com.io7m.olivebench.controller.api.OBControllerEventType;
+import com.io7m.olivebench.gui.internal.rendering.OBRenderContext;
+import com.io7m.olivebench.gui.internal.rendering.OBTrackOnPatternCanvasRenderer;
+import com.io7m.olivebench.gui.internal.rendering.OBTrackOnPatternTimelineRenderer;
 import com.io7m.olivebench.services.api.OBServiceDirectoryType;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.canvas.Canvas;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
+import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -47,15 +50,19 @@ public final class OBPatternViewController implements Initializable
   private final OBServiceDirectoryType services;
   private final OBControllerAsynchronousType controller;
   private final CompositeDisposable compositionSubscriptions;
+  private final OBTrackOnPatternCanvasRenderer patternTrackRenderer;
+  private final OBTrackOnPatternTimelineRenderer timelineTrackRenderer;
 
   @FXML
-  private Pane patternRootPane;
+  private AnchorPane patternRootPane;
   @FXML
   private Pane toolbar;
-  @FXML
-  private Canvas timelineCanvas;
-  @FXML
-  private Canvas patternCanvas;
+
+  private OBCanvasPane timelineCanvas;
+  private OBCanvasPane patternCanvas;
+  private OBRenderContext timelineRenderContext;
+  private OBRenderContext patternRenderContext;
+  private int canvasUpdates;
 
   public OBPatternViewController(
     final OBServiceDirectoryType inServices)
@@ -66,6 +73,10 @@ public final class OBPatternViewController implements Initializable
       this.services.requireService(OBControllerAsynchronousType.class);
     this.compositionSubscriptions =
       new CompositeDisposable();
+    this.patternTrackRenderer =
+      new OBTrackOnPatternCanvasRenderer(this.controller);
+    this.timelineTrackRenderer =
+      new OBTrackOnPatternTimelineRenderer(this.controller);
   }
 
   @Override
@@ -75,22 +86,33 @@ public final class OBPatternViewController implements Initializable
   {
     LOG.debug("initialize");
 
-    this.patternRootPane.heightProperty()
-      .addListener(observable -> {
-        final var rootPaneHeight = this.patternRootPane.getHeight();
-        final var timelineCanvasHeight = this.timelineCanvas.getHeight();
-        this.patternCanvas.setHeight(rootPaneHeight - timelineCanvasHeight);
-        this.canvasUpdated();
-      });
+    this.timelineCanvas =
+      new OBCanvasPane(this::renderCanvasTimeline);
+    this.patternCanvas =
+      new OBCanvasPane(this::renderCanvasPattern);
 
-    this.patternRootPane.widthProperty()
-      .addListener(observable -> {
-        final var toolbarWidth = this.toolbar.getWidth();
-        final var rootPaneWidth = this.patternRootPane.getWidth();
-        this.timelineCanvas.setWidth(rootPaneWidth - toolbarWidth);
-        this.patternCanvas.setWidth(rootPaneWidth - toolbarWidth);
-        this.canvasUpdated();
-      });
+    this.timelineCanvas.setMinHeight(32.0);
+    this.timelineCanvas.setMaxHeight(32.0);
+    this.timelineCanvas.setPrefHeight(32.0);
+
+    this.patternRootPane.getChildren()
+      .add(this.timelineCanvas);
+    this.patternRootPane.getChildren()
+      .add(this.patternCanvas);
+
+    AnchorPane.setTopAnchor(this.timelineCanvas, Double.valueOf(0.0));
+    AnchorPane.setLeftAnchor(this.timelineCanvas, Double.valueOf(32.0));
+    AnchorPane.setRightAnchor(this.timelineCanvas, Double.valueOf(0.0));
+
+    AnchorPane.setLeftAnchor(this.patternCanvas, Double.valueOf(32.0));
+    AnchorPane.setRightAnchor(this.patternCanvas, Double.valueOf(0.0));
+    AnchorPane.setTopAnchor(this.patternCanvas, Double.valueOf(32.0));
+    AnchorPane.setBottomAnchor(this.patternCanvas, Double.valueOf(0.0));
+
+    this.timelineRenderContext =
+      new OBRenderContext(this.controller, this.timelineCanvas.canvas());
+    this.patternRenderContext =
+      new OBRenderContext(this.controller, this.patternCanvas.canvas());
 
     this.controller.events()
       .subscribe(this::onControllerEvent);
@@ -126,6 +148,12 @@ public final class OBPatternViewController implements Initializable
           this.compositionSubscriptions.add(
             composition.events().subscribe(this::onCompositionEvent)
           );
+          break;
+        }
+
+        case COMPOSITION_VIEWPORT_CHANGED: {
+          this.timelineCanvas.invalidate();
+          this.patternCanvas.invalidate();
           break;
         }
 
@@ -165,7 +193,10 @@ public final class OBPatternViewController implements Initializable
   private void onCompositionModifiedEvent(
     final OBCompositionModifiedEvent event)
   {
-    Platform.runLater(this::canvasUpdated);
+    Platform.runLater(() -> {
+      this.timelineCanvas.invalidate();
+      this.patternCanvas.invalidate();
+    });
   }
 
   private void onControllerEventCommand(
@@ -180,33 +211,57 @@ public final class OBPatternViewController implements Initializable
 
   }
 
-  private void canvasUpdated()
-  {
-    this.renderCanvasTimeline();
-    this.renderCanvasPattern();
-  }
-
   private void renderCanvasPattern()
   {
+    final var compositionOpt = this.controller.composition();
+    if (compositionOpt.isEmpty()) {
+      return;
+    }
+
+    final var composition =
+      compositionOpt.get();
     final var graphics =
-      this.patternCanvas.getGraphicsContext2D();
-    graphics.setFill(Color.BLUE);
-    graphics.fillRect(
+      this.patternCanvas.canvas().getGraphicsContext2D();
+
+    graphics.clearRect(
       0.0,
       0.0,
       this.patternCanvas.getWidth(),
-      this.patternCanvas.getHeight());
+      this.patternCanvas.getHeight()
+    );
+
+    final var tracks =
+      List.copyOf(composition.tracks().values());
+
+    for (final var track : tracks) {
+      this.patternTrackRenderer.render(this.patternRenderContext, track);
+    }
   }
 
   private void renderCanvasTimeline()
   {
+    final var compositionOpt = this.controller.composition();
+    if (compositionOpt.isEmpty()) {
+      return;
+    }
+
+    final var composition =
+      compositionOpt.get();
     final var graphics =
-      this.timelineCanvas.getGraphicsContext2D();
-    graphics.setFill(Color.RED);
-    graphics.fillRect(
+      this.timelineCanvas.canvas().getGraphicsContext2D();
+
+    graphics.clearRect(
       0.0,
       0.0,
       this.timelineCanvas.getWidth(),
-      this.timelineCanvas.getHeight());
+      this.timelineCanvas.getHeight()
+    );
+
+    final var tracks =
+      List.copyOf(composition.tracks().values());
+
+    for (final var track : tracks) {
+      this.timelineTrackRenderer.render(this.timelineRenderContext, track);
+    }
   }
 }

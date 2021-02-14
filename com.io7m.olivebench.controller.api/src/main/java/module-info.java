@@ -28,6 +28,7 @@ module com.io7m.olivebench.controller.api
 
   requires org.slf4j;
   requires transitive com.io7m.olivebench.composition;
+  requires transitive com.io7m.olivebench.theme.api;
 
   exports com.io7m.olivebench.controller.api;
 }

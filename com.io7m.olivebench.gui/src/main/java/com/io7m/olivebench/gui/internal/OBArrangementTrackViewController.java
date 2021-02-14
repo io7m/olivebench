@@ -18,6 +18,8 @@ package com.io7m.olivebench.gui.internal;
 
 import com.io7m.olivebench.composition.OBTrackType;
 import com.io7m.olivebench.controller.api.OBControllerAsynchronousType;
+import com.io7m.olivebench.gui.internal.rendering.OBRenderContext;
+import com.io7m.olivebench.gui.internal.rendering.OBTrackOnArrangementCanvasRenderer;
 import com.io7m.olivebench.services.api.OBServiceDirectoryType;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.fxml.FXML;
@@ -26,7 +28,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.AnchorPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,9 +47,10 @@ public final class OBArrangementTrackViewController
   private final OBServiceDirectoryType services;
   private final OBControllerAsynchronousType controller;
   private final CompositeDisposable compositionSubscriptions;
+  private final OBTrackOnArrangementCanvasRenderer trackRenderer;
 
   @FXML
-  private Pane rootPane;
+  private AnchorPane rootPane;
   @FXML
   private TextField trackNameField;
   @FXML
@@ -55,7 +58,9 @@ public final class OBArrangementTrackViewController
   @FXML
   private ToggleButton soloButton;
 
+  private OBCanvasPane trackCanvas;
   private OBTrackType track;
+  private OBRenderContext trackRenderContext;
 
   private OBArrangementTrackViewController(
     final OBServiceDirectoryType inServices)
@@ -66,6 +71,8 @@ public final class OBArrangementTrackViewController
       this.services.requireService(OBControllerAsynchronousType.class);
     this.compositionSubscriptions =
       new CompositeDisposable();
+    this.trackRenderer =
+      new OBTrackOnArrangementCanvasRenderer();
   }
 
   public static OBArrangementTrackViewController create(
@@ -105,8 +112,42 @@ public final class OBArrangementTrackViewController
   {
     LOG.debug("initialize");
 
+    this.setStyle("-fx-padding: 0px");
     this.setGraphic(this.rootPane);
     this.setText(null);
+
+    this.trackCanvas =
+      new OBCanvasPane(this::renderCanvas);
+
+    this.rootPane.getChildren()
+      .add(0, this.trackCanvas);
+
+    AnchorPane.setTopAnchor(this.trackCanvas, Double.valueOf(0.0));
+    AnchorPane.setBottomAnchor(this.trackCanvas, Double.valueOf(0.0));
+    AnchorPane.setLeftAnchor(this.trackCanvas, Double.valueOf(0.0));
+    AnchorPane.setRightAnchor(this.trackCanvas, Double.valueOf(0.0));
+
+    this.trackRenderContext =
+      new OBRenderContext(this.controller, this.trackCanvas.canvas());
+  }
+
+  private void renderCanvas()
+  {
+    final var currentTrack = this.track;
+    if (currentTrack == null) {
+      return;
+    }
+
+    final var graphics =
+      this.trackCanvas.canvas().getGraphicsContext2D();
+    graphics.clearRect(
+      0.0,
+      0.0,
+      this.trackCanvas.getWidth(),
+      this.trackCanvas.getHeight()
+    );
+
+    this.trackRenderer.render(this.trackRenderContext, currentTrack);
   }
 
   @Override
@@ -126,6 +167,7 @@ public final class OBArrangementTrackViewController
     final var trackMetadata = item.metadata();
     this.rootPane.setVisible(true);
     this.trackNameField.setText(trackMetadata.name());
+    this.trackCanvas.invalidate();
   }
 
   @FXML

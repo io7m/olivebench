@@ -75,11 +75,8 @@ public final class OBControllerClientInterpreter
       name, OBControllerClientAPI.class.getCanonicalName())) {
       return true;
     }
-    if (Objects.equals(
-      name, OBControllerClientAPIType.class.getCanonicalName())) {
-      return true;
-    }
-    return false;
+    return Objects.equals(
+      name, OBControllerClientAPIType.class.getCanonicalName());
   }
 
   @Override

@@ -27,7 +27,7 @@ import com.io7m.olivebench.composition.OBTrackType;
 import com.io7m.olivebench.composition.regions.OBRegionMusicType;
 import com.io7m.olivebench.composition.regions.OBRegionTextType;
 import com.io7m.olivebench.composition.regions.OBRegionType;
-import com.io7m.olivebench.composition.spaces.OBSpacePatternTrackType;
+import com.io7m.olivebench.composition.spaces.OBTrackSpaceType;
 
 import java.util.Collections;
 import java.util.Map;
@@ -146,7 +146,7 @@ public final class OBTrack implements OBTrackType
 
   @Override
   public OBRegionMusicType createMusicRegion(
-    final PAreaL<OBSpacePatternTrackType> bounds,
+    final PAreaL<OBTrackSpaceType> bounds,
     final OBTimeSignature timeSignature,
     final OBKeySignature keySignature)
   {
@@ -169,7 +169,7 @@ public final class OBTrack implements OBTrackType
   @Override
   public OBRegionMusicType createMusicRegion(
     final UUID regionId,
-    final PAreaL<OBSpacePatternTrackType> bounds,
+    final PAreaL<OBTrackSpaceType> bounds,
     final OBTimeSignature timeSignature,
     final OBKeySignature keySignature)
   {
@@ -194,7 +194,7 @@ public final class OBTrack implements OBTrackType
 
   @Override
   public OBRegionTextType createTextRegion(
-    final PAreaL<OBSpacePatternTrackType> bounds)
+    final PAreaL<OBTrackSpaceType> bounds)
   {
     Objects.requireNonNull(bounds, "bounds");
 
@@ -207,7 +207,7 @@ public final class OBTrack implements OBTrackType
   @Override
   public OBRegionTextType createTextRegion(
     final UUID regionId,
-    final PAreaL<OBSpacePatternTrackType> bounds)
+    final PAreaL<OBTrackSpaceType> bounds)
   {
     Objects.requireNonNull(regionId, "regionId");
     Objects.requireNonNull(bounds, "bounds");

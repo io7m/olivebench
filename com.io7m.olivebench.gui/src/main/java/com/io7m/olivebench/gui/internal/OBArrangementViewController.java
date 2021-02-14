@@ -25,6 +25,8 @@ import com.io7m.olivebench.controller.api.OBControllerCommandEvent;
 import com.io7m.olivebench.controller.api.OBControllerCommandFailedEvent;
 import com.io7m.olivebench.controller.api.OBControllerCompositionEvent;
 import com.io7m.olivebench.controller.api.OBControllerEventType;
+import com.io7m.olivebench.gui.internal.rendering.OBRenderContext;
+import com.io7m.olivebench.gui.internal.rendering.OBTrackOnArrangementTimelineRenderer;
 import com.io7m.olivebench.services.api.OBServiceDirectoryType;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import javafx.application.Platform;
@@ -32,12 +34,14 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -49,13 +53,17 @@ public final class OBArrangementViewController implements Initializable
   private final OBServiceDirectoryType services;
   private final OBControllerAsynchronousType controller;
   private final CompositeDisposable compositionSubscriptions;
+  private final OBTrackOnArrangementTimelineRenderer timelineTrackRenderer;
 
   @FXML
-  private Pane rootPane;
+  private AnchorPane rootPane;
   @FXML
   private Pane toolbar;
   @FXML
   private ListView<OBTrackType> trackList;
+
+  private OBCanvasPane timelineCanvas;
+  private OBRenderContext timelineRenderContext;
 
   public OBArrangementViewController(
     final OBServiceDirectoryType inServices)
@@ -66,6 +74,8 @@ public final class OBArrangementViewController implements Initializable
       this.services.requireService(OBControllerAsynchronousType.class);
     this.compositionSubscriptions =
       new CompositeDisposable();
+    this.timelineTrackRenderer =
+      new OBTrackOnArrangementTimelineRenderer();
   }
 
   @Override
@@ -74,6 +84,23 @@ public final class OBArrangementViewController implements Initializable
     final ResourceBundle resourceBundle)
   {
     LOG.debug("initialize");
+
+    this.timelineCanvas = new OBCanvasPane(this::renderCanvas);
+    this.timelineCanvas.setMinHeight(32.0);
+    this.timelineCanvas.setMaxHeight(32.0);
+    this.timelineCanvas.setPrefHeight(32.0);
+
+    this.rootPane.getChildren().add(this.timelineCanvas);
+
+    AnchorPane.setLeftAnchor(
+      this.timelineCanvas, Double.valueOf(32.0));
+    AnchorPane.setRightAnchor(
+      this.timelineCanvas, Double.valueOf(0.0));
+    AnchorPane.setTopAnchor(
+      this.timelineCanvas, Double.valueOf(0.0));
+
+    this.timelineRenderContext =
+      new OBRenderContext(this.controller, this.timelineCanvas.canvas());
 
     this.controller.events()
       .subscribe(this::onControllerEvent);
@@ -115,6 +142,13 @@ public final class OBArrangementViewController implements Initializable
           this.compositionSubscriptions.add(
             composition.events().subscribe(this::onCompositionEvent)
           );
+
+          this.instantiateTrackViews();
+          break;
+        }
+
+        case COMPOSITION_VIEWPORT_CHANGED: {
+          this.timelineCanvas.invalidate();
           break;
         }
 
@@ -125,6 +159,7 @@ public final class OBArrangementViewController implements Initializable
 
         case COMPOSITION_CLOSED: {
           this.compositionSubscriptions.dispose();
+          this.trackList.setItems(FXCollections.emptyObservableList());
           break;
         }
       }
@@ -154,18 +189,21 @@ public final class OBArrangementViewController implements Initializable
   private void onCompositionModifiedEvent(
     final OBCompositionModifiedEvent event)
   {
-    Platform.runLater(() -> {
-      final var composition =
-        this.controller.composition()
-          .orElseThrow(IllegalStateException::new);
+    Platform.runLater(this::instantiateTrackViews);
+  }
 
-      this.trackList.setCellFactory(
-        listView -> OBArrangementTrackViewController.create(this.services)
-      );
-      this.trackList.setItems(FXCollections.observableList(
-        new ArrayList<>(composition.tracks().values())
-      ));
-    });
+  private void instantiateTrackViews()
+  {
+    final var composition =
+      this.controller.composition()
+        .orElseThrow(IllegalStateException::new);
+
+    this.trackList.setCellFactory(
+      listView -> OBArrangementTrackViewController.create(this.services)
+    );
+    this.trackList.setItems(FXCollections.observableList(
+      new ArrayList<>(composition.tracks().values())
+    ));
   }
 
   private void onControllerEventCommand(
@@ -178,5 +216,46 @@ public final class OBArrangementViewController implements Initializable
     final OBControllerCommandFailedEvent event)
   {
 
+  }
+
+  private void renderCanvas()
+  {
+    final var timelineWidth =
+      this.timelineCanvas.getWidth();
+    final var timelineHeight =
+      this.timelineCanvas.getHeight();
+
+    this.timelineCanvas.canvas()
+      .getGraphicsContext2D()
+      .clearRect(0.0, 0.0, timelineWidth, timelineHeight);
+
+    this.renderCanvasTimeline();
+  }
+
+  private void renderCanvasTimeline()
+  {
+    final var compositionOpt = this.controller.composition();
+    if (compositionOpt.isEmpty()) {
+      return;
+    }
+
+    final var composition =
+      compositionOpt.get();
+    final var graphics =
+      this.timelineCanvas.canvas().getGraphicsContext2D();
+
+    graphics.clearRect(
+      0.0,
+      0.0,
+      this.timelineCanvas.getWidth(),
+      this.timelineCanvas.getHeight()
+    );
+
+    final var tracks =
+      List.copyOf(composition.tracks().values());
+
+    for (final var track : tracks) {
+      this.timelineTrackRenderer.render(this.timelineRenderContext, track);
+    }
   }
 }

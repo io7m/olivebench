@@ -18,7 +18,8 @@ package com.io7m.olivebench.composition;
 
 import com.io7m.immutables.styles.ImmutablesStyleType;
 import com.io7m.jtensors.core.parameterized.vectors.PVector3D;
-import com.io7m.olivebench.composition.spaces.OBSpaceRGBAType;
+import com.io7m.jtensors.core.parameterized.vectors.PVector4D;
+import com.io7m.olivebench.composition.spaces.OBRGBASpaceType;
 import org.immutables.value.Value;
 
 /**
@@ -44,8 +45,20 @@ public interface OBTrackMetadataType
    */
 
   @Value.Default
-  default PVector3D<OBSpaceRGBAType> color()
+  default PVector3D<OBRGBASpaceType> color()
   {
     return PVector3D.of(1.0, 1.0, 1.0);
+  }
+
+  /**
+   * @return The track color as an RGBA vector
+   */
+
+  @Value.Auxiliary
+  @Value.Derived
+  default PVector4D<OBRGBASpaceType> colorRGBA()
+  {
+    final var c = this.color();
+    return PVector4D.of(c.x(), c.y(), c.z(), 1.0);
   }
 }

@@ -18,7 +18,6 @@ package com.io7m.olivebench.tests.composition;
 
 import com.io7m.jregions.core.parameterized.areas.PAreaL;
 import com.io7m.olivebench.composition.OBClockService;
-import com.io7m.olivebench.composition.OBClockServiceType;
 import com.io7m.olivebench.composition.OBCompositionChange;
 import com.io7m.olivebench.composition.OBCompositionEventType;
 import com.io7m.olivebench.composition.OBCompositionMetadata;
@@ -26,10 +25,8 @@ import com.io7m.olivebench.composition.OBCompositionModificationTimeChangedEvent
 import com.io7m.olivebench.composition.OBCompositionModifiedEvent;
 import com.io7m.olivebench.composition.OBCompositions;
 import com.io7m.olivebench.composition.OBLocaleService;
-import com.io7m.olivebench.composition.OBLocaleServiceType;
 import com.io7m.olivebench.composition.OBTimeConfiguration;
 import com.io7m.olivebench.events.api.OBEventType;
-import com.io7m.olivebench.services.api.OBServiceDirectory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -38,9 +35,11 @@ import org.slf4j.LoggerFactory;
 import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Locale;
 import java.util.UUID;
 
+import static com.io7m.olivebench.composition.OBCompositionChange.PORT_CREATED;
+import static com.io7m.olivebench.composition.OBCompositionChange.PORT_DELETED;
+import static com.io7m.olivebench.composition.OBCompositionChange.PORT_UNDELETED;
 import static com.io7m.olivebench.composition.OBCompositionChange.REGION_CREATED;
 import static com.io7m.olivebench.composition.OBCompositionChange.REGION_DELETED;
 import static com.io7m.olivebench.composition.OBCompositionChange.REGION_UNDELETED;
@@ -83,7 +82,8 @@ public final class OBCompositionTest
 
   private void eventIsIncreasedModTime()
   {
-    final var event = (OBCompositionModificationTimeChangedEvent) this.events.remove(0);
+    final var event = (OBCompositionModificationTimeChangedEvent) this.events.remove(
+      0);
     assertTrue(event.time().isAfter(this.eventPreviousTime));
     this.eventPreviousTime = event.time();
   }
@@ -307,5 +307,185 @@ public final class OBCompositionTest
     assertEquals(0, this.events.size());
     assertThrows(IllegalStateException.class, r0::undelete);
     assertEquals(0, this.events.size());
+  }
+
+  @Test
+  public void testCreatePortOutput()
+  {
+    final var metadata =
+      OBCompositionMetadata.builder()
+        .setId(UUID.randomUUID())
+        .setTimeConfiguration(this.timeConfiguration)
+        .build();
+
+    final var composition =
+      this.compositions.createComposition(this.clock, this.locale, metadata);
+    composition.events().subscribe(this::logEvent);
+
+    final var port = composition.createOutputPort();
+    assertEquals(1, composition.ports().size());
+    assertFalse(port.isDeleted());
+    port.delete();
+    assertTrue(port.isDeleted());
+
+    assertEquals(metadata, composition.metadata());
+    assertEquals(0, composition.ports().size());
+    assertEquals(4, this.events.size());
+
+    this.eventIs(PORT_CREATED);
+    this.eventIsIncreasedModTime();
+    this.eventIs(PORT_DELETED);
+    this.eventIsIncreasedModTime();
+
+    assertEquals(0, this.events.size());
+    assertThrows(IllegalStateException.class, port::delete);
+    assertEquals(0, this.events.size());
+  }
+
+  @Test
+  public void testCreateUndeletePortOutput()
+  {
+    final var metadata =
+      OBCompositionMetadata.builder()
+        .setId(UUID.randomUUID())
+        .setTimeConfiguration(this.timeConfiguration)
+        .build();
+
+    final var composition =
+      this.compositions.createComposition(this.clock, this.locale, metadata);
+    composition.events().subscribe(this::logEvent);
+
+    final var port = composition.createOutputPort();
+    assertFalse(port.isDeleted());
+    port.delete();
+    assertTrue(port.isDeleted());
+    port.undelete();
+    assertFalse(port.isDeleted());
+
+    assertEquals(metadata, composition.metadata());
+    assertEquals(1, composition.ports().size());
+    assertEquals(6, this.events.size());
+
+    this.eventIs(PORT_CREATED);
+    this.eventIsIncreasedModTime();
+    this.eventIs(PORT_DELETED);
+    this.eventIsIncreasedModTime();
+    this.eventIs(PORT_UNDELETED);
+    this.eventIsIncreasedModTime();
+
+    assertEquals(0, this.events.size());
+    assertThrows(IllegalStateException.class, port::undelete);
+    assertEquals(0, this.events.size());
+  }
+
+  @Test
+  public void testCreatePortOutputIDUsed()
+  {
+    final var metadata =
+      OBCompositionMetadata.builder()
+        .setId(UUID.randomUUID())
+        .setTimeConfiguration(this.timeConfiguration)
+        .build();
+
+    final var composition =
+      this.compositions.createComposition(this.clock, this.locale, metadata);
+    composition.events().subscribe(this::logEvent);
+
+    final var id = UUID.randomUUID();
+    composition.createOutputPort(id);
+
+    assertThrows(IllegalArgumentException.class, () -> {
+      composition.createOutputPort(id);
+    });
+  }
+
+  @Test
+  public void testCreatePortInput()
+  {
+    final var metadata =
+      OBCompositionMetadata.builder()
+        .setId(UUID.randomUUID())
+        .setTimeConfiguration(this.timeConfiguration)
+        .build();
+
+    final var composition =
+      this.compositions.createComposition(this.clock, this.locale, metadata);
+    composition.events().subscribe(this::logEvent);
+
+    final var port = composition.createInputPort();
+    assertEquals(1, composition.ports().size());
+    assertFalse(port.isDeleted());
+    port.delete();
+    assertTrue(port.isDeleted());
+
+    assertEquals(metadata, composition.metadata());
+    assertEquals(0, composition.ports().size());
+    assertEquals(4, this.events.size());
+
+    this.eventIs(PORT_CREATED);
+    this.eventIsIncreasedModTime();
+    this.eventIs(PORT_DELETED);
+    this.eventIsIncreasedModTime();
+
+    assertEquals(0, this.events.size());
+    assertThrows(IllegalStateException.class, port::delete);
+    assertEquals(0, this.events.size());
+  }
+
+  @Test
+  public void testCreateUndeletePortInput()
+  {
+    final var metadata =
+      OBCompositionMetadata.builder()
+        .setId(UUID.randomUUID())
+        .setTimeConfiguration(this.timeConfiguration)
+        .build();
+
+    final var composition =
+      this.compositions.createComposition(this.clock, this.locale, metadata);
+    composition.events().subscribe(this::logEvent);
+
+    final var port = composition.createInputPort();
+    assertFalse(port.isDeleted());
+    port.delete();
+    assertTrue(port.isDeleted());
+    port.undelete();
+    assertFalse(port.isDeleted());
+
+    assertEquals(metadata, composition.metadata());
+    assertEquals(1, composition.ports().size());
+    assertEquals(6, this.events.size());
+
+    this.eventIs(PORT_CREATED);
+    this.eventIsIncreasedModTime();
+    this.eventIs(PORT_DELETED);
+    this.eventIsIncreasedModTime();
+    this.eventIs(PORT_UNDELETED);
+    this.eventIsIncreasedModTime();
+
+    assertEquals(0, this.events.size());
+    assertThrows(IllegalStateException.class, port::undelete);
+    assertEquals(0, this.events.size());
+  }
+
+  @Test
+  public void testCreatePortInputIDUsed()
+  {
+    final var metadata =
+      OBCompositionMetadata.builder()
+        .setId(UUID.randomUUID())
+        .setTimeConfiguration(this.timeConfiguration)
+        .build();
+
+    final var composition =
+      this.compositions.createComposition(this.clock, this.locale, metadata);
+    composition.events().subscribe(this::logEvent);
+
+    final var id = UUID.randomUUID();
+    composition.createInputPort(id);
+
+    assertThrows(IllegalArgumentException.class, () -> {
+      composition.createInputPort(id);
+    });
   }
 }

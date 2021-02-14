@@ -14,37 +14,22 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.olivebench.composition;
+package com.io7m.olivebench.xml.v1.internal;
 
-/**
- * The interface supported by objects that can be "deleted".
- */
+import com.io7m.jlexing.core.ImmutableStyleType;
+import com.io7m.olivebench.composition.ports.OBPortInputType;
+import com.io7m.olivebench.composition.ports.OBPortOutputType;
+import org.immutables.value.Value;
 
-public interface OBDeleteableType
+import java.util.List;
+
+@ImmutableStyleType
+@Value.Immutable(builder = false, copy = false)
+public interface OB1PortsType
 {
-  /**
-   * @return {@code true} if {@link #delete()} has been called
-   */
+  @Value.Parameter
+  List<OBPortInputType> inputPorts();
 
-  boolean isDeleted();
-
-  /**
-   * Delete the object. After this method has been called, subsequent
-   * calls to {@code isDeleted()} will return {@code true}.
-   *
-   * @throws IllegalStateException If {@code isDeleted()} is {@code true}
-   */
-
-  void delete()
-    throws IllegalStateException;
-
-  /**
-   * Undelete the object. After this method has been called, subsequent
-   * calls to {@code isDeleted()} will return {@code false}.
-   *
-   * @throws IllegalStateException If {@code isDeleted()} is {@code false}
-   */
-
-  void undelete()
-    throws IllegalStateException;
+  @Value.Parameter
+  List<OBPortOutputType> outputPorts();
 }

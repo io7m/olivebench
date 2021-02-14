@@ -387,6 +387,52 @@
     </xsd:complexType>
   </xsd:element>
 
+  <xsd:element name="PortOutput">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A single output port within the composition.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType>
+      <xsd:attribute name="id"
+                     type="c:UuidType"
+                     use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="PortInput">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A single input port within the composition.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType>
+      <xsd:attribute name="id"
+                     type="c:UuidType"
+                     use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="Ports">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        The set of ports within the composition.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType>
+      <xsd:sequence minOccurs="0"
+                    maxOccurs="unbounded">
+        <xsd:choice>
+          <xsd:element ref="c:PortOutput"/>
+          <xsd:element ref="c:PortInput"/>
+        </xsd:choice>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
   <xsd:element name="Composition">
     <xsd:annotation>
       <xsd:documentation xml:lang="en">
@@ -397,6 +443,7 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element ref="c:Metadata"/>
+        <xsd:element ref="c:Ports"/>
         <xsd:element ref="c:Tracks"/>
       </xsd:sequence>
     </xsd:complexType>

@@ -17,6 +17,9 @@
 package com.io7m.olivebench.composition;
 
 import com.io7m.jranges.RangeInclusiveL;
+import com.io7m.olivebench.composition.ports.OBPortInputType;
+import com.io7m.olivebench.composition.ports.OBPortOutputType;
+import com.io7m.olivebench.composition.ports.OBPortType;
 import io.reactivex.rxjava3.core.Observable;
 
 import java.time.OffsetDateTime;
@@ -102,4 +105,18 @@ public interface OBCompositionType
    */
 
   RangeInclusiveL noteRange();
+
+  /**
+   * @return A read-only view of the ports in the composition
+   */
+
+  SortedMap<UUID, OBPortType> ports();
+
+  OBPortOutputType createOutputPort();
+
+  OBPortOutputType createOutputPort(UUID id);
+
+  OBPortInputType createInputPort();
+
+  OBPortInputType createInputPort(UUID id);
 }

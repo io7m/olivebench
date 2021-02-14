@@ -20,5 +20,6 @@
     </ob:DCMetadata>
     <ob:TimeConfiguration ticksPerQuarterNote="1024"/>
   </ob:Metadata>
+  <ob:Ports/>
   <ob:Tracks/>
 </ob:Composition>

@@ -74,5 +74,29 @@ public enum OBCompositionChange
    * A region was undeleted.
    */
 
-  REGION_UNDELETED
+  REGION_UNDELETED,
+
+  /**
+   * A port was created.
+   */
+
+  PORT_CREATED,
+
+  /**
+   * A port was modified.
+   */
+
+  PORT_MODIFIED,
+
+  /**
+   * A port was deleted.
+   */
+
+  PORT_DELETED,
+
+  /**
+   * A port was undeleted.
+   */
+
+  PORT_UNDELETED,
 }

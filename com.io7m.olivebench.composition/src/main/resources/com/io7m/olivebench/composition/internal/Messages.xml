@@ -20,6 +20,14 @@
   Region ID: {0}
 ]]></entry>
 
+  <entry key="portAlreadyDeleted"><![CDATA[Port already deleted.
+  Port ID: {0}
+]]></entry>
+
+  <entry key="portNotDeleted"><![CDATA[Port has not been deleted.
+  Port ID: {0}
+]]></entry>
+
   <entry key="identifierAlreadyUsed"><![CDATA[Identifier already used.
   Identifier: {0}
   Object:     {1}

@@ -14,37 +14,25 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.olivebench.composition;
+package com.io7m.olivebench.composition.internal;
 
-/**
- * The interface supported by objects that can be "deleted".
- */
+import com.io7m.olivebench.composition.ports.OBPortOutputType;
 
-public interface OBDeleteableType
+import java.util.UUID;
+
+public final class OBPortOutput
+  extends OBPortAbstract implements OBPortOutputType
 {
-  /**
-   * @return {@code true} if {@link #delete()} has been called
-   */
+  OBPortOutput(
+    final OBComposition inComposition,
+    final UUID inPortId)
+  {
+    super(inComposition, inPortId);
+  }
 
-  boolean isDeleted();
-
-  /**
-   * Delete the object. After this method has been called, subsequent
-   * calls to {@code isDeleted()} will return {@code true}.
-   *
-   * @throws IllegalStateException If {@code isDeleted()} is {@code true}
-   */
-
-  void delete()
-    throws IllegalStateException;
-
-  /**
-   * Undelete the object. After this method has been called, subsequent
-   * calls to {@code isDeleted()} will return {@code false}.
-   *
-   * @throws IllegalStateException If {@code isDeleted()} is {@code false}
-   */
-
-  void undelete()
-    throws IllegalStateException;
+  @Override
+  public String toString()
+  {
+    return String.format("[OBPortOutput %s]", this.id());
+  }
 }

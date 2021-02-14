@@ -14,37 +14,9 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.olivebench.composition;
+package com.io7m.olivebench.composition.ports;
 
-/**
- * The interface supported by objects that can be "deleted".
- */
-
-public interface OBDeleteableType
+public interface OBPortInputType extends OBPortType
 {
-  /**
-   * @return {@code true} if {@link #delete()} has been called
-   */
 
-  boolean isDeleted();
-
-  /**
-   * Delete the object. After this method has been called, subsequent
-   * calls to {@code isDeleted()} will return {@code true}.
-   *
-   * @throws IllegalStateException If {@code isDeleted()} is {@code true}
-   */
-
-  void delete()
-    throws IllegalStateException;
-
-  /**
-   * Undelete the object. After this method has been called, subsequent
-   * calls to {@code isDeleted()} will return {@code false}.
-   *
-   * @throws IllegalStateException If {@code isDeleted()} is {@code false}
-   */
-
-  void undelete()
-    throws IllegalStateException;
 }

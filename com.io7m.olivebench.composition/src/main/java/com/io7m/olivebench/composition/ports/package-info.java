@@ -14,45 +14,13 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.olivebench.composition.regions;
-
-import com.io7m.jregions.core.parameterized.areas.PAreaL;
-import com.io7m.olivebench.composition.OBDeleteableType;
-import com.io7m.olivebench.composition.OBTrackType;
-import com.io7m.olivebench.composition.spaces.OBTrackSpaceType;
-
-import java.util.UUID;
-
 /**
- * The base type of regions.
+ * Olivebench (Composition model [Ports])
  */
 
-public interface OBRegionType extends OBDeleteableType
-{
-  /**
-   * @return The unique region ID
-   */
+@Export
+@Version("1.0.0")
+package com.io7m.olivebench.composition.ports;
 
-  UUID id();
-
-  /**
-   * @return The track to which this region belongs
-   */
-
-  OBTrackType track();
-
-  /**
-   * @return The bounds of the region
-   */
-
-  PAreaL<OBTrackSpaceType> bounds();
-
-  /**
-   * Set the bounds of the region.
-   *
-   * @param newBounds The new bounds of the region
-   */
-
-  void setBounds(
-    PAreaL<OBTrackSpaceType> newBounds);
-}
+import org.osgi.annotation.bundle.Export;
+import org.osgi.annotation.versioning.Version;

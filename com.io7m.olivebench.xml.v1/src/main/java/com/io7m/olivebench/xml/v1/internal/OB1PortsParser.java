@@ -20,13 +20,12 @@ import com.io7m.blackthorne.api.BTElementHandlerConstructorType;
 import com.io7m.blackthorne.api.BTElementHandlerType;
 import com.io7m.blackthorne.api.BTElementParsingContextType;
 import com.io7m.blackthorne.api.BTQualifiedName;
-import com.io7m.olivebench.composition.OBClockServiceType;
-import com.io7m.olivebench.composition.OBCompositionFactoryType;
-import com.io7m.olivebench.composition.OBCompositionMetadata;
 import com.io7m.olivebench.composition.OBCompositionType;
-import com.io7m.olivebench.composition.OBLocaleServiceType;
-import com.io7m.olivebench.services.api.OBServiceDirectoryType;
+import com.io7m.olivebench.composition.ports.OBPortInputType;
+import com.io7m.olivebench.composition.ports.OBPortOutputType;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -34,26 +33,22 @@ import static com.io7m.olivebench.xml.v1.internal.OB1Names.element;
 import static java.util.Map.entry;
 import static java.util.Map.ofEntries;
 
-public final class OB1CompositionParser
-  implements BTElementHandlerType<Object, OBCompositionType>
+public final class OB1PortsParser
+  implements BTElementHandlerType<Object, OB1Ports>
 {
-  private final OBClockServiceType clock;
-  private final OBLocaleServiceType locale;
-  private final OBCompositionFactoryType factory;
-  private OBCompositionMetadata metadata;
-  private OBCompositionType composition;
+  private final OBCompositionType composition;
+  private final List<OBPortInputType> portsInput;
+  private final List<OBPortOutputType> portsOutput;
 
-  public OB1CompositionParser(
-    final OBClockServiceType inClock,
-    final OBLocaleServiceType inLocale,
-    final OBServiceDirectoryType services)
+  public OB1PortsParser(
+    final OBCompositionType inComposition)
   {
-    this.clock =
-      Objects.requireNonNull(inClock, "clock");
-    this.locale =
-      Objects.requireNonNull(inLocale, "locale");
-    this.factory =
-      services.requireService(OBCompositionFactoryType.class);
+    this.composition =
+      Objects.requireNonNull(inComposition, "composition");
+    this.portsInput =
+      new ArrayList<>();
+    this.portsOutput =
+      new ArrayList<>();
   }
 
   @Override
@@ -62,14 +57,21 @@ public final class OB1CompositionParser
   {
     return ofEntries(
       entry(
-        element("Metadata"),
-        c -> new OB1MetadataParser()),
+        element("PortOutput"),
+        c -> new OB1PortOutputParser(this.composition)),
       entry(
-        element("Ports"),
-        c -> new OB1PortsParser(this.composition)),
-      entry(
-        element("Tracks"),
-        c -> new OB1TracksParser(this.composition))
+        element("PortInput"),
+        c -> new OB1PortInputParser(this.composition))
+    );
+  }
+
+  @Override
+  public OB1Ports onElementFinished(
+    final BTElementParsingContextType context)
+  {
+    return OB1Ports.of(
+      List.copyOf(this.portsInput),
+      List.copyOf(this.portsOutput)
     );
   }
 
@@ -78,28 +80,16 @@ public final class OB1CompositionParser
     final BTElementParsingContextType context,
     final Object result)
   {
-    if (result instanceof OBCompositionMetadata) {
-      this.metadata = (OBCompositionMetadata) result;
-      this.composition =
-        this.factory.createComposition(this.clock, this.locale, this.metadata);
+    if (result instanceof OBPortInputType) {
+      this.portsInput.add((OBPortInputType) result);
       return;
     }
-    if (result instanceof OB1Tracks) {
+    if (result instanceof OBPortOutputType) {
+      this.portsOutput.add((OBPortOutputType) result);
       return;
     }
-    if (result instanceof OB1Ports) {
-      return;
-    }
-
     throw new IllegalStateException(
       String.format("Unrecognized value: %s", result)
     );
-  }
-
-  @Override
-  public OBCompositionType onElementFinished(
-    final BTElementParsingContextType context)
-  {
-    return this.composition;
   }
 }

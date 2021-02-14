@@ -14,37 +14,28 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.olivebench.composition;
+package com.io7m.olivebench.composition.ports;
+
+import com.io7m.olivebench.composition.OBCompositionType;
+import com.io7m.olivebench.composition.OBDeleteableType;
+
+import java.util.UUID;
 
 /**
- * The interface supported by objects that can be "deleted".
+ * The base type of composition ports.
  */
 
-public interface OBDeleteableType
+public interface OBPortType extends OBDeleteableType
 {
   /**
-   * @return {@code true} if {@link #delete()} has been called
+   * @return The unique port ID
    */
 
-  boolean isDeleted();
+  UUID id();
 
   /**
-   * Delete the object. After this method has been called, subsequent
-   * calls to {@code isDeleted()} will return {@code true}.
-   *
-   * @throws IllegalStateException If {@code isDeleted()} is {@code true}
+   * @return The composition to which the port belongs
    */
 
-  void delete()
-    throws IllegalStateException;
-
-  /**
-   * Undelete the object. After this method has been called, subsequent
-   * calls to {@code isDeleted()} will return {@code false}.
-   *
-   * @throws IllegalStateException If {@code isDeleted()} is {@code false}
-   */
-
-  void undelete()
-    throws IllegalStateException;
+  OBCompositionType composition();
 }

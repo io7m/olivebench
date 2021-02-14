@@ -20,6 +20,7 @@
     </ob:DCMetadata>
     <ob:TimeConfiguration ticksPerQuarterNote="1024"/>
   </ob:Metadata>
+  <ob:Ports/>
   <ob:Tracks>
     <ob:Track id="ae3e5e10-95b3-48a6-9765-d08046bcbdee">
       <ob:TrackMetadata name="Track 0">

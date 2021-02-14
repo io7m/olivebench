@@ -24,6 +24,9 @@ import com.io7m.olivebench.composition.OBCompositionModificationTimeChangedEvent
 import com.io7m.olivebench.composition.OBCompositionModifiedEvent;
 import com.io7m.olivebench.composition.OBCompositionType;
 import com.io7m.olivebench.composition.OBTrackType;
+import com.io7m.olivebench.composition.ports.OBPortInputType;
+import com.io7m.olivebench.composition.ports.OBPortOutputType;
+import com.io7m.olivebench.composition.ports.OBPortType;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
@@ -37,21 +40,26 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 import static com.io7m.olivebench.composition.OBCompositionChange.METADATA_CHANGED;
+import static com.io7m.olivebench.composition.OBCompositionChange.PORT_CREATED;
+import static com.io7m.olivebench.composition.OBCompositionChange.PORT_DELETED;
+import static com.io7m.olivebench.composition.OBCompositionChange.PORT_UNDELETED;
 import static com.io7m.olivebench.composition.OBCompositionChange.TRACK_CREATED;
 import static com.io7m.olivebench.composition.OBCompositionChange.TRACK_DELETED;
 import static com.io7m.olivebench.composition.OBCompositionChange.TRACK_UNDELETED;
 
 public final class OBComposition implements OBCompositionType
 {
+  private final ConcurrentSkipListMap<UUID, OBPortType> ports;
   private final ConcurrentSkipListMap<UUID, OBTrackType> tracks;
-  private final SortedMap<UUID, OBTrackType> tracksRead;
+  private final Disposable modifiedSubscription;
   private final OBClockServiceType clock;
   private final OBCompositionStrings strings;
   private final OBObjectMap objects;
+  private final SortedMap<UUID, OBPortType> portsRead;
+  private final SortedMap<UUID, OBTrackType> tracksRead;
   private final Subject<OBCompositionEventType> eventSubject;
-  private final Disposable modifiedSubscription;
-  private volatile OffsetDateTime timeLastModified;
   private volatile OBCompositionMetadata metadata;
+  private volatile OffsetDateTime timeLastModified;
 
   public OBComposition(
     final OBClockServiceType inClock,
@@ -66,10 +74,17 @@ public final class OBComposition implements OBCompositionType
       Objects.requireNonNull(inMetadata, "inMetadata");
     this.objects =
       new OBObjectMap(this.strings);
+
     this.tracks =
       new ConcurrentSkipListMap<>();
     this.tracksRead =
       Collections.unmodifiableSortedMap(this.tracks);
+
+    this.ports =
+      new ConcurrentSkipListMap<>();
+    this.portsRead =
+      Collections.unmodifiableSortedMap(this.ports);
+
     this.timeLastModified =
       this.clock.now();
     this.eventSubject =
@@ -126,6 +141,48 @@ public final class OBComposition implements OBCompositionType
     this.tracks.put(track.id(), track);
     this.publish(OBCompositionModifiedEvent.of(TRACK_UNDELETED, track.id()));
     return track;
+  }
+
+  private <T extends OBPortType> T portSave(
+    final T newPort)
+  {
+    this.ports.put(newPort.id(), newPort);
+    this.publish(OBCompositionModifiedEvent.of(PORT_CREATED, newPort.id()));
+    return newPort;
+  }
+
+  boolean portIsDeleted(
+    final OBPortType port)
+  {
+    return !Objects.equals(this.ports.get(port.id()), port);
+  }
+
+  OBPortType portDelete(
+    final OBPortType port)
+  {
+    if (this.portIsDeleted(port)) {
+      throw new IllegalStateException(
+        this.strings().format("portAlreadyDeleted", port.id())
+      );
+    }
+
+    this.ports.remove(port.id());
+    this.publish(OBCompositionModifiedEvent.of(PORT_DELETED, port.id()));
+    return port;
+  }
+
+  OBPortType portUndelete(
+    final OBPortType port)
+  {
+    if (!this.portIsDeleted(port)) {
+      throw new IllegalStateException(
+        this.strings().format("portNotDeleted", port.id())
+      );
+    }
+
+    this.ports.put(port.id(), port);
+    this.publish(OBCompositionModifiedEvent.of(PORT_UNDELETED, port.id()));
+    return port;
   }
 
   OBObjectMap objects()
@@ -208,6 +265,44 @@ public final class OBComposition implements OBCompositionType
   public RangeInclusiveL noteRange()
   {
     return RangeInclusiveL.of(0L, 127L);
+  }
+
+  @Override
+  public SortedMap<UUID, OBPortType> ports()
+  {
+    return this.portsRead;
+  }
+
+  @Override
+  public OBPortOutputType createOutputPort()
+  {
+    return this.portSave(
+      this.objects.withFresh(freshId -> new OBPortOutput(this, freshId))
+    );
+  }
+
+  @Override
+  public OBPortOutputType createOutputPort(final UUID id)
+  {
+    return this.portSave(
+      this.objects.withSpecific(id, freshId -> new OBPortOutput(this, freshId))
+    );
+  }
+
+  @Override
+  public OBPortInputType createInputPort()
+  {
+    return this.portSave(
+      this.objects.withFresh(freshId -> new OBPortInput(this, freshId))
+    );
+  }
+
+  @Override
+  public OBPortInputType createInputPort(final UUID id)
+  {
+    return this.portSave(
+      this.objects.withSpecific(id, freshId -> new OBPortInput(this, freshId))
+    );
   }
 
   public void publish(

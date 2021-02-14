@@ -46,6 +46,7 @@ module com.io7m.olivebench.composition
   provides OBCompositionFactoryType with OBCompositions;
 
   exports com.io7m.olivebench.composition.annotations;
+  exports com.io7m.olivebench.composition.ports;
   exports com.io7m.olivebench.composition.regions;
   exports com.io7m.olivebench.composition.spaces;
   exports com.io7m.olivebench.composition;

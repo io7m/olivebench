@@ -31,7 +31,7 @@ import java.util.UUID;
  */
 
 @ThreadSafe
-public interface OBTrackType extends OBDeleteableType<OBTrackType>
+public interface OBTrackType extends OBDeleteableType
 {
   /**
    * @return The unique track ID

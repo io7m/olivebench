@@ -27,6 +27,9 @@ import com.io7m.olivebench.composition.OBTimeConfiguration;
 import com.io7m.olivebench.composition.OBTimeSignature;
 import com.io7m.olivebench.composition.OBTrackMetadata;
 import com.io7m.olivebench.composition.OBTrackType;
+import com.io7m.olivebench.composition.ports.OBPortInputType;
+import com.io7m.olivebench.composition.ports.OBPortOutputType;
+import com.io7m.olivebench.composition.ports.OBPortType;
 import com.io7m.olivebench.composition.regions.OBNote;
 import com.io7m.olivebench.composition.regions.OBRegionMusicType;
 import com.io7m.olivebench.composition.regions.OBRegionTextType;
@@ -106,6 +109,7 @@ public final class OB1CompositionSerializer
     writer.writeNamespace("dc", DUBLIN_CORE);
 
     this.writeMetadata(writer, this.composition.metadata());
+    this.writePorts(writer, this.composition.ports());
     this.writeTracks(writer, this.composition.tracks());
 
     writer.writeEndElement();
@@ -135,6 +139,63 @@ public final class OB1CompositionSerializer
     }
 
     this.output.flush();
+  }
+
+  private void writePorts(
+    final XMLStreamWriter writer,
+    final SortedMap<UUID, OBPortType> ports)
+    throws XMLStreamException
+  {
+    final var ids =
+      ports.keySet()
+        .stream()
+        .map(UUID::toString)
+        .sorted()
+        .map(UUID::fromString)
+        .collect(Collectors.toList());
+
+    writer.writeStartElement(this.namespace, "Ports");
+    for (final var id : ids) {
+      this.writePort(writer, ports.get(id));
+    }
+    writer.writeEndElement();
+  }
+
+  private void writePort(
+    final XMLStreamWriter writer,
+    final OBPortType port)
+    throws XMLStreamException
+  {
+    if (port instanceof OBPortInputType) {
+      this.writePortInput(writer, (OBPortInputType) port);
+      return;
+    }
+    if (port instanceof OBPortOutputType) {
+      this.writePortOutput(writer, (OBPortOutputType) port);
+      return;
+    }
+
+    throw new IllegalStateException();
+  }
+
+  private void writePortInput(
+    final XMLStreamWriter writer,
+    final OBPortInputType port)
+    throws XMLStreamException
+  {
+    writer.writeStartElement(this.namespace, "PortInput");
+    writer.writeAttribute("id", port.id().toString());
+    writer.writeEndElement();
+  }
+
+  private void writePortOutput(
+    final XMLStreamWriter writer,
+    final OBPortOutputType port)
+    throws XMLStreamException
+  {
+    writer.writeStartElement(this.namespace, "PortOutput");
+    writer.writeAttribute("id", port.id().toString());
+    writer.writeEndElement();
   }
 
   private void writeTracks(
